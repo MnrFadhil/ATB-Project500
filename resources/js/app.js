@@ -8,3 +8,6 @@ import Chart from "chart.js/auto";
 
 window.$ = $;
 window.Popper = Popper;
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+});

@@ -1,4 +1,3 @@
-
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
@@ -18,7 +17,7 @@
     </div>
 
     <!-- Nav Item - Dashboard -->
-    <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+    <li class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
         <a class="nav-link" href="/dashboard" wire:navigated>
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
@@ -26,7 +25,7 @@
     </li>
 
     <!-- Nav Item - User -->
-    <li class="nav-item  {{ request()->routeIs('user-list*') ? 'active' : '' }}">
+    <li class="nav-item  {{ request()->is('user-list*') ? 'active' : '' }}">
         <a class="nav-link" href="/user-list" wire:navigated>
             <i class="fas fa-fw fa-users"></i>
             <span>User</span>
@@ -34,9 +33,9 @@
     </li>
 
     <!-- Nav Item - Data input -->
-    <li class="nav-item {{ request()->routeIs('data*') ? 'active' : '' }}">
+    <li class="nav-item {{ request()->is('data*') ? 'active' : '' }}">
         <a class="nav-link" href="/data" wire:navigated>
-        <i class="fas fa-fw fa-table"></i>
+            <i class="fas fa-fw fa-table"></i>
             <span>Data</span>
         </a>
     </li>
