@@ -25,11 +25,10 @@ new #[Layout('layouts.guest')] class extends Component {
 
 <div>
     <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
     <form wire:submit="login">
         <div class="p-5">
             <div class="text-center">
-                <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                <h1 class="h4 text-gray-900 mb-4 font-weight-bold">LOGIN</h1>
             </div>
 
             <div class="form-group">
@@ -51,6 +50,9 @@ new #[Layout('layouts.guest')] class extends Component {
             <button type="submit" class="btn btn-primary btn-user btn-block">
                 Login
             </button>
+            @error('form.email')
+                <span class="error">{{ $message }}</span>
+            @enderror
         </div>
     </form>
 </div>

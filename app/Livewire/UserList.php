@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -101,14 +102,23 @@ class UserList extends Component
 
         if ($this->mode == 'edit') {
             $userUpdate = User::findOrFail($this->userId);
-            $userUpdate->update($validData);
+            $isSuccess = $userUpdate->update($validData);
+
+            if ($isSuccess) Session::flash('success', 'Success Edit User');
+            else Session::flash('eror', 'Eror Edit User');
         }
         if ($this->mode == 'create') {
-            User::create($validData);
+            $isSuccess = User::create($validData);
+
+            if ($isSuccess) Session::flash('success', 'Success Create User');
+            else Session::flash('eror', 'Eror Create User');
         }
         if ($this->mode == 'delete') {
             $userUpdate = User::findOrFail($this->userId);
-            $userUpdate->delete();
+            $isSuccess = $userUpdate->delete();
+
+            if ($isSuccess) Session::flash('success', 'Success Create User');
+            else Session::flash('eror', 'Eror Create User');
         }
 
         if ($this->mode !== 'delete') {
@@ -116,6 +126,8 @@ class UserList extends Component
         } else {
             $this->dispatch('close-modal-detail');
         }
+
+        return redirect('/user-list');
     }
 
     public function showChangePassword()

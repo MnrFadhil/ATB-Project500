@@ -1,7 +1,7 @@
 <div>
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">User List</h1>
+        <h1 class="h3 mb-0 text-gray-800">Manage Users</h1>
     </div>
 
     <!-- DataTales Example -->
@@ -9,7 +9,7 @@
         <div class="card-header py-3 d-flex align-items-center justify-content-between">
             <div>
                 <h6 class="m-0 font-weight-bold">
-                    All Users Data
+                    Users List
                 </h6>
             </div>
             <div>
