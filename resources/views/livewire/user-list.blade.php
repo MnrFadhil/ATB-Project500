@@ -8,7 +8,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex align-items-center justify-content-between">
             <div>
-                <h6 class="m-0 font-weight-bold">
+                <h6 class="m-0 font-weight-bold text-primary">
                     Users List
                 </h6>
             </div>
@@ -31,8 +31,8 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Username</th>
                             <th>Nama</th>
+                            <th>Username</th>
                             <th>Role</th>
                             <th>Address</th>
                             <th style="width: 10%">Action
@@ -42,23 +42,22 @@
                     <tbody>
                         @forelse ($users as $user)
                             <tr>
-                                <td>{{ $user->username }}</td>
                                 <td>{{ $user->name }}</td>
+                                <td>{{ $user->username }}</td>
                                 <td class="text-capitalize">{{ $user->role }}</td>
                                 <td>{{ $user->address }}</td>
                                 <td>
                                     <div class="d-flex">
                                         <button wire:click="detailUser({{ $user }})" type="button"
-                                            class="btn btn-info btn-sm" data-placement="left" title="Edit User">
+                                            class="btn btn-info btn-sm">
                                             <i class="fas fa-info-circle" style="color: white"></i>
                                         </button>
                                         <button wire:click="updateUser({{ $user }})" type="button"
-                                            class="btn btn-warning ml-2 btn-sm" data-placement="left" title="Edit User">
+                                            class="btn btn-warning ml-2 btn-sm">
                                             <i class="fas fa-pencil" style="color: white"></i>
                                         </button>
                                         <button wire:click="deleteUser({{ $user }})" type="button"
-                                            class="btn btn-danger ml-2 btn-sm" data-toggle="tooltip"
-                                            data-placement="left" title="Delete User">
+                                            class="btn btn-danger ml-2 btn-sm">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -153,7 +152,7 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailModalLabel">Detail User
+                    <h5 class="modal-title" id="detailModalLabel">{{ $mode == 'delete' ? 'Delete' : 'Detail' }} User
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -210,7 +209,7 @@
     <script>
         // tootip
         $(function() {
-            $('[data-toggle="modal"]').tooltip();
+            $('[data-toggle="tooltip"]').tooltip();
         });
 
 

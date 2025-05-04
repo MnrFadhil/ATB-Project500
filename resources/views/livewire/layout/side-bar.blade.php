@@ -36,7 +36,7 @@
     <li class="nav-item {{ request()->is('data*') ? 'active' : '' }}">
         <a class="nav-link" href="/data" wire:navigated>
             <i class="fas fa-fw fa-table"></i>
-            <span>Data</span>
+            <span>Monitoring</span>
         </a>
     </li>
 

@@ -2,18 +2,15 @@
 
 namespace App\Livewire;
 
-use App\Models\Shift;
 use Livewire\Component;
 
-class Data extends Component
+class FormMonitoring extends Component
 {
     /* -------------------------------------------------------------------------- */
     /*                               Lifecycle Hooks                              */
     /* -------------------------------------------------------------------------- */
     public function render()
     {
-        return view('livewire.data', [
-            'shifts' => Shift::paginate(15)
-        ])->layout('layouts.app');
+        return view('livewire.form-monitoring')->layout('layouts.app');
     }
 }
