@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('pump_proccess', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('shift_id');
-            $table->enum('type', ['intake', 'offtake']);
+            $table->enum('type', ['intake', 'distribusi']);
             $table->enum('status', ['running', 'standby', 'normal']);
-            $table->string('name');
             $table->float('ampere')->default(0);
             $table->float('frequency')->default(0);
             $table->float('pressure')->default(0);
