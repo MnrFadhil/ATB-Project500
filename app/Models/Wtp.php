@@ -21,6 +21,7 @@ class Wtp extends Model
         'flokulator_b',
         'clarifier_a',
         'clarifier_b',
+        'filtration',
         'gravity_filter_a',
         'gravity_filter_b',
         'gravity_filter_c',

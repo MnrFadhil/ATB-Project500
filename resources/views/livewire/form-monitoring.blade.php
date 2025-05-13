@@ -25,7 +25,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="shift">Shift</label>
                         <select wire:model="form.shift.shift" class="custom-select" id="shift" required>
-                            <option value="">Shift I</option>
+                            <option value="">Select Shift</option>
                             <option value="shift i">Shift I</option>
                             <option value="shift ii">Shift II</option>
                             <option value="shift iii">Shift III</option>
@@ -94,7 +94,7 @@
 
                     <div class="col-md-6 mb-3">
                         <label for="Operator2">Operator 2</label>
-                        <select wire:model="form.shift.operator_2" class="custom-select" id="Operator2" required>
+                        <select wire:model="form.shift.operator_2" class="custom-select" id="Operator2">
                             <option value="">Select Operator</option>
                             @forelse ($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -382,7 +382,7 @@
 
                     <div class="col-6 col-md-3 mb-3">
                         <label for="wbpMdpPanel">Wbp
-                            (NTU)</label>
+                        </label>
                         <input wire:model="form.mdpPanel.wdp" type="number" class="form-control" id="wbpMdpPanel"
                             required>
                         @error('form.mdpPanel.mdpPanel.wdp')
@@ -393,7 +393,7 @@
                     <div class="col-6 col-md-3 mb-3">
                         <label for="lwbpMdpPanel"
                             style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Lwbp
-                            (PCU)</label>
+                        </label>
                         <input wire:model="form.mdpPanel.lwbp" type="number" class="form-control" id="lwbpMdpPanel"
                             required>
                         @error('form.mdpPanel.mdpPanel.lwbp')
@@ -1087,7 +1087,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end">
-                    <a class="btn btn-secondary" href="/data" wire:navigated type="button">Back</a>
+                    <a class="btn btn-secondary" href="/monitoring-index" wire:navigated type="button">Back</a>
                     <button class="btn btn-primary ml-2" type="submit">Submit</button>
                 </div>
             </form>

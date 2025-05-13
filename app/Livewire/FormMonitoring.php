@@ -31,18 +31,16 @@ class FormMonitoring extends Component
             // Shift model
             $shift = new Shift();
             $shift = $shift->create($form['shift']);
-            $shift->shiftOperators()->createMany(
-                [
-                    ['user_id' => $form['shift']['operator_1']],
-                    ['user_id' => $form['shift']['operator_2']]
-                ]
+            $shift->shiftOperators()->attach(
+                ['user_id' => $form['shift']['operator_1']],
+
             );
-            $shift->shiftOperators()->createMany(
-                [
-                    ['user_id' => $form['shift']['operator_1']],
-                    ['user_id' => $form['shift']['operator_2']]
-                ]
-            );
+            if ($form['shift']['operator_2'] !== '') {
+
+                $shift->shiftOperators()->attach(
+                    ['user_id' => $form['shift']['operator_2']],
+                );
+            }
             $shift->waterQualities()->createMany([
                 ['type' => 'air baku', ...$form['airBaku']],
                 ['type' => 'sedimentation', ...$form['sedimentation']],
@@ -66,19 +64,20 @@ class FormMonitoring extends Component
                 ['type' => 'distribusi d', ...$form['pumpDistriD']],
             ]);
             $shift->pumpChemicals()->createMany([
-                $form['pumpPac'],
-                $form['pumpChlor']
+                ['type' => 'pac', ...$form['pumpPac']],
+                ['type' => 'chlorine/kaporit', ...$form['pumpChlor']]
             ]);
             $shift->unitOperation()->createMany([
                 $form['unitOper'],
             ]);
+
             $shift->wtps()->createMany([
                 $form['wtp'],
             ]);
 
             if ($shift) Session::flash('success', 'Success Create Monitoring Data');
             else Session::flash('eror', 'Eror Create Monitoring Data');
-            return redirect('/data');
+            return redirect('/monitoring-index');
         });
     }
 

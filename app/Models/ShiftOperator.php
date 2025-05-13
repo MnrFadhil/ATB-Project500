@@ -19,4 +19,13 @@ class ShiftOperator extends Model
         'user_id',
         'shift_id',
     ];
+
+    /* -------------------------------------------------------------------------- */
+    /*                                Relationship                                */
+    /* -------------------------------------------------------------------------- */
+    // Operators (Many to Many)
+    public function shifts()
+    {
+        return $this->belongsToMany(Shift::class, 'operator_shift', 'operator_id', 'user_id');
+    }
 }

@@ -306,7 +306,7 @@ class MonitoringForm extends Form
             'shift.notes'           => 'nullable|string',
             'shift.collection_tank' => 'required|numeric',
             'shift.operator_1'      => 'required|string',
-            'shift.operator_2'      => 'required|string',
+            'shift.operator_2'      => 'string',
 
             // airBaku
             'airBaku.ph'        => 'required|numeric',

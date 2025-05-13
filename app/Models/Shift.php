@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Shift extends Model
@@ -31,9 +32,15 @@ class Shift extends Model
     /* -------------------------------------------------------------------------- */
 
     // Operators (One to Many)
-    public function shiftOperators(): HasMany
+    public function shiftOperatorsCreate(): HasMany
     {
-        return $this->hasMany(ShiftOperator::class, 'shift_id', 'id');
+        return $this->hasMany(User::class, 'shift_operators', 'shift_id', 'user_id');
+    }
+
+    // Operators (Many to Many)
+    public function shiftOperators()
+    {
+        return $this->belongsToMany(User::class, 'shift_operators', 'shift_id', 'user_id');
     }
 
     // Water Quality (One to Many)
@@ -48,16 +55,16 @@ class Shift extends Model
         return $this->hasMany(FlowMeter::class, 'shift_id', 'id');
     }
 
-    // Reservoir Level (One to Many)
-    public function reservoirLevels(): HasMany
+    // Reservoir Level (One to One)
+    public function reservoirLevels(): HasOne
     {
-        return $this->hasMany(ReservoirLevel::class, 'shift_id', 'id');
+        return $this->hasOne(ReservoirLevel::class, 'shift_id', 'id');
     }
 
-    // MDP Panels Level (One to Many)
-    public function mdpPanels(): HasMany
+    // MDP Panels Level (One to One)
+    public function mdpPanels(): HasOne
     {
-        return $this->hasMany(MdpPanel::class, 'shift_id', 'id');
+        return $this->hasOne(MdpPanel::class, 'shift_id', 'id');
     }
 
     // Pump Proccess (One to Many)
@@ -73,20 +80,20 @@ class Shift extends Model
     }
 
     // Unit Operation (One to Many)
-    public function unitOperation(): HasMany
+    public function unitOperation(): HasOne
     {
-        return $this->hasMany(UnitOperation::class, 'shift_id', 'id');
+        return $this->hasOne(UnitOperation::class, 'shift_id', 'id');
     }
 
     // WTPS (One to Many)
-    public function wtps(): HasMany
+    public function wtps(): HasOne
     {
-        return $this->hasMany(Wtp::class, 'shift_id', 'id');
+        return $this->hasOne(Wtp::class, 'shift_id', 'id');
     }
 
-    // Pressure Static Mixer (One to Many)
-    public function pressureStaticMixer(): HasMany
+    // Pressure Static Mixer (One to One)
+    public function pressureStaticMixer(): HasOne
     {
-        return $this->hasMany(PressureStaticMixer::class, 'shift_id', 'id');
+        return $this->hasOne(PressureStaticMixer::class, 'shift_id', 'id');
     }
 }

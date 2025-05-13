@@ -33,7 +33,7 @@
     </li>
 
     <!-- Nav Item - Data input -->
-    <li class="nav-item {{ request()->is('data*') ? 'active' : '' }}">
+    <li class="nav-item {{ request()->is('monitoring*') ? 'active' : '' }}">
         <a class="nav-link" href="/monitoring-index" wire:navigated>
             <i class="fas fa-fw fa-table"></i>
             <span>Monitoring</span>
