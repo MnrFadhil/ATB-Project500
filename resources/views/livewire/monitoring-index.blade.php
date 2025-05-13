@@ -20,13 +20,6 @@
             </div>
         </div>
         <div class="card-body">
-            {{-- <div class="input-group input-group-sm mb-4 float-right" style="width: 220px">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">Search</span>
-                </div>
-                <input wire:model.live="search" type="text" class="form-control" aria-label="Small"
-                    aria-describedby="inputGroup-sizing-sm">
-            </div> --}}
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>
@@ -54,7 +47,8 @@
                                             class="btn btn-warning ml-2 btn-sm">
                                             <i class="fas fa-pencil" style="color: white"></i>
                                         </a>
-                                        <button type="button" class="btn btn-danger ml-2 btn-sm">
+                                        <button wire:click="showConfirmDelete({{ $shift }})" type="button"
+                                            class="btn btn-danger ml-2 btn-sm">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -71,9 +65,40 @@
         </div>
     </div>
 
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalLabel">
+                        Test
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
 
+                <div class="modal-body">
+                    Are you sure you want to delete <strong
+                        class="text-uppercase">{{ $shiftDetail ? $shiftDetail['shift'] : '' }}</strong>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" wire:click="deleteShift()" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @script
-    <script></script>
+    <script>
+        window.addEventListener('show-modal-detail', () => {
+            $('#detailModal').modal('show');
+        });
+
+        window.addEventListener('close-modal-detail', () => {
+            $('#detailModal').modal('hide');
+        });
+    </script>
 @endscript

@@ -982,9 +982,8 @@
                     <div class="col-6 col-md-3 mb-3">
                         <label for="wtpFlocA">Flocullation A</label>
                         <select wire:model="form.wtp.flokulator_a" class="custom-select" id="wtpFlocA" required>
-                            <option value="normal">Normal</option>
-                            <option value="standby">Standby</option>
-                            <option value="running">Running</option>
+                            <option value="off">Off</option>
+                            <option value="on">On</option>
                         </select>
                         @error('form.wtp.flokulator_a')
                             <span class="error">{{ $message }}</span>

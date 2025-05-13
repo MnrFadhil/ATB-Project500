@@ -170,15 +170,15 @@ class FormMonitoring extends Component
             $shift = Shift::find($this->id);
             $shift->update($form['shift']);
 
-            $shift->shiftOperators()->sync(
-                ['user_id' => $form['shift']['operator_1']],
-            );
+            $userIds = [$form['shift']['operator_1']];
 
-            if (count($form['shift']) == 8) {
-                $shift->shiftOperators()->sync(
-                    ['user_id' => $form['shift']['operator_2']],
-                );
+            if (isset($form['shift']['operator_2'])) {
+                $userIds[] = $form['shift']['operator_2'];
             }
+
+            // belum tau cara terbaik nya
+            $shift->shiftOperators()->sync([]);
+            $shift->shiftOperators()->attach($userIds);
 
             $shift->waterQualities->where('type', 'air baku')->first()->update($form['airBaku']);
             $shift->waterQualities->where('type', 'sedimentation')->first()->update($form['sedimentation']);

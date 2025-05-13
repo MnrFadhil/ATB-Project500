@@ -12,16 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('shift_operators', function (Blueprint $table) {
-            // $table->uuid('id')->primary();
+            $table->id();
             $table->uuid('shift_id');
             $table->uuid('user_id');
-            $table->softDeletes();
-            $table->timestamps();
-
-            $table->foreign('shift_id')->references('id')->on('shifts')
-                ->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreign('user_id')->references('id')->on('users')
-                ->cascadeOnUpdate()->cascadeOnDelete();
         });
     }
 
