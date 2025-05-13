@@ -139,7 +139,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="font-weight-bold mb-2 text-capitalize">In Comer MDP Panel</div>
-                    <div class="mb-3">
+                    <div>
                         <div class="row">
                             <div class="col-4">Total Kwh</div>
                             <div class="col-8">: {{ $shifts->mdpPanels->kwh_total }} kwh</div>
@@ -155,6 +155,19 @@
                         <div class="row">
                             <div class="col-4">Kvar</div>
                             <div class="col-8">: {{ $shifts->mdpPanels->kvar }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div>
+                        <div class="row">
+                            <div class="col-4">Level Air Bak Pengumpul</div>
+                            <div class="col-8">: {{ $shifts->collection_tank }} m</div>
                         </div>
                     </div>
                 </div>
@@ -250,7 +263,7 @@
                             @if ($pumpChemicals->type == 'chlorine/kaporit')
                                 <div class="row">
                                     <div class="col-4">Flow Rate</div>
-                                    <div class="col-8">: {{ $shifts->pressureStaticMixer->inlet }} l/h</div>
+                                    <div class="col-8">: {{ $pumpChemicals->flow_rate }} l/h</div>
                                 </div>
                             @endif
                             <div class="row">

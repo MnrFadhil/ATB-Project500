@@ -19,142 +19,142 @@ class MonitoringForm extends Form
     ];
 
     public $airBaku = [
-        'ph'            => 1,
-        'turbidity'     => 2,
-        'color'         => 3,
-        'tds'           => 4,
+        'ph'            => 0,
+        'turbidity'     => 0,
+        'color'         => 0,
+        'tds'           => 0,
     ];
 
     public $sedimentation = [
-        'ph'            => 5,
-        'turbidity'     => 6,
-        'color'         => 7,
-        'tds'           => 8,
+        'ph'            => 0,
+        'turbidity'     => 0,
+        'color'         => 0,
+        'tds'           => 0,
     ];
 
     public $reservoir = [
-        'ph'            => 9,
-        'turbidity'     => 10,
-        'color'         => 11,
-        'tds'           => 12,
-        'free_chlor'    => 13,
-        'orp'           => 14,
+        'ph'            => 0,
+        'turbidity'     => 0,
+        'color'         => 0,
+        'tds'           => 0,
+        'free_chlor'    => 0,
+        'orp'           => 0,
     ];
 
     public $flowAirBaku = [
-        'flow'          => 15,
-        'totalizer'     => 16,
+        'flow'          => 0,
+        'totalizer'     => 0,
     ];
 
     public $flowSudarso = [
         'location'      => 'yos sudarso',
-        'flow'          => 17,
-        'totalizer'     => 18,
+        'flow'          => 0,
+        'totalizer'     => 0,
     ];
 
     public $flowVeteran = [
         'location'      => 'veteran',
-        'flow'          => 19,
-        'totalizer'     => 20,
+        'flow'          => 0,
+        'totalizer'     => 0,
     ];
 
     public $reservoirLevel = [
-        'level_a'       => 21,
-        'level_b'       => 22,
+        'level_a'       => 0,
+        'level_b'       => 0,
     ];
 
     public $mdpPanel = [
-        'kwh_total'       => 23,
-        'wdp'             => 24,
-        'lwbp'            => 25,
-        'kvar'            => 26,
+        'kwh_total'       => 0,
+        'wdp'             => 0,
+        'lwbp'            => 0,
+        'kvar'            => 0,
     ];
 
     public $pressStatic = [
-        'inlet'       => 27,
-        'outlet'      => 28,
+        'inlet'       => 0,
+        'outlet'      => 0,
     ];
 
     public $pumpIntakeA = [
-        'ampere'       => 29,
-        'frequency'    => 30,
-        'pressure'     => 31,
-        'status'       => 'standby'
+        'ampere'       => 0,
+        'frequency'    => 0,
+        'pressure'     => 0,
+        'status'       => 'normal'
     ];
     public $pumpIntakeB = [
-        'ampere'       => 32,
-        'frequency'    => 33,
-        'pressure'      => 34,
-        'status'       => 'standby'
+        'ampere'       => 0,
+        'frequency'    => 0,
+        'pressure'      => 0,
+        'status'       => 'normal'
     ];
     public $pumpIntakeC = [
-        'ampere'       => 35,
-        'frequency'    => 36,
-        'pressure'      => 37,
-        'status'       => 'standby'
+        'ampere'       => 0,
+        'frequency'    => 0,
+        'pressure'      => 0,
+        'status'       => 'normal'
     ];
 
     public $pumpDistriA = [
-        'ampere'       => 38,
-        'frequency'    => 39,
-        'pressure'      => 40,
-        'status'       => 'standby'
+        'ampere'       => 0,
+        'frequency'    => 0,
+        'pressure'      => 0,
+        'status'       => 'normal'
     ];
     public $pumpDistriB = [
-        'ampere'       => 41,
-        'frequency'    => 42,
-        'pressure'      => 43,
-        'status'       => 'standby'
+        'ampere'       => 0,
+        'frequency'    => 0,
+        'pressure'      => 0,
+        'status'       => 'normal'
     ];
     public $pumpDistriC = [
-        'ampere'       => 44,
-        'frequency'    => 45,
-        'pressure'      => 46,
-        'status'       => 'standby'
+        'ampere'       => 0,
+        'frequency'    => 0,
+        'pressure'      => 0,
+        'status'       => 'normal'
     ];
     public $pumpDistriD = [
-        'ampere'       => 47,
-        'frequency'    => 48,
-        'pressure'      => 49,
-        'status'       => 'standby'
+        'ampere'       => 0,
+        'frequency'    => 0,
+        'pressure'      => 0,
+        'status'       => 'normal'
     ];
 
     public $pumpPac = [
-        'frequency'     => 50,
-        'dosage'        => 51,
-        'concentration' => 52,
-        'stirring'      => 53,
-        'tank_level'    => 54
+        'frequency'     => 0,
+        'dosage'        => 0,
+        'concentration' => 0,
+        'stirring'      => 0,
+        'tank_level'    => 0
     ];
 
     public $pumpChlor = [
-        'flow_rate'     => 55,
-        'dosage'        => 56,
-        'concentration' => 57,
-        'stirring'      => 58,
-        'tank_level'    => 59
+        'flow_rate'     => 0,
+        'dosage'        => 0,
+        'concentration' => 0,
+        'stirring'      => 0,
+        'tank_level'    => 0
     ];
     public $unitOper = [
-        'barscreen'        => 'standby',
-        'finescreen_a'     => 'standby',
-        'finescreen_b'     => 'standby',
-        'compressor_a'     => 'standby',
-        'compressor_b'     => 'standby',
-        'air_drayer'       => 'standby',
+        'barscreen'        => 'normal',
+        'finescreen_a'     => 'normal',
+        'finescreen_b'     => 'normal',
+        'compressor_a'     => 'normal',
+        'compressor_b'     => 'normal',
+        'air_drayer'       => 'normal',
     ];
 
     public $wtp = [
-        'flokulator_a'     => 'on',
-        'flokulator_b'     => 'on',
-        'clarifier_a'      => 'on',
-        'clarifier_b'      => 'on',
-        'filtration'       => 'on',
-        'gravity_filter_a' => 60,
-        'gravity_filter_b' => 61,
-        'gravity_filter_c' => 62,
-        'gravity_filter_d' => 63,
-        'gravity_filter_e' => 64,
-        'gravity_filter_f' => 65,
+        'flokulator_a'     => 'off',
+        'flokulator_b'     => 'off',
+        'clarifier_a'      => 'off',
+        'clarifier_b'      => 'off',
+        'filtration'       => 'off',
+        'gravity_filter_a' => 0,
+        'gravity_filter_b' => 0,
+        'gravity_filter_c' => 0,
+        'gravity_filter_d' => 0,
+        'gravity_filter_e' => 0,
+        'gravity_filter_f' => 0,
     ];
 
 

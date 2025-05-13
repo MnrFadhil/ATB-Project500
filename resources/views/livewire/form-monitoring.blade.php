@@ -1,7 +1,7 @@
 <div>
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Create Record</h1>
+        <h1 class="h3 mb-0 text-gray-800">{{ $id ? 'Edit' : 'Create' }} Record</h1>
     </div>
 
     {{-- Form --}}
@@ -38,18 +38,18 @@
                     <div class="col-6  mb-3">
                         <label for="startTime">Start Time</label>
                         <select wire:model="form.shift.start_time" class="custom-select" id="startTime" required>
-                            <option value="'00:00'">00:00</option>
-                            <option value="'02:00'">02:00</option>
-                            <option value="'04:00'">04:00</option>
-                            <option value="'06:00'">06:00</option>
-                            <option value="'08:00'">08:00</option>
-                            <option value="'10:00'">10:00</option>
-                            <option value="'12:00'">12:00</option>
-                            <option value="'14:00'">14:00</option>
-                            <option value="'16:00'">16:00</option>
-                            <option value="'18:00'">18:00</option>
-                            <option value="'20:00'">20:00</option>
-                            <option value="'22:00'">22:00</option>
+                            <option value="00:00">00:00</option>
+                            <option value="02:00">02:00</option>
+                            <option value="04:00">04:00</option>
+                            <option value="06:00">06:00</option>
+                            <option value="08:00">08:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="12:00">12:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="16:00">16:00</option>
+                            <option value="18:00">18:00</option>
+                            <option value="20:00">20:00</option>
+                            <option value="22:00">22:00</option>
                         </select>
                         @error('form.shift.start_time')
                             <span class="error">{{ $message }}</span>
@@ -59,18 +59,18 @@
                     <div class="col-6  mb-3">
                         <label for="endTime">End Time</label>
                         <select wire:model="form.shift.end_time" class="custom-select" id="endTime" required>
-                            <option value="'00:00'">00:00</option>
-                            <option value="'02:00'">02:00</option>
-                            <option value="'04:00'">04:00</option>
-                            <option value="'06:00'">06:00</option>
-                            <option value="'08:00'">08:00</option>
-                            <option value="'10:00'">10:00</option>
-                            <option value="'12:00'">12:00</option>
-                            <option value="'14:00'">14:00</option>
-                            <option value="'16:00'">16:00</option>
-                            <option value="'18:00'">18:00</option>
-                            <option value="'20:00'">20:00</option>
-                            <option value="'22:00'">22:00</option>
+                            <option value="00:00">00:00</option>
+                            <option value="02:00">02:00</option>
+                            <option value="04:00">04:00</option>
+                            <option value="06:00">06:00</option>
+                            <option value="08:00">08:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="12:00">12:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="16:00">16:00</option>
+                            <option value="18:00">18:00</option>
+                            <option value="20:00">20:00</option>
+                            <option value="22:00">22:00</option>
                         </select>
                         @error('form.shift.end_time')
                             <span class="error">{{ $message }}</span>
@@ -1088,7 +1088,7 @@
 
                 <div class="d-flex justify-content-end">
                     <a class="btn btn-secondary" href="/monitoring-index" wire:navigated type="button">Back</a>
-                    <button class="btn btn-primary ml-2" type="submit">Submit</button>
+                    <button class="btn btn-primary ml-2" type="submit">{{ $id ? 'Update' : 'Submit' }} </button>
                 </div>
             </form>
         </div>
