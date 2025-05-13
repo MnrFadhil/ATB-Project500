@@ -41,9 +41,9 @@
                     <tbody>
                         @forelse ($shifts as $shift)
                             <tr>
-                                <td>{{ $shift->start_time }} - {{ $shift->end_time }}</td>
-                                <td>{{ $shift->shift }}</td>
-                                <td>{{ $shift->Note }}</td>
+                                <td>{{ substr($shift->start_time, 0, 5) }} - {{ substr($shift->end_time, 0, 5) }}</td>
+                                <td>{{ strtoupper($shift->shift) }}</td>
+                                <td>{{ $shift->notes ? $shift->notes : '-' }}</td>
                                 <td>
                                     <div class="d-flex">
                                         <button type="button" class="btn btn-info btn-sm">
@@ -63,7 +63,6 @@
                                 <td colspan="5" class="text-center">No Data Available</td>
                             </tr>
                         @endforelse
-
                     </tbody>
                 </table>
             </div>

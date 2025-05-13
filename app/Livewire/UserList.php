@@ -84,12 +84,11 @@ class UserList extends Component
 
     public function submit()
     {
-
         $validData = $this->validate([
             'name'      => ['required', 'string'],
             'username'  => ['required', 'string',  Rule::unique('users', 'username')->ignore($this->userId)],
             'email'     => ['required', 'email', 'string',  Rule::unique('users', 'email')->ignore($this->userId)],
-            'password'  => ['string', $this->mode == 'edit' ? 'nullable' : 'required'],
+            'password'  => ['string', $this->mode == 'create' ? 'required' : 'nullable'],
             'role'      => ['required', 'string'],
             'address'   => ['string'],
         ]);

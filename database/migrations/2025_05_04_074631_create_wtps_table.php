@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('flokulator_b')->nullable();
             $table->string('clarifier_a')->nullable();
             $table->string('clarifier_b')->nullable();
+            $table->string('filtration')->nullable();
             $table->float('gravity_filter_a')->default(0);
             $table->float('gravity_filter_b')->default(0);
             $table->float('gravity_filter_c')->default(0);

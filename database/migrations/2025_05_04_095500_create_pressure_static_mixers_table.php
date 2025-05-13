@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pressure_static_mixer', function (Blueprint $table) {
+        Schema::create('pressure_static_mixers', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('shift_id');
             $table->float('inlet')->default(0);
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pressure_static_mixer');
+        Schema::dropIfExists('pressure_static_mixers');
     }
 };

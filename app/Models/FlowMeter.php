@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FlowMeter extends Model
 {
+    use HasUuids, SoftDeletes;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -13,7 +17,6 @@ class FlowMeter extends Model
      */
     protected $fillable = [
         'shift_id',
-        'type',
         'location',
         'flow',
         'totalizer',

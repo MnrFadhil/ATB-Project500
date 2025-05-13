@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pump_proccess', function (Blueprint $table) {
+        Schema::create('pump_proccesses', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('shift_id');
-            $table->enum('type', ['intake', 'distribusi']);
+            $table->enum('type', ['intake a', 'intake b', 'intake c', 'distribusi a', 'distribusi b', 'distribusi c', 'distribusi d']);
             $table->enum('status', ['running', 'standby', 'normal']);
             $table->float('ampere')->default(0);
             $table->float('frequency')->default(0);

@@ -11,7 +11,7 @@
             <h6 class="m-0 font-weight-bold ">Forms</h6>
         </div>
         <div class="card-body">
-            <form>
+            <form wire:submit.prevent="submit">
                 <div class="form-row">
                     <div class="col-12 font-weight-bold mb-2">Shift</div>
                     <div class="col-md-6 mb-3">
@@ -25,6 +25,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="shift">Shift</label>
                         <select wire:model="form.shift.shift" class="custom-select" id="shift" required>
+                            <option value="">Shift I</option>
                             <option value="shift i">Shift I</option>
                             <option value="shift ii">Shift II</option>
                             <option value="shift iii">Shift III</option>
@@ -39,16 +40,16 @@
                         <select wire:model="form.shift.start_time" class="custom-select" id="startTime" required>
                             <option value="'00:00'">00:00</option>
                             <option value="'02:00'">02:00</option>
-                            <option value="'05:00'">05:00</option>
-                            <option value="'07:00'">07:00</option>
-                            <option value="'09:00'">09:00</option>
-                            <option value="'11:00'">11:00</option>
-                            <option value="'13:00'">13:00</option>
-                            <option value="'15:00'">15:00</option>
-                            <option value="'17:00'">17:00</option>
-                            <option value="'19:00'">19:00</option>
-                            <option value="'21:00'">21:00</option>
-                            <option value="'23:00'">23:00</option>
+                            <option value="'04:00'">04:00</option>
+                            <option value="'06:00'">06:00</option>
+                            <option value="'08:00'">08:00</option>
+                            <option value="'10:00'">10:00</option>
+                            <option value="'12:00'">12:00</option>
+                            <option value="'14:00'">14:00</option>
+                            <option value="'16:00'">16:00</option>
+                            <option value="'18:00'">18:00</option>
+                            <option value="'20:00'">20:00</option>
+                            <option value="'22:00'">22:00</option>
                         </select>
                         @error('form.shift.start_time')
                             <span class="error">{{ $message }}</span>
@@ -60,16 +61,16 @@
                         <select wire:model="form.shift.end_time" class="custom-select" id="endTime" required>
                             <option value="'00:00'">00:00</option>
                             <option value="'02:00'">02:00</option>
-                            <option value="'05:00'">05:00</option>
-                            <option value="'07:00'">07:00</option>
-                            <option value="'09:00'">09:00</option>
-                            <option value="'11:00'">11:00</option>
-                            <option value="'13:00'">13:00</option>
-                            <option value="'15:00'">15:00</option>
-                            <option value="'17:00'">17:00</option>
-                            <option value="'19:00'">19:00</option>
-                            <option value="'21:00'">21:00</option>
-                            <option value="'23:00'">23:00</option>
+                            <option value="'04:00'">04:00</option>
+                            <option value="'06:00'">06:00</option>
+                            <option value="'08:00'">08:00</option>
+                            <option value="'10:00'">10:00</option>
+                            <option value="'12:00'">12:00</option>
+                            <option value="'14:00'">14:00</option>
+                            <option value="'16:00'">16:00</option>
+                            <option value="'18:00'">18:00</option>
+                            <option value="'20:00'">20:00</option>
+                            <option value="'22:00'">22:00</option>
                         </select>
                         @error('form.shift.end_time')
                             <span class="error">{{ $message }}</span>
@@ -79,6 +80,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="operator1">Operator 1</label>
                         <select wire:model="form.shift.operator_1" class="custom-select" id="operator1" required>
+                            <option value="">Select Operator</option>
                             @forelse ($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @empty
@@ -93,6 +95,7 @@
                     <div class="col-md-6 mb-3">
                         <label for="Operator2">Operator 2</label>
                         <select wire:model="form.shift.operator_2" class="custom-select" id="Operator2" required>
+                            <option value="">Select Operator</option>
                             @forelse ($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @empty
@@ -896,56 +899,79 @@
                 <div class="form-row">
                     <div class="col-6 mb-3">
                         <label for="barScreen">Bar Screen</label>
-                        <select class="custom-select" id="barScreen" required>
+                        <select wire:model="form.unitOper.barscreen" class="custom-select" id="barScreen" required>
                             <option value="normal">Normal</option>
                             <option value="standby">Standby</option>
                             <option value="running">Running</option>
                         </select>
+                        @error('form.unitOper.barscreen')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="col-6 mb-3">
                         <label for="airDrayer">Air Dryer</label>
-                        <select class="custom-select" id="airDrayer" required>
+                        <select wire:model="form.unitOper.air_drayer" class="custom-select" id="airDrayer" required>
                             <option value="normal">Normal</option>
                             <option value="standby">Standby</option>
                             <option value="running">Running</option>
                         </select>
+                        @error('form.unitOper.air_drayer')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="col-6 col-md-3 mb-3">
                         <label for="fineScreenA">Fine Screen A</label>
-                        <select class="custom-select" id="fineScreenA" required>
+                        <select wire:model="form.unitOper.finescreen_a" class="custom-select" id="fineScreenA"
+                            required>
                             <option value="normal">Normal</option>
                             <option value="standby">Standby</option>
                             <option value="running">Running</option>
                         </select>
+                        @error('form.unitOper.finescreen_a')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="col-6 col-md-3 mb-3">
                         <label for="fineScreenB">Fine Screen B</label>
-                        <select class="custom-select" id="fineScreenB" required>
+                        <select wire:model="form.unitOper.finescreen_b" class="custom-select" id="fineScreenB"
+                            required>
                             <option value="normal">Normal</option>
                             <option value="standby">Standby</option>
                             <option value="running">Running</option>
                         </select>
+                        </select>
+                        @error('form.unitOper.finescreen_b')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="col-6 col-md-3 mb-3">
                         <label for="compressorA">Compressor A</label>
-                        <select class="custom-select" id="compressorA" required>
+                        <select wire:model="form.unitOper.compressor_a" class="custom-select" id="compressorA"
+                            required>
                             <option value="normal">Normal</option>
                             <option value="standby">Standby</option>
                             <option value="running">Running</option>
                         </select>
+                        @error('form.unitOper.compressor_a')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="col-6 col-md-3 mb-3">
                         <label for="compressorB">Compressor B</label>
-                        <select class="custom-select" id="compressorB" required>
+                        <select wire:model="form.unitOper.compressor_b" class="custom-select" id="compressorB"
+                            required>
                             <option value="normal">Normal</option>
                             <option value="standby">Standby</option>
                             <option value="running">Running</option>
                         </select>
+                        @error('form.unitOper.compressor_b')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
 
@@ -955,47 +981,58 @@
                     <div class="col-12 font-weight-bold mb-2">WTP</div>
                     <div class="col-6 col-md-3 mb-3">
                         <label for="wtpFlocA">Flocullation A</label>
-                        <select class="custom-select" id="wtpFlocA" required>
+                        <select wire:model="form.wtp.flokulator_a" class="custom-select" id="wtpFlocA" required>
                             <option value="normal">Normal</option>
                             <option value="standby">Standby</option>
                             <option value="running">Running</option>
                         </select>
+                        @error('form.wtp.flokulator_a')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="col-6 col-md-3 mb-3">
                         <label for="wtpFlocB">Flocullation B</label>
-                        <select class="custom-select" id="wtpFlocB" required>
-                            <option value="normal">Normal</option>
-                            <option value="standby">Standby</option>
-                            <option value="running">Running</option>
+                        <select wire:model="form.wtp.flokulator_b" class="custom-select" id="wtpFlocB" required>
+                            <option value="off">Off</option>
+                            <option value="on">On</option>
                         </select>
+                        @error('form.wtp.flokulator_b')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="col-6 col-md-3 mb-3">
                         <label for="wtpClafA">Clarifier A</label>
-                        <select class="custom-select" id="wtpClafA" required>
-                            <option value="normal">Normal</option>
-                            <option value="standby">Standby</option>
-                            <option value="running">Running</option>
+                        <select wire:model="form.wtp.clarifier_a" class="custom-select" id="wtpClafA" required>
+                            <option value="off">Off</option>
+                            <option value="on">On</option>
                         </select>
+                        @error('form.wtp.clarifier_a')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="col-6 col-md-3 mb-3">
                         <label for="wtpClafB">Clarifier B</label>
-                        <select class="custom-select" id="wtpClafB" required>
-                            <option value="normal">Normal</option>
-                            <option value="standby">Standby</option>
-                            <option value="running">Running</option>
+                        <select wire:model="form.wtp.clarifier_b" class="custom-select" id="wtpClafB" required>
+                            <option value="off">Off</option>
+                            <option value="on">On</option>
                         </select>
+                        @error('form.wtp.clarifier_b')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="col-12 col-md-6 mb-3">
                         <label for="wtpFiltrasi">Filtrasi</label>
-                        <select class="custom-select" id="wtpFiltrasi" required>
-                            <option value="normal">Normal</option>
-                            <option value="standby">Standby</option>
-                            <option value="running">Running</option>
+                        <select wire:model="form.wtp.filtration" class="custom-select" id="wtpFiltrasi" required>
+                            <option value="off">Off</option>
+                            <option value="on">On</option>
                         </select>
+                        @error('form.wtp.filtration')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
 
@@ -1004,33 +1041,53 @@
                     <div class="col-12 font-weight-bold mb-2" style="font-size: 15px">Level Grafity Filtrasi</div>
                     <div class="col-md-3 co mb-3">
                         <label for="filtrasiA">A (m)</label>
-                        <input type="number" class="form-control" id="filtrasiA" required>
+                        <input wire:model="form.wtp.gravity_filter_a" type="number" class="form-control"
+                            id="filtrasiA" required>
+                        @error('form.wtp.gravity_filter_a')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="col-md-3 co mb-3">
                         <label for="filtrasiB">B (m)</label>
-                        <input type="number" class="form-control" id="filtrasiB" required>
+                        <input wire:model="form.wtp.gravity_filter_b" type="number" class="form-control"
+                            id="filtrasiB" required>
                     </div>
                     <div class="col-md-3 co mb-3">
                         <label for="filtrasiC">C (m)</label>
-                        <input type="number" class="form-control" id="filtrasiC" required>
+                        <input wire:model="form.wtp.gravity_filter_c" type="number" class="form-control"
+                            id="filtrasiC" required>
+                        @error('form.wtp.gravity_filter_c')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="col-md-3 co mb-3">
                         <label for="filtrasiD">D (m)</label>
-                        <input type="number" class="form-control" id="filtrasiD" required>
+                        <input wire:model="form.wtp.gravity_filter_d" type="number" class="form-control"
+                            id="filtrasiD" required>
+                        @error('form.wtp.gravity_filter_d')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="col-md-3 co mb-3">
                         <label for="filtrasiE">E (m)</label>
-                        <input type="number" class="form-control" id="filtrasiE" required>
+                        <input wire:model="form.wtp.gravity_filter_e" type="number" class="form-control"
+                            id="filtrasiE" required>
+                        @error('form.wtp.gravity_filter_e')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="col-md-3 co mb-3">
                         <label for="filtrasiF">F (m)</label>
-                        <input type="number" class="form-control" id="filtrasiF" required>
+                        <input wire:model="form.wtp.gravity_filter_f" type="number" class="form-control"
+                            id="filtrasiF" required>
+                        @error('form.wtp.gravity_filter_e')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                     </div>
-
                 </div>
 
                 <div class="d-flex justify-content-end">
-                    <button class="btn btn-secondary" type="submit">Back</button>
+                    <a class="btn btn-secondary" href="/data" wire:navigated type="button">Back</a>
                     <button class="btn btn-primary ml-2" type="submit">Submit</button>
                 </div>
             </form>
