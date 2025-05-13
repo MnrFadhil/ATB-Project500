@@ -13,7 +13,7 @@
                 </h6>
             </div>
             <div>
-                <a href="/data/create" wire:navigated class=" btn btn-sm btn-primary shadow-sm"><i
+                <a href="/monitoring/create" wire:navigated class=" btn btn-sm btn-primary shadow-sm"><i
                         class="fas fa-add fa-sm text-white"></i>
                     <span class="d-none d-sm-inline-block">Add Record</span>
                 </a>
