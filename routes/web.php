@@ -15,9 +15,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
     Route::get('user-list', UserList::class)->name('user-list');
     Route::get('monitoring-index', MonitoringIndex::class)->name('monitoring-index');
-    Route::get('monitoring/create', FormMonitoring::class)->name('monitoring-form');
+    Route::get('monitoring/create', FormMonitoring::class)->name('monitoring-form')->middleware(['admin']);
     Route::get('monitoring/{id}', MonitoringDetail::class)->name('monitoring-detail');
-    Route::get('monitoring/{id}/edit', FormMonitoring::class)->name('monitoring-form');
+    Route::get('monitoring/{id}/edit', FormMonitoring::class)->name('monitoring-form')->middleware(['admin']);
 });
 
 require __DIR__ . '/auth.php';

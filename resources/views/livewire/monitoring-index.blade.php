@@ -13,10 +13,12 @@
                 </h6>
             </div>
             <div>
-                <a href="/monitoring/create" wire:navigated class="btn btn-sm btn-primary shadow-sm"><i
-                        class="fas fa-add fa-sm text-white"></i>
-                    <span class="d-none d-sm-inline-block">Add Record</span>
-                </a>
+                @if (!$isAdmin)
+                    <a href="/monitoring/create" wire:navigated class="btn btn-sm btn-primary shadow-sm"><i
+                            class="fas fa-add fa-sm text-white"></i>
+                        <span class="d-none d-sm-inline-block">Add Record</span>
+                    </a>
+                @endif
             </div>
         </div>
         <div class="card-body">
@@ -43,14 +45,17 @@
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-info-circle" style="color: white"></i>
                                         </a>
-                                        <a href="/monitoring/{{ $shift->id }}/edit" type="button"
-                                            class="btn btn-warning ml-2 btn-sm">
-                                            <i class="fas fa-pencil" style="color: white"></i>
-                                        </a>
-                                        <button wire:click="showConfirmDelete({{ $shift }})" type="button"
-                                            class="btn btn-danger ml-2 btn-sm">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        @if (!$isAdmin)
+                                            <a href="/monitoring/{{ $shift->id }}/edit" type="button"
+                                                class="btn btn-warning ml-2 btn-sm">
+                                                <i class="fas fa-pencil" style="color: white"></i>
+                                            </a>
+
+                                            <button wire:click="showConfirmDelete({{ $shift }})" type="button"
+                                                class="btn btn-danger ml-2 btn-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

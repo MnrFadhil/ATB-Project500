@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Shift;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
 
@@ -12,6 +13,8 @@ class MonitoringIndex extends Component
     /*                             Member Of Variabel                             */
     /* -------------------------------------------------------------------------- */
     public $shiftDetail;
+    public $isAdmin;
+
 
     /* -------------------------------------------------------------------------- */
     /*                                Logic Methods                               */
@@ -34,6 +37,12 @@ class MonitoringIndex extends Component
     /* -------------------------------------------------------------------------- */
     /*                               Lifecycle Hooks                              */
     /* -------------------------------------------------------------------------- */
+    public function mount()
+    {
+        $this->isAdmin = Auth::user()->role == 'admin';
+    }
+
+
     public function render()
     {
         return view('livewire.monitoring-index', [

@@ -471,10 +471,12 @@
             </div>
             <div class="d-flex justify-content-end">
                 <a class="btn btn-secondary" href="/monitoring-index" wire:navigated type="button">Back</a>
-                <a href="/monitoring/{{ $id }}/edit" class="btn btn-warning ml-2" type="submit">
-                    <i class="fas fa-pencil" style="color: white"></i>
-                    Edit
-                </a>
+                @if (!$isAdmin)
+                    <a href="/monitoring/{{ $id }}/edit" class="btn btn-warning ml-2" type="submit">
+                        <i class="fas fa-pencil" style="color: white"></i>
+                        Edit
+                    </a>
+                @endif
             </div>
         </div>
     </div>

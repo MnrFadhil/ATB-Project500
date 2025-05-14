@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Shift;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class MonitoringDetail extends Component
@@ -11,6 +12,7 @@ class MonitoringDetail extends Component
     /*                             Member Of Variabel                             */
     /* -------------------------------------------------------------------------- */
     public $id;
+    public $isAdmin;
 
     /* -------------------------------------------------------------------------- */
     /*                               Lifecycle Hooks                              */
@@ -18,6 +20,7 @@ class MonitoringDetail extends Component
     public function mount($id)
     {
         $this->id = $id;
+        $this->isAdmin = Auth::user()->role == 'admin';
     }
 
     public function render()

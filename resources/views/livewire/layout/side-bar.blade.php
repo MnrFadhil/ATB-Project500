@@ -1,4 +1,18 @@
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+<?php
+
+use App\Livewire\Actions\Logout;
+use Livewire\Volt\Component;
+
+new class extends Component {
+    public $isAdmin;
+
+    public function mount()
+    {
+        $this->isAdmin = Auth::user()->role == 'admin';
+    }
+}; ?>
+
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/dashboard" wire:navigated>
@@ -25,12 +39,14 @@
     </li>
 
     <!-- Nav Item - User -->
-    <li class="nav-item  {{ request()->is('user-list*') ? 'active' : '' }}">
-        <a class="nav-link" href="/user-list" wire:navigated>
-            <i class="fas fa-fw fa-users"></i>
-            <span>User</span>
-        </a>
-    </li>
+    @if ($isAdmin)
+        <li class="nav-item  {{ request()->is('user-list*') ? 'active' : '' }}">
+            <a class="nav-link" href="/user-list" wire:navigated>
+                <i class="fas fa-fw fa-users"></i>
+                <span>User</span>
+            </a>
+        </li>
+    @endif
 
     <!-- Nav Item - Data input -->
     <li class="nav-item {{ request()->is('monitoring*') ? 'active' : '' }}">
