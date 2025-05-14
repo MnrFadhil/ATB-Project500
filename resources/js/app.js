@@ -8,3 +8,4 @@ import Chart from "chart.js/auto";
 
 window.$ = $;
 window.Popper = Popper;
+window.Chart = Chart;
