@@ -178,7 +178,7 @@
                     <div class="row">
                         <div class="col-3 font-weight-bold">Address</div>
                         <div class="font-weight-bold col-1">:</div>
-                        <div>{{ $address }}</div>
+                        <div>{{ $address ? $address : '-' }}</div>
                     </div>
                     <div class="row">
                         <div class="col-3 font-weight-bold">Role</div>
