@@ -38,6 +38,11 @@
                         <div class="col-7 col-md-8">: {{ substr($shifts->start_time, 0, 5) }} -
                             {{ substr($shifts->end_time, 0, 5) }}</div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-5 col-md-4">Notes</div>
+                        <div class="col-7 col-md-8">: {{$shifts->notes ? $shift->notes : '-'}}</div>
+                    </div>
                 </div>
             </div>
 
@@ -485,6 +490,19 @@
 
 @script
     <script>
+        let shiftDetail = @json($shifts);
+        let airBaku = shiftDetail.water_qualities.find(data => data.type == 'air baku')
+        let sedimentasi = shiftDetail.water_qualities.find(data => data.type == 'sedimentation')
+        let reservoir = shiftDetail.water_qualities.find(data => data.type == 'reservoir')
+        let flowAirBaku = shiftDetail.flow_meters.find(data => data.location == null)
+        let flowSudarso = shiftDetail.flow_meters.find(data => data.location == 'yos sudarso')
+        let flowVeteran = shiftDetail.flow_meters.find(data => data.location == 'veteran')
+        let pumpProccessIntake = shiftDetail.pump_proccess.filter(data => data.type.includes('intake'))
+        let pumpProccessDistribusi = shiftDetail.pump_proccess.filter(data => data.type.includes('distribusi'))
+        let pumpPac = shiftDetail.pump_chemicals.find(data => data.type == 'pac')
+        let pumpChlorine = shiftDetail.pump_chemicals.find(data => data.type == 'chlorine/kaporit')
+
+        console.log(shiftDetail)
         /**
          * Function to copy all monitoring data values from HTML to clipboard
          * This function extracts all measurement values from the monitoring report
@@ -497,125 +515,126 @@
         })
 
         function copyAllMonitoringValues() {
-            try {
-                // Final data structure to hold all grouped data
-                let formattedOutput = [];
+            const reportText =
+                `*UPDATE DAILY REPORT AND MONITORING SCADA*
+${shiftDetail.date} / ${shiftDetail.shift.toUpperCase()}
+Operator : ${shiftDetail.shift_operators[0].name} ${shiftDetail.shift_operators.length >1 ? '& '+shiftDetail.shift_operators?.[1]?.name:''}
+Jam : ${shiftDetail.start_time.slice(0,5)} - ${shiftDetail.end_time.slice(0,5)} WIB
 
-                // Function to extract data from a section
-                function extractSectionData(sectionTitle, sectionElement) {
-                    const dataRows = sectionElement.querySelectorAll('.row');
-                    if (dataRows.length === 0) return null;
+- Air Baku :
+pH : ${airBaku.ph}
+Turbidity : ${airBaku.turbidity} NTU
+Warna :  ${airBaku.turbidity} PCU
+TDS : ${airBaku.tds}
 
-                    let sectionData = [`**---${sectionTitle}---**`];
+- Sedimentation :
+pH : ${sedimentasi.ph}
+Turbidity : ${sedimentasi.turbidity} NTU
+Warna :  ${sedimentasi.turbidity} PCU
+TDS : ${sedimentasi.tds}
 
-                    // Extract normal label-value pairs
-                    dataRows.forEach(row => {
-                        const label = row.querySelector('.col-5.col-md-4')?.textContent?.trim();
+- Reservoir :
+pH : ${reservoir.ph}
+Turbidity : ${reservoir.turbidity} NTU
+Warna :  ${reservoir.turbidity} PCU
+TDS : ${reservoir.tds}
+Free Chlor : ${reservoir.free_chlor} mg/L
+ORP : ${reservoir.orp} mV
 
-                        // Get regular value or status badge
-                        const valueCol = row.querySelector('.col-7.col-md-8');
-                        let value;
+- Flowmeter Air Baku
+Flow : ${flowAirBaku.flow} l/s
+Totalizer : ${flowAirBaku.totalizer} m³
 
-                        if (valueCol?.classList.contains('d-flex')) {
-                            // This is a status field with badge
-                            const badge = valueCol.querySelector('.badge');
-                            value = badge?.textContent?.trim();
-                        } else {
-                            // Regular value field
-                            value = valueCol?.textContent?.trim().replace(/^:\s*/, ''); // Remove leading colon
-                        }
+- Flowmeter Distribusi :
+Yos Sudarso
+Flow : ${flowSudarso.flow} l/s
+Totalizer : ${flowSudarso.totalizer} m³
 
-                        if (label && value) {
-                            sectionData.push(`${label}: ${value}`);
-                        }
-                    });
+- Veteran
+Flow : ${flowVeteran.flow} l/s
+Totalizer : ${flowVeteran.totalizer} m³
 
-                    return sectionData.length > 1 ? sectionData : null; // Only return if we have actual data
-                }
+- Level Reservoir :
+Level A : ${shiftDetail.reservoir_levels.level_a} m
+Level B : ${shiftDetail.reservoir_levels.level_b} m
 
-                // Extract shift information first
-                const shiftSection = document.querySelector('.card-body');
-                if (shiftSection) {
-                    const shiftTitle = shiftSection.querySelector('.col-12.font-weight-bold.mb-2.text-uppercase')
-                        ?.textContent?.trim() || 'Shift Information';
-                    const shiftData = extractSectionData(shiftTitle, shiftSection.querySelector('.col-md-8.mb-3'));
-                    if (shiftData) formattedOutput = formattedOutput.concat(shiftData, ['']);
-                }
+- In Comer MDP Panel :
+Kwh total : ${shiftDetail.mdp_panels.kwh_total}
+Wbp : ${shiftDetail.mdp_panels.wdp}
+Lwbp : ${shiftDetail.mdp_panels.lwbp}
+Kvar : ${shiftDetail.mdp_panels.kvar}
 
-                // Process all major sections (those with headers)
-                const sections = document.querySelectorAll('.font-weight-bold.mb-2.text-capitalize');
-                sections.forEach(section => {
-                    const sectionTitle = section.textContent?.trim();
-                    if (!sectionTitle) return;
+- Level air bak pengumpul: ${shiftDetail.collection_tank} m
 
-                    // Find the parent container that holds this section's data
-                    let sectionContainer = section.closest('.col-md-6, .col-md-12');
-                    if (!sectionContainer) return;
+- ⁠Pressure Static Mixer
+Inlet : ${shiftDetail.pressure_static_mixer.inlet} bar
+Outlet :  ${shiftDetail.pressure_static_mixer.outlet} bar
 
-                    // For sections that contain multiple subsections (like pumps)
-                    if (sectionTitle === 'Pompa Intake' || sectionTitle === 'Pompa Distribusi') {
-                        const pumps = sectionContainer.parentElement.querySelectorAll(
-                            '.col-md-6 .font-weight-bold.mb-2 .text-capitalize');
+- Pompa Intake :
+${pumpProccessIntake.map(element => {
+return(`${element.type}
+Ampere : ${element.ampere}
+Frekuensi : ${element.frequency}
+Pressure : ${element.pressure}
+Status : ${element.status}
 
-                        // Add the main section title
-                        formattedOutput.push(`**---${sectionTitle}---**`);
+`)
+}).join("")}
 
-                        // Process each pump separately
-                        pumps.forEach(pump => {
-                            formattedOutput.push(`${pump.textContent?.trim().toUpperCase()}`);
-                            const pumpName = pump.textContent?.trim();
-                            const pumpContainer = pump.closest('.col-md-6');
-                            if (pumpName && pumpContainer) {
-                                const pumpData = extractSectionData(pumpName, pumpContainer);
-                                if (pumpData) {
-                                    // Remove the header since we're using it as a subheader
-                                    pumpData.shift();
-                                    // Add the pump data with indentation
-                                    pumpData.forEach(line => formattedOutput.push(`  ${line}`));
-                                }
-                            }
-                        });
-                        formattedOutput.push(''); // Add blank line after section
-                    } else {
-                        // Regular section without subsections
-                        const sectionData = extractSectionData(sectionTitle, sectionContainer);
-                        if (sectionData) formattedOutput = formattedOutput.concat(sectionData, ['']);
-                    }
+- Pompa Distribusi :
+${pumpProccessDistribusi.map(element => {
+return(`${element.type}
+Ampere : ${element.ampere}
+Frekuensi : ${element.frequency}
+Pressure : ${element.pressure}
+Status : ${element.status}
+
+`)
+}).join("")}
+
+- Pompa Dosing PAC :
+Frekuensi : ${pumpPac.frequency} Hz
+Dosis : ${pumpPac.dosage} ppm
+Konsentrasi :  ${pumpPac.concentration} %
+Pengadukan : ${pumpPac.stirring} Kg
+Level Tangki : ${pumpPac.tank_level} cm
+
+- Pompa Dosing Clorine/Kaporit :
+Frekuensi : ${pumpPac.flow_rate} l/h
+Dosis : ${pumpPac.dosage} ppm
+Konsentrasi :  ${pumpPac.concentration} %
+Pengadukan : ${pumpPac.stirring} Kg
+Level Tangki : ${pumpPac.tank_level} cm
+
+- Barscreen : ${shiftDetail.unit_operation.barscreen}
+- Fine Screen A : ${shiftDetail.unit_operation.finescreen_a}
+- Fine Screen B : ${shiftDetail.unit_operation.finescreen_b}
+- Compressor A : ${shiftDetail.unit_operation.compressor_a}
+- Compressor B : ${shiftDetail.unit_operation.compressor_b}
+- Air dryer : ${shiftDetail.unit_operation.air_drayer}
+
+WTP
+- Flocullation A: ${shiftDetail.wtps.flokulator_a}
+- Flocullation B: ${shiftDetail.wtps.flokulator_b}
+- Clarifier A : ${shiftDetail.wtps.clarifier_a}
+- Clarifier B : ${shiftDetail.wtps.clarifier_b}
+- Filtrasi : ${shiftDetail.wtps.filtration}
+- Level Grafity Filtrasi :
+A: ${shiftDetail.wtps.gravity_filter_a} m menuju overflow
+B: ${shiftDetail.wtps.gravity_filter_b} m menuju overflow
+C: ${shiftDetail.wtps.gravity_filter_c} m menuju overflow
+D: ${shiftDetail.wtps.gravity_filter_d} m menuju overflow
+E: ${shiftDetail.wtps.gravity_filter_e} m menuju overflow
+F: ${shiftDetail.wtps.gravity_filter_f} m menuju overflow
+
+Catatan : ${shiftDetail?.notes ?shiftDetail?.notes : '-'}`;
+
+            navigator.clipboard.writeText(reportText)
+                .then(() => alert('Daily report copied to clipboard!'))
+                .catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    alert('Please click the button again to copy');
                 });
-
-                // Format the data for clipboard
-                const textToCopy = formattedOutput.join('\n');
-
-                // Copy to clipboard
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(textToCopy)
-                        .then(() => {
-                            console.log('Values copied to clipboard successfully');
-                        })
-                        .catch(err => {
-                            console.error('Failed to copy values: ', err);
-                        });
-                } else {
-                    // Fallback for browsers that don't support Clipboard API
-                    const textarea = document.createElement('textarea');
-                    textarea.value = textToCopy;
-                    textarea.style.position = 'fixed';
-                    document.body.appendChild(textarea);
-                    textarea.focus();
-                    textarea.select();
-
-                    const successful = document.execCommand('copy');
-                    document.body.removeChild(textarea);
-
-                    if (successful) {
-                        console.log('Values copied to clipboard successfully (fallback method)');
-                    } else {
-                        console.error('Failed to copy values (fallback method)');
-                    }
-                }
-            } catch (error) {
-                console.error('Error copying values to clipboard:', error);
-            }
         }
     </script>
 @endscript

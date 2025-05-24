@@ -15,8 +15,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('shift_id');
             $table->enum('location', ['yos sudarso', 'veteran'])->nullable();
-            $table->float('flow')->default(0);
-            $table->float('totalizer')->default(0);
+            $table->integer('flow')->default(0);
+            $table->bigInteger('totalizer')->default(0);
             $table->softDeletes();
             $table->timestamps();
 
