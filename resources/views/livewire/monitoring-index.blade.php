@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Monitoring</h1>
         <div>
-            <button wire:click="downloadReport()" class=" btn btn-sm btn-info shadow-sm"><i
+            <button wire:click="$js.modalDownloadShow" class=" btn btn-sm btn-info shadow-sm"><i
                     class="fas fa-download fa-sm text-white"></i>
                 <span class="d-none d-sm-inline-block ml-2">Download Report</span>
             </button>
@@ -81,7 +81,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="detailModalLabel">
-                        Test
+                        Delete
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -100,10 +100,59 @@
             </div>
         </div>
     </div>
+
+
+    <div wire:ignore.self class="modal fade" id="modalDownload" tabindex="-1" aria-labelledby="modalDownloadLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <form wire:submit.prevent="downloadReport" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDownloadLabel">
+                        Download Report
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div>
+                        <label>Date</label>
+                        <input wire:model="downloadDate" type="date" class="form-control" required>
+                        @error('downloadDate')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="mt-3">
+                        <label>Type</label>
+                        <select wire:model="downloadType" class="form-control">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-info">Download</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 @script
     <script>
+        $js('modalDownloadShow', () => {
+            $('#modalDownload').modal('show');
+        })
+
+        window.addEventListener('modalDownloadHide', () => {
+            $('#modalDownload').modal('hide')
+        });
+
+
         window.addEventListener('show-modal-detail', () => {
             $('#detailModal').modal('show');
         });
