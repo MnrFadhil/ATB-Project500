@@ -7,8 +7,10 @@
     {{-- Form --}}
 
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
+        <div class="card-header py-3 d-flex align-items-center justify-content-between">
             <h6 class="m-0 font-weight-bold ">Details</h6>
+
+            <i class="fas fa-fw fa-clone" style="cursor:pointer" wire:click="$js.copyClipboard" aria-hidden="true"></i>
         </div>
         <div class="card-body">
             <div class="row">
@@ -18,7 +20,6 @@
                         <div class="col-5 col-md-4">Date</div>
                         <div class="col-7 col-md-8">: {{ $shifts->date }}</div>
                     </div>
-
 
                     <div class="row">
                         <div class="col-5 col-md-4">Operator</div>
@@ -180,11 +181,11 @@
                     <div class="font-weight-bold mb-2 text-capitalize">⁠Pressure Static Mixer</div>
                     <div class="mb-3">
                         <div class="row">
-                            <div class="col-5 col-md-4">Total Kwh</div>
+                            <div class="col-5 col-md-4">Inlet</div>
                             <div class="col-7 col-md-8">: {{ $shifts->pressureStaticMixer->inlet }} Bar</div>
                         </div>
                         <div class="row">
-                            <div class="col-5 col-md-4">Wbp</div>
+                            <div class="col-5 col-md-4">Outlet</div>
                             <div class="col-7 col-md-8">: {{ $shifts->pressureStaticMixer->outlet }} Bar</div>
                         </div>
                     </div>
@@ -376,7 +377,7 @@
                                 @if ($shifts->wtps->flokulator_a == 'on')
                                     <h6> <span class="badge badge-success ml-1">On</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-danger ml-1">off</span></h6>
+                                    <h6> <span class="badge badge-danger ml-1">Off</span></h6>
                                 @endif
                             </div>
                         </div>
@@ -386,7 +387,7 @@
                                 @if ($shifts->wtps->flokulator_b == 'on')
                                     <h6> <span class="badge badge-success ml-1">On</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-danger ml-1">off</span></h6>
+                                    <h6> <span class="badge badge-danger ml-1">Off</span></h6>
                                 @endif
                             </div>
                         </div>
@@ -396,7 +397,7 @@
                                 @if ($shifts->wtps->clarifier_a == 'on')
                                     <h6> <span class="badge badge-success ml-1">On</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-danger ml-1">off</span></h6>
+                                    <h6> <span class="badge badge-danger ml-1">Off</span></h6>
                                 @endif
                             </div>
                         </div>
@@ -406,7 +407,7 @@
                                 @if ($shifts->wtps->clarifier_b == 'on')
                                     <h6> <span class="badge badge-success ml-1">On</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-danger ml-1">off</span></h6>
+                                    <h6> <span class="badge badge-danger ml-1">Off</span></h6>
                                 @endif
                             </div>
                         </div>
@@ -481,3 +482,140 @@
         </div>
     </div>
 </div>
+
+@script
+    <script>
+        /**
+         * Function to copy all monitoring data values from HTML to clipboard
+         * This function extracts all measurement values from the monitoring report
+         * and copies them as text in a structured format with section headers
+         */
+
+
+        $js('copyClipboard', () => {
+            copyAllMonitoringValues();
+        })
+
+        function copyAllMonitoringValues() {
+            try {
+                // Final data structure to hold all grouped data
+                let formattedOutput = [];
+
+                // Function to extract data from a section
+                function extractSectionData(sectionTitle, sectionElement) {
+                    const dataRows = sectionElement.querySelectorAll('.row');
+                    if (dataRows.length === 0) return null;
+
+                    let sectionData = [`**---${sectionTitle}---**`];
+
+                    // Extract normal label-value pairs
+                    dataRows.forEach(row => {
+                        const label = row.querySelector('.col-5.col-md-4')?.textContent?.trim();
+
+                        // Get regular value or status badge
+                        const valueCol = row.querySelector('.col-7.col-md-8');
+                        let value;
+
+                        if (valueCol?.classList.contains('d-flex')) {
+                            // This is a status field with badge
+                            const badge = valueCol.querySelector('.badge');
+                            value = badge?.textContent?.trim();
+                        } else {
+                            // Regular value field
+                            value = valueCol?.textContent?.trim().replace(/^:\s*/, ''); // Remove leading colon
+                        }
+
+                        if (label && value) {
+                            sectionData.push(`${label}: ${value}`);
+                        }
+                    });
+
+                    return sectionData.length > 1 ? sectionData : null; // Only return if we have actual data
+                }
+
+                // Extract shift information first
+                const shiftSection = document.querySelector('.card-body');
+                if (shiftSection) {
+                    const shiftTitle = shiftSection.querySelector('.col-12.font-weight-bold.mb-2.text-uppercase')
+                        ?.textContent?.trim() || 'Shift Information';
+                    const shiftData = extractSectionData(shiftTitle, shiftSection.querySelector('.col-md-8.mb-3'));
+                    if (shiftData) formattedOutput = formattedOutput.concat(shiftData, ['']);
+                }
+
+                // Process all major sections (those with headers)
+                const sections = document.querySelectorAll('.font-weight-bold.mb-2.text-capitalize');
+                sections.forEach(section => {
+                    const sectionTitle = section.textContent?.trim();
+                    if (!sectionTitle) return;
+
+                    // Find the parent container that holds this section's data
+                    let sectionContainer = section.closest('.col-md-6, .col-md-12');
+                    if (!sectionContainer) return;
+
+                    // For sections that contain multiple subsections (like pumps)
+                    if (sectionTitle === 'Pompa Intake' || sectionTitle === 'Pompa Distribusi') {
+                        const pumps = sectionContainer.parentElement.querySelectorAll(
+                            '.col-md-6 .font-weight-bold.mb-2 .text-capitalize');
+
+                        // Add the main section title
+                        formattedOutput.push(`**---${sectionTitle}---**`);
+
+                        // Process each pump separately
+                        pumps.forEach(pump => {
+                            formattedOutput.push(`${pump.textContent?.trim().toUpperCase()}`);
+                            const pumpName = pump.textContent?.trim();
+                            const pumpContainer = pump.closest('.col-md-6');
+                            if (pumpName && pumpContainer) {
+                                const pumpData = extractSectionData(pumpName, pumpContainer);
+                                if (pumpData) {
+                                    // Remove the header since we're using it as a subheader
+                                    pumpData.shift();
+                                    // Add the pump data with indentation
+                                    pumpData.forEach(line => formattedOutput.push(`  ${line}`));
+                                }
+                            }
+                        });
+                        formattedOutput.push(''); // Add blank line after section
+                    } else {
+                        // Regular section without subsections
+                        const sectionData = extractSectionData(sectionTitle, sectionContainer);
+                        if (sectionData) formattedOutput = formattedOutput.concat(sectionData, ['']);
+                    }
+                });
+
+                // Format the data for clipboard
+                const textToCopy = formattedOutput.join('\n');
+
+                // Copy to clipboard
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToCopy)
+                        .then(() => {
+                            console.log('Values copied to clipboard successfully');
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy values: ', err);
+                        });
+                } else {
+                    // Fallback for browsers that don't support Clipboard API
+                    const textarea = document.createElement('textarea');
+                    textarea.value = textToCopy;
+                    textarea.style.position = 'fixed';
+                    document.body.appendChild(textarea);
+                    textarea.focus();
+                    textarea.select();
+
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textarea);
+
+                    if (successful) {
+                        console.log('Values copied to clipboard successfully (fallback method)');
+                    } else {
+                        console.error('Failed to copy values (fallback method)');
+                    }
+                }
+            } catch (error) {
+                console.error('Error copying values to clipboard:', error);
+            }
+        }
+    </script>
+@endscript

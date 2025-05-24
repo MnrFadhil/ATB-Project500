@@ -17,8 +17,8 @@ return new class extends Migration
             $table->enum('type', ['air baku', 'sedimentation', 'reservoir']);
             $table->float('ph')->default(0);
             $table->float('turbidity')->default(0);
-            $table->integer('color')->default(0);
-            $table->integer('tds')->default(0);
+            $table->float('color')->default(0);
+            $table->float('tds')->default(0);
             $table->float('free_chlor')->default(0);
             $table->float('orp')->default(0);
             $table->timestamps();

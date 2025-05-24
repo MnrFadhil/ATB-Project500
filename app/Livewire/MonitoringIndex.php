@@ -6,6 +6,7 @@ use App\Models\Shift;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MonitoringIndex extends Component
 {
@@ -34,6 +35,28 @@ class MonitoringIndex extends Component
         return redirect('/monitoring-index');
     }
 
+    public function downloadReport()
+    {
+        $shifts =  Shift::with([
+            'shiftOperators',
+            'waterQualities',
+            'flowMeters',
+            'reservoirLevels',
+            'mdpPanels',
+            'pumpProccess',
+            'pumpChemicals',
+            'unitOperation',
+            'wtps',
+            'pressureStaticMixer'
+        ])->orderBy('shift', 'asc')->orderBy('date', 'asc')->orderBy('start_time', 'asc')->get()->toArray();
+
+
+        $pdf = PDF::loadView('download.monitoring', ['shifts' => $shifts])->setPaper('legal', 'landscape');
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, 'report.pdf');
+    }
+
     /* -------------------------------------------------------------------------- */
     /*                               Lifecycle Hooks                              */
     /* -------------------------------------------------------------------------- */
@@ -46,7 +69,7 @@ class MonitoringIndex extends Component
     public function render()
     {
         return view('livewire.monitoring-index', [
-            'shifts' => Shift::paginate(15)
+            'shifts' => Shift::orderBy('shift', 'asc')->orderBy('date', 'asc')->orderBy('start_time', 'asc')->paginate(15)
         ])->layout('layouts.app');
     }
 }

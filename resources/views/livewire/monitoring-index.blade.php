@@ -1,7 +1,13 @@
 <div>
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Monitoring</h1>
+        <div>
+            <button wire:click="downloadReport()" class=" btn btn-sm btn-info shadow-sm"><i
+                    class="fas fa-download fa-sm text-white"></i>
+                <span class="d-none d-sm-inline-block ml-2">Download Report</span>
+            </button>
+        </div>
     </div>
 
     <!-- DataTales Example -->

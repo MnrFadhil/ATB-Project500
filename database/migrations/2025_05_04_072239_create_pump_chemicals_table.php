@@ -19,8 +19,8 @@ return new class extends Migration
             $table->float('dosage')->default(0);
             $table->float('concentration')->default(0);
             $table->float('stirring')->default(0);
-            $table->integer('tank_level')->default(0);
-            $table->integer('flow_rate')->default(0);
+            $table->float('tank_level')->default(0);
+            $table->float('flow_rate')->default(0);
             $table->softDeletes();
             $table->timestamps();
 

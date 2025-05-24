@@ -13,125 +13,125 @@ class MonitoringForm extends Form
         'start_time'      => '00:00',
         'end_time'        => '00:00',
         'notes'           => '',
-        'collection_tank' => 0,
+        'collection_tank' => '',
         'operator_1'      => '',
         'operator_2'      => '',
     ];
 
     public $airBaku = [
-        'ph'            => 0,
-        'turbidity'     => 0,
-        'color'         => 0,
-        'tds'           => 0,
+        'ph'            => '',
+        'turbidity'     => '',
+        'color'         => '',
+        'tds'           => '',
     ];
 
     public $sedimentation = [
-        'ph'            => 0,
-        'turbidity'     => 0,
-        'color'         => 0,
-        'tds'           => 0,
+        'ph'            => '',
+        'turbidity'     => '',
+        'color'         => '',
+        'tds'           => '',
     ];
 
     public $reservoir = [
-        'ph'            => 0,
-        'turbidity'     => 0,
-        'color'         => 0,
-        'tds'           => 0,
-        'free_chlor'    => 0,
-        'orp'           => 0,
+        'ph'            => '',
+        'turbidity'     => '',
+        'color'         => '',
+        'tds'           => '',
+        'free_chlor'    => '',
+        'orp'           => '',
     ];
 
     public $flowAirBaku = [
-        'flow'          => 0,
-        'totalizer'     => 0,
+        'flow'          => '',
+        'totalizer'     => '',
     ];
 
     public $flowSudarso = [
         'location'      => 'yos sudarso',
-        'flow'          => 0,
-        'totalizer'     => 0,
+        'flow'          => '',
+        'totalizer'     => '',
     ];
 
     public $flowVeteran = [
         'location'      => 'veteran',
-        'flow'          => 0,
-        'totalizer'     => 0,
+        'flow'          => '',
+        'totalizer'     => '',
     ];
 
     public $reservoirLevel = [
-        'level_a'       => 0,
-        'level_b'       => 0,
+        'level_a'       => '',
+        'level_b'       => '',
     ];
 
     public $mdpPanel = [
-        'kwh_total'       => 0,
-        'wdp'             => 0,
-        'lwbp'            => 0,
-        'kvar'            => 0,
+        'kwh_total'       => '',
+        'wdp'             => '',
+        'lwbp'            => '',
+        'kvar'            => '',
     ];
 
     public $pressStatic = [
-        'inlet'       => 0,
-        'outlet'      => 0,
+        'inlet'       => '',
+        'outlet'      => '',
     ];
 
     public $pumpIntakeA = [
-        'ampere'       => 0,
-        'frequency'    => 0,
-        'pressure'     => 0,
+        'ampere'       => '',
+        'frequency'    => '',
+        'pressure'     => '',
         'status'       => 'normal'
     ];
     public $pumpIntakeB = [
-        'ampere'       => 0,
-        'frequency'    => 0,
-        'pressure'      => 0,
+        'ampere'       => '',
+        'frequency'    => '',
+        'pressure'      => '',
         'status'       => 'normal'
     ];
     public $pumpIntakeC = [
-        'ampere'       => 0,
-        'frequency'    => 0,
-        'pressure'      => 0,
+        'ampere'       => '',
+        'frequency'    => '',
+        'pressure'      => '',
         'status'       => 'normal'
     ];
 
     public $pumpDistriA = [
-        'ampere'       => 0,
-        'frequency'    => 0,
-        'pressure'      => 0,
+        'ampere'       => '',
+        'frequency'    => '',
+        'pressure'      => '',
         'status'       => 'normal'
     ];
     public $pumpDistriB = [
-        'ampere'       => 0,
-        'frequency'    => 0,
-        'pressure'      => 0,
+        'ampere'       => '',
+        'frequency'    => '',
+        'pressure'      => '',
         'status'       => 'normal'
     ];
     public $pumpDistriC = [
-        'ampere'       => 0,
-        'frequency'    => 0,
-        'pressure'      => 0,
+        'ampere'       => '',
+        'frequency'    => '',
+        'pressure'      => '',
         'status'       => 'normal'
     ];
     public $pumpDistriD = [
-        'ampere'       => 0,
-        'frequency'    => 0,
-        'pressure'      => 0,
+        'ampere'       => '',
+        'frequency'    => '',
+        'pressure'      => '',
         'status'       => 'normal'
     ];
 
     public $pumpPac = [
-        'frequency'     => 0,
-        'dosage'        => 0,
-        'concentration' => 0,
-        'stirring'      => 0,
+        'frequency'     => '',
+        'dosage'        => '',
+        'concentration' => '',
+        'stirring'      => '',
         'tank_level'    => 0
     ];
 
     public $pumpChlor = [
-        'flow_rate'     => 0,
-        'dosage'        => 0,
-        'concentration' => 0,
-        'stirring'      => 0,
+        'flow_rate'     => '',
+        'dosage'        => '',
+        'concentration' => '',
+        'stirring'      => '',
         'tank_level'    => 0
     ];
     public $unitOper = [
@@ -149,12 +149,12 @@ class MonitoringForm extends Form
         'clarifier_a'      => 'off',
         'clarifier_b'      => 'off',
         'filtration'       => 'off',
-        'gravity_filter_a' => 0,
-        'gravity_filter_b' => 0,
-        'gravity_filter_c' => 0,
-        'gravity_filter_d' => 0,
-        'gravity_filter_e' => 0,
-        'gravity_filter_f' => 0,
+        'gravity_filter_a' => '',
+        'gravity_filter_b' => '',
+        'gravity_filter_c' => '',
+        'gravity_filter_d' => '',
+        'gravity_filter_e' => '',
+        'gravity_filter_f' => '',
     ];
 
 
@@ -311,36 +311,36 @@ class MonitoringForm extends Form
             // airBaku
             'airBaku.ph'        => 'required|numeric',
             'airBaku.turbidity' => 'required|numeric',
-            'airBaku.color'     => 'required|integer',
-            'airBaku.tds'       => 'required|integer',
+            'airBaku.color'     => 'required|numeric',
+            'airBaku.tds'       => 'required|numeric',
 
             // sedimentation
             'sedimentation.ph'        => 'required|numeric',
             'sedimentation.turbidity' => 'required|numeric',
-            'sedimentation.color'     => 'required|integer',
-            'sedimentation.tds'       => 'required|integer',
+            'sedimentation.color'     => 'required|numeric',
+            'sedimentation.tds'       => 'required|numeric',
 
             // reservoir
             'reservoir.ph'         => 'required|numeric',
             'reservoir.turbidity'  => 'required|numeric',
-            'reservoir.color'      => 'required|integer',
-            'reservoir.tds'        => 'required|integer',
+            'reservoir.color'      => 'required|numeric',
+            'reservoir.tds'        => 'required|numeric',
             'reservoir.free_chlor' => 'required|numeric',
             'reservoir.orp'        => 'required|numeric',
 
             // flowAirBaku
-            'flowAirBaku.flow'      => 'required|integer',
-            'flowAirBaku.totalizer' => 'required|integer',
+            'flowAirBaku.flow'      => 'required|numeric',
+            'flowAirBaku.totalizer' => 'required|numeric',
 
             // flowSudarso
             'flowSudarso.location'  => 'required|string',
-            'flowSudarso.flow'      => 'required|integer',
-            'flowSudarso.totalizer' => 'required|integer',
+            'flowSudarso.flow'      => 'required|numeric',
+            'flowSudarso.totalizer' => 'required|numeric',
 
             // flowVeteran
             'flowVeteran.location'  => 'required|string',
-            'flowVeteran.flow'      => 'required|integer',
-            'flowVeteran.totalizer' => 'required|integer',
+            'flowVeteran.flow'      => 'required|numeric',
+            'flowVeteran.totalizer' => 'required|numeric',
 
             // reservoirLevel
             'reservoirLevel.level_a' => 'required|numeric',
