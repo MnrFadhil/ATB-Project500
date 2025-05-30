@@ -57,7 +57,7 @@ class ShiftExportExcel implements FromView, WithTitle
 
     public function title(): string
     {
-        return 'Products';
+        return 'Worksheet';
     }
 }
 

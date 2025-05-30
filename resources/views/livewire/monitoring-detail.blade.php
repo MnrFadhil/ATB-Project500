@@ -41,7 +41,7 @@
 
                     <div class="row">
                         <div class="col-5 col-md-4">Notes</div>
-                        <div class="col-7 col-md-8">: {{$shifts->notes ? $shift->notes : '-'}}</div>
+                        <div class="col-7 col-md-8">: {{ $shifts->notes ? $shifts->notes : '-' }}</div>
                     </div>
                 </div>
             </div>
@@ -233,12 +233,12 @@
                             <div class="row">
                                 <div class="col-5 col-md-4">Status</div>
                                 <div class="col-7 col-md-8 d-flex">:
-                                    @if ($pumpProccess->status == 'normal')
-                                        <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                    @if ($pumpProccess->status == 'running')
+                                        <h6> <span class="badge badge-success ml-1">Running</span></h6>
                                     @elseif ($pumpProccess->status == 'standby')
-                                        <h6> <span class="badge badge-info ml-1">Stand by</span></h6>
+                                        <h6> <span class="badge badge-info ml-1">Standby</span></h6>
                                     @else
-                                        <h6> <span class="badge badge-warning ml-1">Running</span></h6>
+                                        <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                     @endif
                                 </div>
                             </div>
@@ -273,6 +273,10 @@
                                 </div>
                             @endif
                             <div class="row">
+                                <div class="col-5 col-md-4">Konsentrasi</div>
+                                <div class="col-7 col-md-8">: {{ $pumpChemicals->concentration }} %</div>
+                            </div>
+                            <div class="row">
                                 <div class="col-5 col-md-4">Dosis</div>
                                 <div class="col-7 col-md-8">: {{ $pumpChemicals->dosage }} ppm</div>
                             </div>
@@ -297,72 +301,72 @@
                         <div class="row">
                             <div class="col-5 col-md-4">Bar Screen</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->barscreen == 'normal')
-                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @if ($shifts->unitOperation->barscreen == 'running')
+                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
                                 @elseif ($shifts->unitOperation->barscreen == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Stand by</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Running</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Air Drayer</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->air_drayer == 'normal')
-                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @if ($shifts->unitOperation->air_drayer == 'running')
+                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
                                 @elseif ($shifts->unitOperation->air_drayer == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Stand by</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Running</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Finescreen A</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->finescreen_a == 'normal')
-                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @if ($shifts->unitOperation->finescreen_a == 'running')
+                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
                                 @elseif ($shifts->unitOperation->finescreen_a == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Stand by</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Running</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Finescreen B</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->finescreen_b == 'normal')
-                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @if ($shifts->unitOperation->finescreen_b == 'running')
+                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
                                 @elseif ($shifts->unitOperation->finescreen_b == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Stand by</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Running</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Compressor A</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->compressor_a == 'normal')
-                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @if ($shifts->unitOperation->compressor_a == 'running')
+                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
                                 @elseif ($shifts->unitOperation->compressor_a == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Stand by</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Running</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Compressor B</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->compressor_b == 'normal')
-                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @if ($shifts->unitOperation->compressor_b == 'running')
+                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
                                 @elseif ($shifts->unitOperation->compressor_b == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Stand by</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Running</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
@@ -502,7 +506,83 @@
         let pumpPac = shiftDetail.pump_chemicals.find(data => data.type == 'pac')
         let pumpChlorine = shiftDetail.pump_chemicals.find(data => data.type == 'chlorine/kaporit')
 
-        console.log(shiftDetail)
+        let intake = transformText(pumpProccessIntake, {
+            tittle: [],
+            tittle1: '',
+            tittle2: '',
+            tittle3: '',
+            ampere: '',
+            frequency: '',
+            pressure: '',
+        })
+
+
+        let distri = transformText(pumpProccessDistribusi, {
+            tittle: [],
+            tittle1: '',
+            tittle2: '',
+            tittle3: '',
+            ampere: '',
+            frequency: '',
+            pressure: '',
+        })
+
+
+
+        function transformText(dataArray, tempData) {
+            dataArray.forEach((data, i) => {
+                const idx = data.type.split(' ')[1].toUpperCase()
+
+                if (data.status == 'running') {
+                    if (tempData.tittle1 == '') {
+                        tempData.tittle1 = `${idx} Running`
+                    } else {
+                        let test = tempData.tittle1.split(' ')
+                        test[test.length - 2] += `, ${idx}`
+                        tempData.tittle1 = test.join(' ')
+                    }
+
+                    if (tempData.ampere == '') {
+                        tempData.ampere = `${data.ampere} A (${idx})`
+                    } else {
+                        tempData.ampere += `; ${data.ampere} A (${idx})`
+                    }
+                    if (tempData.frequency == '') {
+                        tempData.frequency = `${data.frequency} Hz (${idx})`
+                    } else {
+                        tempData.frequency += `; ${data.frequency} Hz (${idx})`
+                    }
+                    if (tempData.pressure == '') {
+                        tempData.pressure = `${data.pressure} Bar (${idx})`
+                    } else {
+                        tempData.pressure += `; ${data.pressure} Bar (${idx})`
+                    }
+                } else if (data.status == 'standby') {
+                    if (tempData.tittle2 == '') {
+                        tempData.tittle2 = `${idx} Standby`
+                    } else {
+                        let test = tempData.tittle2.split(' ')
+                        test[test.length - 2] += `, ${idx}`
+                        tempData.tittle2 = test.join(' ')
+                    }
+                } else {
+                    if (tempData.tittle3 == '') {
+                        tempData.tittle3 = `${idx} Maintenance`
+                    } else {
+                        let test = tempData.tittle3.split(' ')
+                        test[test.length - 2] += `, ${idx}`
+                        tempData.tittle3 = test.join(' ')
+                    }
+                }
+            });
+
+            if (tempData.tittle1 !== '') tempData.tittle.push(tempData.tittle1)
+            if (tempData.tittle2 !== '') tempData.tittle.push(tempData.tittle2)
+            if (tempData.tittle3 !== '') tempData.tittle.push(tempData.tittle3)
+
+            return tempData;
+        }
+
         /**
          * Function to copy all monitoring data values from HTML to clipboard
          * This function extracts all measurement values from the monitoring report
@@ -570,27 +650,15 @@ Kvar : ${shiftDetail.mdp_panels.kvar}
 Inlet : ${shiftDetail.pressure_static_mixer.inlet} bar
 Outlet :  ${shiftDetail.pressure_static_mixer.outlet} bar
 
-- Pompa Intake :
-${pumpProccessIntake.map(element => {
-return(`${element.type}
-Ampere : ${element.ampere}
-Frekuensi : ${element.frequency}
-Pressure : ${element.pressure}
-Status : ${element.status}
+- Pompa Intake : ${intake.tittle.join(', ')}
+Ampere : ${intake.ampere == ''?'-':intake.ampere}
+Frekuensi : ${intake.frequency == ''?'-':intake.frequency}
+Pressure : ${intake.pressure== ''?'-':intake.pressure}
 
-`)
-}).join("")}
-
-- Pompa Distribusi :
-${pumpProccessDistribusi.map(element => {
-return(`${element.type}
-Ampere : ${element.ampere}
-Frekuensi : ${element.frequency}
-Pressure : ${element.pressure}
-Status : ${element.status}
-
-`)
-}).join("")}
+- Pompa Distribusi : ${distri.tittle.join(', ')}
+Ampere : ${distri.ampere == ''?'-':distri.ampere}
+Frekuensi : ${distri.frequency == ''?'-':distri.frequency}
+Pressure : ${distri.pressure== ''?'-':distri.pressure}
 
 - Pompa Dosing PAC :
 Frekuensi : ${pumpPac.frequency} Hz
@@ -629,12 +697,33 @@ F: ${shiftDetail.wtps.gravity_filter_f} m menuju overflow
 
 Catatan : ${shiftDetail?.notes ?shiftDetail?.notes : '-'}`;
 
-            navigator.clipboard.writeText(reportText)
-                .then(() => alert('Daily report copied to clipboard!'))
-                .catch(err => {
-                    console.error('Failed to copy text: ', err);
-                    alert('Please click the button again to copy');
-                });
+
+            const textarea = document.createElement('textarea');
+            textarea.value = reportText;
+            textarea.style.position = 'fixed'; // Prevent scrolling
+            document.body.appendChild(textarea);
+
+            textarea.select();
+            try {
+                const success = document.execCommand('copy');
+                if (success) {
+                    alert('Report copied to clipboard!');
+                } else {
+                    throw new Error('Copy failed');
+                }
+            } catch (err) {
+                alert('Failed to copy. Please manually select and copy (Ctrl+C).');
+                console.error('Copy error:', err);
+            }
+            document.body.removeChild(textarea);
+
+
+            // navigator.clipboard.writeText(reportText)
+            //     .then(() => alert('Daily report copied to clipboard!'))
+            //     .catch(err => {
+            //         console.error('Failed to copy text: ', err);
+            //         alert('Please click the button again to copy');
+            //     });
         }
     </script>
 @endscript

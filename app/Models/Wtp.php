@@ -28,5 +28,11 @@ class Wtp extends Model
         'gravity_filter_d',
         'gravity_filter_e',
         'gravity_filter_f',
+        'gravity_filter_a_status',
+        'gravity_filter_b_status',
+        'gravity_filter_c_status',
+        'gravity_filter_d_status',
+        'gravity_filter_e_status',
+        'gravity_filter_f_status',
     ];
 }

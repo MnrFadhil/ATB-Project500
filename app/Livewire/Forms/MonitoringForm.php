@@ -79,44 +79,44 @@ class MonitoringForm extends Form
         'ampere'       => '',
         'frequency'    => '',
         'pressure'     => '',
-        'status'       => 'normal'
+        'status'       => 'standby'
     ];
     public $pumpIntakeB = [
         'ampere'       => '',
         'frequency'    => '',
-        'pressure'      => '',
-        'status'       => 'normal'
+        'pressure'     => '',
+        'status'       => 'standby'
     ];
     public $pumpIntakeC = [
         'ampere'       => '',
         'frequency'    => '',
-        'pressure'      => '',
-        'status'       => 'normal'
+        'pressure'     => '',
+        'status'       => 'standby'
     ];
 
     public $pumpDistriA = [
         'ampere'       => '',
         'frequency'    => '',
-        'pressure'      => '',
-        'status'       => 'normal'
+        'pressure'     => '',
+        'status'       => 'standby'
     ];
     public $pumpDistriB = [
         'ampere'       => '',
         'frequency'    => '',
-        'pressure'      => '',
-        'status'       => 'normal'
+        'pressure'     => '',
+        'status'       => 'standby'
     ];
     public $pumpDistriC = [
         'ampere'       => '',
         'frequency'    => '',
-        'pressure'      => '',
-        'status'       => 'normal'
+        'pressure'     => '',
+        'status'       => 'standby'
     ];
     public $pumpDistriD = [
         'ampere'       => '',
         'frequency'    => '',
-        'pressure'      => '',
-        'status'       => 'normal'
+        'pressure'     => '',
+        'status'       => 'standby'
     ];
 
     public $pumpPac = [
@@ -135,12 +135,12 @@ class MonitoringForm extends Form
         'tank_level'    => 0
     ];
     public $unitOper = [
-        'barscreen'        => 'normal',
-        'finescreen_a'     => 'normal',
-        'finescreen_b'     => 'normal',
-        'compressor_a'     => 'normal',
-        'compressor_b'     => 'normal',
-        'air_drayer'       => 'normal',
+        'barscreen'        => 'standby',
+        'finescreen_a'     => 'standby',
+        'finescreen_b'     => 'standby',
+        'compressor_a'     => 'standby',
+        'compressor_b'     => 'standby',
+        'air_drayer'       => 'standby',
     ];
 
     public $wtp = [
@@ -155,6 +155,12 @@ class MonitoringForm extends Form
         'gravity_filter_d' => '',
         'gravity_filter_e' => '',
         'gravity_filter_f' => '',
+        'gravity_filter_a_status' => 'standby',
+        'gravity_filter_b_status' => 'standby',
+        'gravity_filter_c_status' => 'standby',
+        'gravity_filter_d_status' => 'standby',
+        'gravity_filter_e_status' => 'standby',
+        'gravity_filter_f_status' => 'standby',
     ];
 
 
@@ -289,6 +295,12 @@ class MonitoringForm extends Form
         'wtp.gravity_filter_d' => 'Gravity Filter D',
         'wtp.gravity_filter_e' => 'Gravity Filter E',
         'wtp.gravity_filter_f' => 'Gravity Filter F',
+        'wtp.gravity_filter_a_status' => 'Gravity Filter A Status',
+        'wtp.gravity_filter_b_status' => 'Gravity Filter B Status',
+        'wtp.gravity_filter_c_status' => 'Gravity Filter C Status',
+        'wtp.gravity_filter_d_status' => 'Gravity Filter D Status',
+        'wtp.gravity_filter_e_status' => 'Gravity Filter E Status',
+        'wtp.gravity_filter_f_status' => 'Gravity Filter F Status',
     ];
 
 
@@ -357,40 +369,40 @@ class MonitoringForm extends Form
             'pressStatic.outlet' => 'required|numeric',
 
             // pumpIntake
-            'pumpIntakeA.ampere'    => 'required|numeric',
-            'pumpIntakeA.frequency' => 'required|numeric',
-            'pumpIntakeA.pressure'  => 'required|numeric',
+            'pumpIntakeA.ampere'    => 'required_if:pumpIntakeA.status,running|numeric',
+            'pumpIntakeA.frequency' => 'required_if:pumpIntakeA.status,running|numeric',
+            'pumpIntakeA.pressure'  => 'required_if:pumpIntakeA.status,running|numeric',
             'pumpIntakeA.status'    => 'required|string',
 
-            'pumpIntakeB.ampere'    => 'required|numeric',
-            'pumpIntakeB.frequency' => 'required|numeric',
-            'pumpIntakeB.pressure'  => 'required|numeric',
+            'pumpIntakeB.ampere'    => 'required_if:pumpIntakeB.status,running|numeric',
+            'pumpIntakeB.frequency' => 'required_if:pumpIntakeB.status,running|numeric',
+            'pumpIntakeB.pressure'  => 'required_if:pumpIntakeB.status,running|numeric',
             'pumpIntakeB.status'    => 'required|string',
 
-            'pumpIntakeC.ampere'    => 'required|numeric',
-            'pumpIntakeC.frequency' => 'required|numeric',
-            'pumpIntakeC.pressure'  => 'required|numeric',
+            'pumpIntakeC.ampere'    => 'required_if:pumpIntakeC.status,running|numeric',
+            'pumpIntakeC.frequency' => 'required_if:pumpIntakeC.status,running|numeric',
+            'pumpIntakeC.pressure'  => 'required_if:pumpIntakeC.status,running|numeric',
             'pumpIntakeC.status'    => 'required|string',
 
             // pumpDistri
-            'pumpDistriA.ampere'    => 'required|numeric',
-            'pumpDistriA.frequency' => 'required|numeric',
-            'pumpDistriA.pressure'  => 'required|numeric',
+            'pumpDistriA.ampere'    => 'required_if:pumpDistriA.status,running|numeric',
+            'pumpDistriA.frequency' => 'required_if:pumpDistriA.status,running|numeric',
+            'pumpDistriA.pressure'  => 'required_if:pumpDistriA.status,running|numeric',
             'pumpDistriA.status'    => 'required|string',
 
-            'pumpDistriB.ampere'    => 'required|numeric',
-            'pumpDistriB.frequency' => 'required|numeric',
-            'pumpDistriB.pressure'  => 'required|numeric',
+            'pumpDistriB.ampere'    => 'required_if:pumpDistriB.status,running|numeric',
+            'pumpDistriB.frequency' => 'required_if:pumpDistriB.status,running|numeric',
+            'pumpDistriB.pressure'  => 'required_if:pumpDistriB.status,running|numeric',
             'pumpDistriB.status'    => 'required|string',
 
-            'pumpDistriC.ampere'    => 'required|numeric',
-            'pumpDistriC.frequency' => 'required|numeric',
-            'pumpDistriC.pressure'  => 'required|numeric',
+            'pumpDistriC.ampere'    => 'required_if:pumpDistriC.status,running|numeric',
+            'pumpDistriC.frequency' => 'required_if:pumpDistriC.status,running|numeric',
+            'pumpDistriC.pressure'  => 'required_if:pumpDistriC.status,running|numeric',
             'pumpDistriC.status'    => 'required|string',
 
-            'pumpDistriD.ampere'    => 'required|numeric',
-            'pumpDistriD.frequency' => 'required|numeric',
-            'pumpDistriD.pressure'  => 'required|numeric',
+            'pumpDistriD.ampere'    => 'required_if:pumpDistriD.status,running|numeric',
+            'pumpDistriD.frequency' => 'required_if:pumpDistriD.status,running|numeric',
+            'pumpDistriD.pressure'  => 'required_if:pumpDistriD.status,running|numeric',
             'pumpDistriD.status'    => 'required|string',
 
             // pumpPac
@@ -401,11 +413,11 @@ class MonitoringForm extends Form
             'pumpPac.tank_level'    => 'required|numeric',
 
             // pumpChlor
-            'pumpChlor.flow_rate'   => 'required|numeric',
-            'pumpChlor.dosage'      => 'required|numeric',
+            'pumpChlor.flow_rate'     => 'required|numeric',
+            'pumpChlor.dosage'        => 'required|numeric',
             'pumpChlor.concentration' => 'required|numeric',
-            'pumpChlor.stirring'    => 'required|numeric',
-            'pumpChlor.tank_level'  => 'required|numeric',
+            'pumpChlor.stirring'      => 'required|numeric',
+            'pumpChlor.tank_level'    => 'required|numeric',
 
             // unitOper
             'unitOper.barscreen'    => 'required|string',
@@ -421,12 +433,18 @@ class MonitoringForm extends Form
             'wtp.clarifier_a'      => 'required|string',
             'wtp.clarifier_b'      => 'required|string',
             'wtp.filtration'       => 'required|string',
-            'wtp.gravity_filter_a' => 'required|numeric',
-            'wtp.gravity_filter_b' => 'required|numeric',
-            'wtp.gravity_filter_c' => 'required|numeric',
-            'wtp.gravity_filter_d' => 'required|numeric',
-            'wtp.gravity_filter_e' => 'required|numeric',
-            'wtp.gravity_filter_f' => 'required|numeric',
+            'wtp.gravity_filter_a' => 'required_if:wtp.gravity_filter_a_status,running|numeric',
+            'wtp.gravity_filter_b' => 'required_if:wtp.gravity_filter_b_status,running|numeric',
+            'wtp.gravity_filter_c' => 'required_if:wtp.gravity_filter_c_status,running|numeric',
+            'wtp.gravity_filter_d' => 'required_if:wtp.gravity_filter_d_status,running|numeric',
+            'wtp.gravity_filter_e' => 'required_if:wtp.gravity_filter_e_status,running|numeric',
+            'wtp.gravity_filter_f' => 'required_if:wtp.gravity_filter_f_status,running|numeric',
+            'wtp.gravity_filter_a_status' => 'required|string',
+            'wtp.gravity_filter_b_status' => 'required|string',
+            'wtp.gravity_filter_c_status' => 'required|string',
+            'wtp.gravity_filter_d_status' => 'required|string',
+            'wtp.gravity_filter_e_status' => 'required|string',
+            'wtp.gravity_filter_f_status' => 'required|string',
         ];
     }
 }

@@ -26,7 +26,7 @@ class FormMonitoring extends Component
     {
         // validate form
         $form = $this->validate();
-
+        $form = $this->setDefaultValueForStatus($form);
 
         if ($this->id) $this->updateRecord($form);
         else $this->createRecord($form);
@@ -48,8 +48,6 @@ class FormMonitoring extends Component
         ])->find($this->id);
 
         $shift = $shift->toArray();
-
-        $this->form->shift = $shift;
 
         $this->form->shift = $shift;
         $this->form->shift['start_time'] = Carbon::createFromFormat('H:i:s', $shift['start_time'])->format('H:i');
@@ -87,6 +85,7 @@ class FormMonitoring extends Component
             if ($pumpProccess['type'] == 'distribusi c')  $this->form->pumpDistriC = $pumpProccess;
             if ($pumpProccess['type'] == 'distribusi d')  $this->form->pumpDistriD = $pumpProccess;
         };
+
 
         foreach ($shift['pump_chemicals'] as $pumpChemic) {
             if ($pumpChemic['type'] == 'pac')  $this->form->pumpPac = $pumpChemic;
@@ -214,6 +213,54 @@ class FormMonitoring extends Component
             else Session::flash('eror', 'Eror Update Monitoring Data');
             return redirect("/monitoring/$shift->id");
         });
+    }
+
+    public function setDefaultValueForStatus($form)
+    {
+        if ($form['pumpIntakeA']['status'] !== 'running') {
+            $form['pumpIntakeA']['ampere'] = 0;
+            $form['pumpIntakeA']['frequency'] = 0;
+            $form['pumpIntakeA']['pressure'] = 0;
+        };
+        if ($form['pumpIntakeB']['status'] !== 'running') {
+            $form['pumpIntakeB']['ampere'] = 0;
+            $form['pumpIntakeB']['frequency'] = 0;
+            $form['pumpIntakeB']['pressure'] = 0;
+        };
+        if ($form['pumpIntakeC']['status'] !== 'running') {
+            $form['pumpIntakeC']['ampere'] = 0;
+            $form['pumpIntakeC']['frequency'] = 0;
+            $form['pumpIntakeC']['pressure'] = 0;
+        };
+        if ($form['pumpDistriA']['status'] !== 'running') {
+            $form['pumpDistriA']['ampere'] = 0;
+            $form['pumpDistriA']['frequency'] = 0;
+            $form['pumpDistriA']['pressure'] = 0;
+        };
+        if ($form['pumpDistriB']['status'] !== 'running') {
+            $form['pumpDistriB']['ampere'] = 0;
+            $form['pumpDistriB']['frequency'] = 0;
+            $form['pumpDistriB']['pressure'] = 0;
+        };
+        if ($form['pumpDistriC']['status'] !== 'running') {
+            $form['pumpDistriC']['ampere'] = 0;
+            $form['pumpDistriC']['frequency'] = 0;
+            $form['pumpDistriC']['pressure'] = 0;
+        };
+        if ($form['pumpDistriD']['status'] !== 'running') {
+            $form['pumpDistriD']['ampere'] = 0;
+            $form['pumpDistriD']['frequency'] = 0;
+            $form['pumpDistriD']['pressure'] = 0;
+        };
+        if ($form['wtp']['gravity_filter_a_status'] !== 'running') $form['wtp']['gravity_filter_a'] = 0;
+        if ($form['wtp']['gravity_filter_b_status'] !== 'running') $form['wtp']['gravity_filter_b'] = 0;
+        if ($form['wtp']['gravity_filter_c_status'] !== 'running') $form['wtp']['gravity_filter_c'] = 0;
+        if ($form['wtp']['gravity_filter_d_status'] !== 'running') $form['wtp']['gravity_filter_d'] = 0;
+        if ($form['wtp']['gravity_filter_e_status'] !== 'running') $form['wtp']['gravity_filter_e'] = 0;
+        if ($form['wtp']['gravity_filter_f_status'] !== 'running') $form['wtp']['gravity_filter_f'] = 0;
+
+
+        return $form;
     }
 
     /* -------------------------------------------------------------------------- */

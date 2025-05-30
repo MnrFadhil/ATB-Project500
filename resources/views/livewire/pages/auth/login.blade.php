@@ -32,8 +32,8 @@ new #[Layout('layouts.guest')] class extends Component {
             </div>
 
             <div class="form-group">
-                <input wire:model="form.email" name="email" required id="email" type="email"
-                    class="form-control form-control-user" placeholder="Enter Email Address...">
+                <input wire:model="form.username" name="username" required id="username" type="text"
+                    class="form-control form-control-user" placeholder="Enter Username">
             </div>
             <div class="form-group">
                 <input type="password" class="form-control form-control-user" placeholder="Password" name="password"
@@ -50,7 +50,7 @@ new #[Layout('layouts.guest')] class extends Component {
             <button type="submit" class="btn btn-primary btn-user btn-block">
                 Login
             </button>
-            @error('form.email')
+            @error('form.username')
                 <span class="error">{{ $message }}</span>
             @enderror
         </div>

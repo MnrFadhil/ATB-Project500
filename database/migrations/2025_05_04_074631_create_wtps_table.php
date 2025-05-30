@@ -20,11 +20,17 @@ return new class extends Migration
             $table->string('clarifier_b')->nullable();
             $table->string('filtration')->nullable();
             $table->float('gravity_filter_a')->default(0);
+            $table->enum('gravity_filter_a_status', ['running', 'maintenance', 'standby']);
             $table->float('gravity_filter_b')->default(0);
+            $table->enum('gravity_filter_b_status', ['running', 'maintenance', 'standby']);
             $table->float('gravity_filter_c')->default(0);
+            $table->enum('gravity_filter_c_status', ['running', 'maintenance', 'standby']);
             $table->float('gravity_filter_d')->default(0);
+            $table->enum('gravity_filter_d_status', ['running', 'maintenance', 'standby']);
             $table->float('gravity_filter_e')->default(0);
+            $table->enum('gravity_filter_e_status', ['running', 'maintenance', 'standby']);
             $table->float('gravity_filter_f')->default(0);
+            $table->enum('gravity_filter_f_status', ['running', 'maintenance', 'standby']);
             $table->softDeletes();
             $table->timestamps();
 

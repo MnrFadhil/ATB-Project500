@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('shift_id');
             $table->enum('type', ['intake a', 'intake b', 'intake c', 'distribusi a', 'distribusi b', 'distribusi c', 'distribusi d']);
-            $table->enum('status', ['running', 'standby', 'normal']);
+            $table->enum('status', ['running', 'standby', 'maintenance']);
             $table->float('ampere')->default(0);
             $table->float('frequency')->default(0);
             $table->float('pressure')->default(0);

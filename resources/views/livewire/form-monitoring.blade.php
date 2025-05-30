@@ -45,7 +45,7 @@
                             <option value="04:00">04:00</option>
                             <option value="05:00">05:00</option>
                             <option value="06:00">06:00</option>
-                            <option value="07:00">08:00</option>
+                            <option value="07:00">07:00</option>
                             <option value="08:00">08:00</option>
                             <option value="09:00">09:00</option>
                             <option value="10:00">10:00</option>
@@ -79,7 +79,7 @@
                             <option value="04:00">04:00</option>
                             <option value="05:00">05:00</option>
                             <option value="06:00">06:00</option>
-                            <option value="07:00">08:00</option>
+                            <option value="07:00">07:00</option>
                             <option value="08:00">08:00</option>
                             <option value="09:00">09:00</option>
                             <option value="10:00">10:00</option>
@@ -480,45 +480,48 @@
                         <div class="form-row">
                             <div class="col-12 font-weight-bold">Pompa A</div>
                             <div class="col-6 mb-3">
-                                <label for="pompaIntakeAAmpere">Ampere (A)</label>
-                                <input wire:model="form.pumpIntakeA.ampere" type="number" step="any"
-                                    class="form-control" id="pompaIntakeAAmpere" required>
-                                @error('form.pumpIntakeA.ampere')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaIntakeAFreq"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
-                                    (Hz)</label>
-                                <input wire:model="form.pumpIntakeA.frequency" type="number" step="any"
-                                    class="form-control" id="pompaIntakeAFreq" required>
-                                @error('form.pumpIntakeA.frequency')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaIntakeAPress"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
-                                    (Bar)</label>
-                                <input wire:model="form.pumpIntakeA.pressure" type="number" step="any"
-                                    class="form-control" id="pompaIntakeAPress" required>
-                                @error('form.pumpIntakeA.pressure')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
                                 <label for="pompaIntakeAStatus">Status</label>
-                                <select wire:model="form.pumpIntakeA.status" class="custom-select"
+                                <select wire:model.live="form.pumpIntakeA.status" class="custom-select"
                                     id="pompaIntakeAStatus" required>
-                                    <option value="normal">Normal</option>
                                     <option value="standby">Standby</option>
                                     <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
                                 </select>
                                 @error('form.pumpIntakeA.status')
                                     <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
+
+                            @if (data_get($this->form, 'pumpIntakeA.status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="pompaIntakeAAmpere">Ampere (A)</label>
+                                    <input wire:model="form.pumpIntakeA.ampere" type="number" step="any"
+                                        class="form-control" id="pompaIntakeAAmpere" required>
+                                    @error('form.pumpIntakeA.ampere')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaIntakeAFreq"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
+                                        (Hz)</label>
+                                    <input wire:model="form.pumpIntakeA.frequency" type="number" step="any"
+                                        class="form-control" id="pompaIntakeAFreq" required>
+                                    @error('form.pumpIntakeA.frequency')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaIntakeAPress"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
+                                        (Bar)</label>
+                                    <input wire:model="form.pumpIntakeA.pressure" type="number" step="any"
+                                        class="form-control" id="pompaIntakeAPress" required>
+                                    @error('form.pumpIntakeA.pressure')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -526,45 +529,48 @@
                         <div class="form-row">
                             <div class="col-12 font-weight-bold">Pompa B</div>
                             <div class="col-6 mb-3">
-                                <label for="pompaIntakeBAmpere">Ampere (A)</label>
-                                <input wire:model="form.pumpIntakeB.ampere" type="number" step="any"
-                                    class="form-control" id="pompaIntakeBAmpere" required>
-                                @error('form.pumpIntakeB.ampere')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaIntakeBFreq"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
-                                    (Hz)</label>
-                                <input wire:model="form.pumpIntakeB.frequency" type="number" step="any"
-                                    class="form-control" id="pompaIntakeBFreq" required>
-                                @error('form.pumpIntakeB.frequency')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaIntakeBPress"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
-                                    (Bar)</label>
-                                <input wire:model="form.pumpIntakeB.pressure" type="number" step="any"
-                                    class="form-control" id="pompaIntakeBPress" required>
-                                @error('form.pumpIntakeB.pressure')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
                                 <label for="pompaIntakeBStatus">Status</label>
-                                <select wire:model="form.pumpIntakeB.status" class="custom-select"
+                                <select wire:model.live="form.pumpIntakeB.status" class="custom-select"
                                     id="pompaIntakeBStatus" required>
-                                    <option value="normal">Normal</option>
                                     <option value="standby">Standby</option>
                                     <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
                                 </select>
                                 @error('form.pumpIntakeB.status')
                                     <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
+
+                            @if (data_get($this->form, 'pumpIntakeB.status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="pompaIntakeBAmpere">Ampere (A)</label>
+                                    <input wire:model="form.pumpIntakeB.ampere" type="number" step="any"
+                                        class="form-control" id="pompaIntakeBAmpere" required>
+                                    @error('form.pumpIntakeB.ampere')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaIntakeBFreq"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
+                                        (Hz)</label>
+                                    <input wire:model="form.pumpIntakeB.frequency" type="number" step="any"
+                                        class="form-control" id="pompaIntakeBFreq" required>
+                                    @error('form.pumpIntakeB.frequency')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaIntakeBPress"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
+                                        (Bar)</label>
+                                    <input wire:model="form.pumpIntakeB.pressure" type="number" step="any"
+                                        class="form-control" id="pompaIntakeBPress" required>
+                                    @error('form.pumpIntakeB.pressure')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -572,45 +578,47 @@
                         <div class="form-row">
                             <div class="col-12 font-weight-bold">Pompa C</div>
                             <div class="col-6 mb-3">
-                                <label for="pompaIntakeCAmpere">Ampere (A)</label>
-                                <input wire:model="form.pumpIntakeC.ampere" type="number" step="any"
-                                    class="form-control" id="pompaIntakeCAmpere" required>
-                                @error('form.pumpIntakeC.ampere')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaIntakeCFreq"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
-                                    (Hz)</label>
-                                <input wire:model="form.pumpIntakeC.frequency" type="number" step="any"
-                                    class="form-control" id="pompaIntakeCFreq" required>
-                                @error('form.pumpIntakeC.frequency')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaIntakeCPress"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
-                                    (Bar)</label>
-                                <input wire:model="form.pumpIntakeC.pressure" type="number" step="any"
-                                    class="form-control" id="pompaIntakeCPress" required>
-                                @error('form.pumpIntakeC.pressure')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
                                 <label for="pompaIntakeCStatus">Status</label>
-                                <select wire:model="form.pumpIntakeC.status" class="custom-select"
+                                <select wire:model.live="form.pumpIntakeC.status" class="custom-select"
                                     id="pompaIntakeCStatus" required>
-                                    <option value="normal">Normal</option>
                                     <option value="standby">Standby</option>
                                     <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
                                 </select>
                                 @error('form.pumpIntakeC.status')
                                     <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
+                            @if (data_get($this->form, 'pumpIntakeC.status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="pompaIntakeCAmpere">Ampere (A)</label>
+                                    <input wire:model="form.pumpIntakeC.ampere" type="number" step="any"
+                                        class="form-control" id="pompaIntakeCAmpere" required>
+                                    @error('form.pumpIntakeC.ampere')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaIntakeCFreq"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
+                                        (Hz)</label>
+                                    <input wire:model="form.pumpIntakeC.frequency" type="number" step="any"
+                                        class="form-control" id="pompaIntakeCFreq" required>
+                                    @error('form.pumpIntakeC.frequency')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaIntakeCPress"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
+                                        (Bar)</label>
+                                    <input wire:model="form.pumpIntakeC.pressure" type="number" step="any"
+                                        class="form-control" id="pompaIntakeCPress" required>
+                                    @error('form.pumpIntakeC.pressure')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -623,45 +631,47 @@
                         <div class="form-row">
                             <div class="col-12 font-weight-bold">Pompa A</div>
                             <div class="col-6 mb-3">
-                                <label for="pompaDistribusiAAmpere">Ampere (A)</label>
-                                <input wire:model="form.pumpDistriA.ampere" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiAAmpere" required>
-                                @error('form.pumpDistriA.ampere')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaDistribusiAFreq"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
-                                    (Hz)</label>
-                                <input wire:model="form.pumpDistriA.frequency" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiAFreq" required>
-                                @error('form.pumpDistriA.frequency')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaDistribusiAPress"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
-                                    (Bar)</label>
-                                <input wire:model="form.pumpDistriA.pressure" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiAPress" required>
-                                @error('form.pumpDistriA.pressure')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
                                 <label for="pompaDistribusiAStatus">Status</label>
-                                <select wire:model="form.pumpDistriA.status" class="custom-select"
+                                <select wire:model.live="form.pumpDistriA.status" class="custom-select"
                                     id="pompaDistribusiAStatus" required>
-                                    <option value="normal">Normal</option>
                                     <option value="standby">Standby</option>
                                     <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
                                 </select>
                                 @error('form.pumpDistriA.status')
                                     <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
+                            @if (data_get($this->form, 'pumpDistriA.status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiAAmpere">Ampere (A)</label>
+                                    <input wire:model="form.pumpDistriA.ampere" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiAAmpere" required>
+                                    @error('form.pumpDistriA.ampere')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiAFreq"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
+                                        (Hz)</label>
+                                    <input wire:model="form.pumpDistriA.frequency" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiAFreq" required>
+                                    @error('form.pumpDistriA.frequency')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiAPress"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
+                                        (Bar)</label>
+                                    <input wire:model="form.pumpDistriA.pressure" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiAPress" required>
+                                    @error('form.pumpDistriA.pressure')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -669,45 +679,48 @@
                         <div class="form-row">
                             <div class="col-12 font-weight-bold">Pompa B</div>
                             <div class="col-6 mb-3">
-                                <label for="pompaDistribusiBAmpere">Ampere (A)</label>
-                                <input wire:model="form.pumpDistriB.ampere" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiBAmpere" required>
-                                @error('form.pumpDistriB.ampere')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaDistribusiBFreq"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
-                                    (Hz)</label>
-                                <input wire:model="form.pumpDistriB.frequency" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiBFreq" required>
-                                @error('form.pumpDistrB.frequency')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaDistribusiBPress"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
-                                    (Bar)</label>
-                                <input wire:model="form.pumpDistriB.pressure" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiBPress" required>
-                                @error('form.pumpDistrB.pressure')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
                                 <label for="pompaDistribusiBStatus">Status</label>
-                                <select wire:model="form.pumpDistriB.status" class="custom-select"
+                                <select wire:model.live="form.pumpDistriB.status" class="custom-select"
                                     id="pompaDistribusiBStatus" required>
-                                    <option value="normal">Normal</option>
                                     <option value="standby">Standby</option>
                                     <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
                                 </select>
                                 @error('form.pumpDistrB.status')
                                     <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
+
+                            @if (data_get($this->form, 'pumpDistriB.status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiBAmpere">Ampere (A)</label>
+                                    <input wire:model="form.pumpDistriB.ampere" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiBAmpere" required>
+                                    @error('form.pumpDistriB.ampere')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiBFreq"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
+                                        (Hz)</label>
+                                    <input wire:model="form.pumpDistriB.frequency" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiBFreq" required>
+                                    @error('form.pumpDistrB.frequency')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiBPress"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
+                                        (Bar)</label>
+                                    <input wire:model="form.pumpDistriB.pressure" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiBPress" required>
+                                    @error('form.pumpDistrB.pressure')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -715,45 +728,48 @@
                         <div class="form-row">
                             <div class="col-12 font-weight-bold">Pompa C</div>
                             <div class="col-6 mb-3">
-                                <label for="pompaDistribusiCAmpere">Ampere (A)</label>
-                                <input wire:model="form.pumpDistriC.ampere" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiCAmpere" required>
-                                @error('form.pumpDistriC.ampere')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaDistribusiCFreq"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
-                                    (Hz)</label>
-                                <input wire:model="form.pumpDistriC.frequency" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiCFreq" required>
-                                @error('form.pumpDistriC.frequency')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaDistribusiCPress"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
-                                    (Bar)</label>
-                                <input wire:model="form.pumpDistriC.pressure" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiCPress" required>
-                                @error('form.pumpDistriC.pressure')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
                                 <label for="pompaDistribusiCStatus">Status</label>
                                 <select wire:model="form.pumpDistriC.status" class="custom-select"
                                     id="pompaDistribusiCStatus" required>
-                                    <option value="normal">Normal</option>
                                     <option value="standby">Standby</option>
                                     <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
                                 </select>
                                 @error('form.pumpDistriC.status')
                                     <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
+
+                            @if (data_get($this->form, 'pumpDistriC.status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiCAmpere">Ampere (A)</label>
+                                    <input wire:model="form.pumpDistriC.ampere" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiCAmpere" required>
+                                    @error('form.pumpDistriC.ampere')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiCFreq"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
+                                        (Hz)</label>
+                                    <input wire:model="form.pumpDistriC.frequency" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiCFreq" required>
+                                    @error('form.pumpDistriC.frequency')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiCPress"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
+                                        (Bar)</label>
+                                    <input wire:model="form.pumpDistriC.pressure" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiCPress" required>
+                                    @error('form.pumpDistriC.pressure')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -761,45 +777,47 @@
                         <div class="form-row">
                             <div class="col-12 font-weight-bold">Pompa D</div>
                             <div class="col-6 mb-3">
-                                <label for="pompaDistribusiDAmpere">Ampere (A)</label>
-                                <input wire:model="form.pumpDistriD.ampere" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiDAmpere" required>
-                                @error('form.pumpDistriD.ampere')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaDistribusiDFreq"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
-                                    (Hz)</label>
-                                <input wire:model="form.pumpDistriD.frequency" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiDFreq" required>
-                                @error('form.pumpDistriD.frequency')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label for="pompaDistribusiDPress"
-                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
-                                    (Bar)</label>
-                                <input wire:model="form.pumpDistriD.pressure" type="number" step="any"
-                                    class="form-control" id="pompaDistribusiDPress" required>
-                                @error('form.pumpDistriD.pressure')
-                                    <span class="error">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="col-6 mb-3">
                                 <label for="pompaDistribusiDStatus">Status</label>
                                 <select wire:model="form.pumpDistriD.status" class="custom-select"
                                     id="pompaDistribusiDStatus" required>
-                                    <option value="normal">Normal</option>
                                     <option value="standby">Standby</option>
                                     <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
                                 </select>
                                 @error('form.pumpDistriD.status')
                                     <span class="error">{{ $message }}</span>
                                 @enderror
                             </div>
+                            @if (data_get($this->form, 'pumpDistriD.status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiDAmpere">Ampere (A)</label>
+                                    <input wire:model="form.pumpDistriD.ampere" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiDAmpere" required>
+                                    @error('form.pumpDistriD.ampere')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiDFreq"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Frekuensi
+                                        (Hz)</label>
+                                    <input wire:model="form.pumpDistriD.frequency" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiDFreq" required>
+                                    @error('form.pumpDistriD.frequency')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label for="pompaDistribusiDPress"
+                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">Pressure
+                                        (Bar)</label>
+                                    <input wire:model="form.pumpDistriD.pressure" type="number" step="any"
+                                        class="form-control" id="pompaDistribusiDPress" required>
+                                    @error('form.pumpDistriD.pressure')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -927,8 +945,7 @@
                         <label for="barScreen">Bar Screen</label>
                         <select wire:model="form.unitOper.barscreen" class="custom-select" id="barScreen" required>
                             <option value="normal">Normal</option>
-                            <option value="standby">Standby</option>
-                            <option value="running">Running</option>
+                            <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.barscreen')
                             <span class="error">{{ $message }}</span>
@@ -939,8 +956,7 @@
                         <label for="airDrayer">Air Dryer</label>
                         <select wire:model="form.unitOper.air_drayer" class="custom-select" id="airDrayer" required>
                             <option value="normal">Normal</option>
-                            <option value="standby">Standby</option>
-                            <option value="running">Running</option>
+                            <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.air_drayer')
                             <span class="error">{{ $message }}</span>
@@ -952,8 +968,7 @@
                         <select wire:model="form.unitOper.finescreen_a" class="custom-select" id="fineScreenA"
                             required>
                             <option value="normal">Normal</option>
-                            <option value="standby">Standby</option>
-                            <option value="running">Running</option>
+                            <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.finescreen_a')
                             <span class="error">{{ $message }}</span>
@@ -965,9 +980,7 @@
                         <select wire:model="form.unitOper.finescreen_b" class="custom-select" id="fineScreenB"
                             required>
                             <option value="normal">Normal</option>
-                            <option value="standby">Standby</option>
-                            <option value="running">Running</option>
-                        </select>
+                            <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.finescreen_b')
                             <span class="error">{{ $message }}</span>
@@ -979,8 +992,7 @@
                         <select wire:model="form.unitOper.compressor_a" class="custom-select" id="compressorA"
                             required>
                             <option value="normal">Normal</option>
-                            <option value="standby">Standby</option>
-                            <option value="running">Running</option>
+                            <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.compressor_a')
                             <span class="error">{{ $message }}</span>
@@ -991,9 +1003,9 @@
                         <label for="compressorB">Compressor B</label>
                         <select wire:model="form.unitOper.compressor_b" class="custom-select" id="compressorB"
                             required>
-                            <option value="normal">Normal</option>
                             <option value="standby">Standby</option>
                             <option value="running">Running</option>
+                            <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.compressor_b')
                             <span class="error">{{ $message }}</span>
@@ -1064,50 +1076,178 @@
 
                 <div class="form-row">
                     <div class="col-12 font-weight-bold mb-2" style="font-size: 15px">Level Grafity Filtrasi</div>
-                    <div class="col-md-3 co mb-3">
-                        <label for="filtrasiA">A (m)</label>
-                        <input wire:model="form.wtp.gravity_filter_a" type="number" step="any"
-                            class="form-control" id="filtrasiA" required>
-                        @error('form.wtp.gravity_filter_a')
-                            <span class="error">{{ $message }}</span>
-                        @enderror
+                    <div class="col-md-6">
+                        <div class="form-row">
+                            <div class="col-12 font-weight-bold">Filtrasi A</div>
+                            <div class="col-6 mb-3">
+                                <label for="filtrasiAStatus">Status</label>
+                                <select wire:model.live="form.wtp.gravity_filter_a_status" class="custom-select"
+                                    id="filtrasiAStatus" required>
+                                    <option value="standby">Standby</option>
+                                    <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                                @error('form.wtp.gravity_filter_a_status')
+                                    <span class="error">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            @if (data_get($this->form, 'wtp.gravity_filter_a_status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="filtrasiA">(m)</label>
+                                    <input wire:model="form.wtp.gravity_filter_a" type="number" step="any"
+                                        class="form-control" id="filtrasiA" required>
+                                    @error('form.wtp.gravity_filter_a')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                    <div class="col-md-3 co mb-3">
-                        <label for="filtrasiB">B (m)</label>
-                        <input wire:model="form.wtp.gravity_filter_b" type="number" step="any"
-                            class="form-control" id="filtrasiB" required>
+
+                    <div class="col-md-6">
+                        <div class="form-row">
+                            <div class="col-12 font-weight-bold">Filtrasi B</div>
+                            <div class="col-6 mb-3">
+                                <label for="filtrasiAStatus">Status</label>
+                                <select wire:model.live="form.wtp.gravity_filter_b_status" class="custom-select"
+                                    id="filtrasiAStatus" required>
+                                    <option value="standby">Standby</option>
+                                    <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                                @error('form.wtp.gravity_filter_b_status')
+                                    <span class="error">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            @if (data_get($this->form, 'wtp.gravity_filter_b_status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="filtrasiA">(m)</label>
+                                    <input wire:model="form.wtp.gravity_filter_b" type="number" step="any"
+                                        class="form-control" id="filtrasiA" required>
+                                    @error('form.wtp.gravity_filter_b')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                    <div class="col-md-3 co mb-3">
-                        <label for="filtrasiC">C (m)</label>
-                        <input wire:model="form.wtp.gravity_filter_c" type="number" step="any"
-                            class="form-control" id="filtrasiC" required>
-                        @error('form.wtp.gravity_filter_c')
-                            <span class="error">{{ $message }}</span>
-                        @enderror
+
+                    <div class="col-md-6">
+                        <div class="form-row">
+                            <div class="col-12 font-weight-bold">Filtrasi C</div>
+                            <div class="col-6 mb-3">
+                                <label for="filtrasiAStatus">Status</label>
+                                <select wire:model.live="form.wtp.gravity_filter_c_status" class="custom-select"
+                                    id="filtrasiAStatus" required>
+                                    <option value="standby">Standby</option>
+                                    <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                                @error('form.wtp.gravity_filter_c_status')
+                                    <span class="error">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            @if (data_get($this->form, 'wtp.gravity_filter_c_status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="filtrasiA">(m)</label>
+                                    <input wire:model="form.wtp.gravity_filter_c" type="number" step="any"
+                                        class="form-control" id="filtrasiA" required>
+                                    @error('form.wtp.gravity_filter_c')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                    <div class="col-md-3 co mb-3">
-                        <label for="filtrasiD">D (m)</label>
-                        <input wire:model="form.wtp.gravity_filter_d" type="number" step="any"
-                            class="form-control" id="filtrasiD" required>
-                        @error('form.wtp.gravity_filter_d')
-                            <span class="error">{{ $message }}</span>
-                        @enderror
+
+                    <div class="col-md-6">
+                        <div class="form-row">
+                            <div class="col-12 font-weight-bold">Filtrasi D</div>
+                            <div class="col-6 mb-3">
+                                <label for="filtrasiAStatus">Status</label>
+                                <select wire:model.live="form.wtp.gravity_filter_d_status" class="custom-select"
+                                    id="filtrasiAStatus" required>
+                                    <option value="standby">Standby</option>
+                                    <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                                @error('form.wtp.gravity_filter_d_status')
+                                    <span class="error">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            @if (data_get($this->form, 'wtp.gravity_filter_d_status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="filtrasiA">(m)</label>
+                                    <input wire:model="form.wtp.gravity_filter_d" type="number" step="any"
+                                        class="form-control" id="filtrasiA" required>
+                                    @error('form.wtp.gravity_filter_d')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                    <div class="col-md-3 co mb-3">
-                        <label for="filtrasiE">E (m)</label>
-                        <input wire:model="form.wtp.gravity_filter_e" type="number" step="any"
-                            class="form-control" id="filtrasiE" required>
-                        @error('form.wtp.gravity_filter_e')
-                            <span class="error">{{ $message }}</span>
-                        @enderror
+
+                    <div class="col-md-6">
+                        <div class="form-row">
+                            <div class="col-12 font-weight-bold">Filtrasi E</div>
+                            <div class="col-6 mb-3">
+                                <label for="filtrasiAStatus">Status</label>
+                                <select wire:model.live="form.wtp.gravity_filter_e_status" class="custom-select"
+                                    id="filtrasiAStatus" required>
+                                    <option value="standby">Standby</option>
+                                    <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                                @error('form.wtp.gravity_filter_e_status')
+                                    <span class="error">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            @if (data_get($this->form, 'wtp.gravity_filter_e_status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="filtrasiA">(m)</label>
+                                    <input wire:model="form.wtp.gravity_filter_e" type="number" step="any"
+                                        class="form-control" id="filtrasiA" required>
+                                    @error('form.wtp.gravity_filter_e')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                    <div class="col-md-3 co mb-3">
-                        <label for="filtrasiF">F (m)</label>
-                        <input wire:model="form.wtp.gravity_filter_f" type="number" step="any"
-                            class="form-control" id="filtrasiF" required>
-                        @error('form.wtp.gravity_filter_e')
-                            <span class="error">{{ $message }}</span>
-                        @enderror
+
+                    <div class="col-md-6">
+                        <div class="form-row">
+                            <div class="col-12 font-weight-bold">Filtrasi F</div>
+                            <div class="col-6 mb-3">
+                                <label for="filtrasiAStatus">Status</label>
+                                <select wire:model.live="form.wtp.gravity_filter_f_status" class="custom-select"
+                                    id="filtrasiAStatus" required>
+                                    <option value="standby">Standby</option>
+                                    <option value="running">Running</option>
+                                    <option value="maintenance">Maintenance</option>
+                                </select>
+                                @error('form.wtp.gravity_filter_f_status')
+                                    <span class="error">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            @if (data_get($this->form, 'wtp.gravity_filter_f_status') == 'running')
+                                <div class="col-6 mb-3">
+                                    <label for="filtrasiA">(m)</label>
+                                    <input wire:model="form.wtp.gravity_filter_f" type="number" step="any"
+                                        class="form-control" id="filtrasiA" required>
+                                    @error('form.wtp.gravity_filter_f')
+                                        <span class="error">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
