@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Component;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Validate;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -75,6 +76,8 @@ class MonitoringIndex extends Component
     #[Validate('string')]
     public string $downloadType = 'pdf';
 
+    public string $date = '';
+
 
     /* -------------------------------------------------------------------------- */
     /*                                Logic Methods                               */
@@ -123,13 +126,16 @@ class MonitoringIndex extends Component
     public function mount()
     {
         $this->isAdmin = Auth::user()->role == 'admin';
+        $this->date = Carbon::now()->format('Y-m-d');
     }
 
 
     public function render()
     {
         return view('livewire.monitoring-index', [
-            'shifts' => Shift::orderBy('shift', 'asc')->orderBy('date', 'asc')->orderBy('start_time', 'asc')->paginate(15)
+            'shifts' => Shift::when($this->date, function ($query) {
+                return $query->where('date', $this->date);
+            })->orderBy('shift', 'asc')->orderBy('date', 'asc')->orderBy('start_time', 'asc')->paginate(15)
         ])->layout('layouts.app');
     }
 }

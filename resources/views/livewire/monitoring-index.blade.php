@@ -1,12 +1,28 @@
 <div>
     <!-- Page Heading -->
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-2">
         <h1 class="h3 mb-0 text-gray-800">Monitoring</h1>
-        <div>
-            <button wire:click="$js.modalDownloadShow" class=" btn btn-sm btn-info shadow-sm"><i
-                    class="fas fa-download fa-sm text-white"></i>
-                <span class="d-none d-sm-inline-block ml-2">Download Report</span>
-            </button>
+
+        <div class="d-flex align-items-center mb-2">
+            <div class="d-sm-flex d-none align-items-center justify-content-end mr-2">
+                <div class="mb-1 mt-md-0">
+                    <input placeholder="Select Date" wire:model.live="date" type="date" class="form-control"
+                        id="date" required>
+                </div>
+            </div>
+            <div>
+                <button wire:click="$js.modalDownloadShow" class=" btn btn-sm btn-info shadow-sm"><i
+                        class="fas fa-download fa-sm text-white"></i>
+                    <span class="d-none d-sm-inline-block ml-2">Download Report</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-sm-none mb-2 align-items-center justify-content-end">
+        <div class="mb-1 mt-md-0">
+            <input placeholder="Select Date" wire:model.live="date" type="date" class="form-control" id="date"
+                required>
         </div>
     </div>
 
