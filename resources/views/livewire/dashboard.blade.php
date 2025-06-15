@@ -303,7 +303,7 @@
                         pointHoverRadius: 3,
                         pointHitRadius: 10,
                         pointBorderWidth: 2,
-                        data: reservoirAchart,
+                        data: reservoirBchart,
                     }],
                 },
                 options: {
@@ -391,6 +391,7 @@
             if (myLineChart7) myLineChart7.destroy();
             var ctx = document.getElementById("airbakuDanTotalFlow");
 
+
             myLineChart7 = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -421,6 +422,15 @@
                 },
                 options: {
                     maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' L/s';
+                                }
+                            }
+                        }
+                    }
                 },
             });
 
@@ -473,6 +483,8 @@
             // TSedimentasi Dan AirBaku
             if (myLineChart9) myLineChart9.destroy();
             var ctx = document.getElementById("TSedimentasidanAirBaku");
+            var turbidityAirbakuChart = shiftChartData.map(data1 => data1.water_qualities.find(val => val
+                .type == 'air baku')).map(val => val.turbidity)
 
             myLineChart9 = new Chart(ctx, {
                 type: 'line',
@@ -490,7 +502,7 @@
                             data: turbiditySedimentasiChart,
                         },
                         {
-                            label: "Debit Air",
+                            label: "Air Baku",
                             lineTension: 0.3,
                             borderColor: "rgba(78, 115, 223, 1)",
                             pointBackgroundColor: "rgba(78, 115, 223, 1)",
@@ -498,12 +510,21 @@
                             pointHoverRadius: 3,
                             pointHitRadius: 10,
                             pointBorderWidth: 2,
-                            data: dataDebitAirBaku,
+                            data: turbidityAirbakuChart,
                         }
                     ],
                 },
                 options: {
                     maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' NTU';
+                                }
+                            }
+                        }
+                    }
                 },
             });
 
@@ -535,12 +556,21 @@
                             pointHoverRadius: 3,
                             pointHitRadius: 10,
                             pointBorderWidth: 2,
-                            data: reservoirAchart,
+                            data: reservoirBchart,
                         }
                     ],
                 },
                 options: {
                     maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' m';
+                                }
+                            }
+                        }
+                    }
                 },
             });
         });

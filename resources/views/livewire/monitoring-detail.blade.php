@@ -307,8 +307,10 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->barscreen == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->barscreen == 'running')
+                                    <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
@@ -317,8 +319,10 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->air_drayer == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->air_drayer == 'running')
+                                    <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
@@ -327,8 +331,10 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->finescreen_a == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->finescreen_a == 'running')
+                                    <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
@@ -337,8 +343,10 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->finescreen_b == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->finescreen_b == 'running')
+                                    <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
@@ -347,8 +355,10 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->compressor_a == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->compressor_a == 'running')
+                                    <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
@@ -357,8 +367,10 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->compressor_b == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->compressor_b == 'running')
+                                    <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>

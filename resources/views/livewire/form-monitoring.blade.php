@@ -945,6 +945,7 @@
                         <label for="barScreen">Bar Screen</label>
                         <select wire:model="form.unitOper.barscreen" class="custom-select" id="barScreen" required>
                             <option value="normal">Normal</option>
+                            <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.barscreen')
@@ -956,6 +957,7 @@
                         <label for="airDrayer">Air Dryer</label>
                         <select wire:model="form.unitOper.air_drayer" class="custom-select" id="airDrayer" required>
                             <option value="normal">Normal</option>
+                            <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.air_drayer')
@@ -968,6 +970,7 @@
                         <select wire:model="form.unitOper.finescreen_a" class="custom-select" id="fineScreenA"
                             required>
                             <option value="normal">Normal</option>
+                            <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.finescreen_a')
@@ -980,6 +983,7 @@
                         <select wire:model="form.unitOper.finescreen_b" class="custom-select" id="fineScreenB"
                             required>
                             <option value="normal">Normal</option>
+                            <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.finescreen_b')
@@ -992,6 +996,7 @@
                         <select wire:model="form.unitOper.compressor_a" class="custom-select" id="compressorA"
                             required>
                             <option value="normal">Normal</option>
+                            <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.compressor_a')
@@ -1004,6 +1009,7 @@
                         <select wire:model="form.unitOper.compressor_b" class="custom-select" id="compressorB"
                             required>
                             <option value="normal">Normal</option>
+                            <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.compressor_b')

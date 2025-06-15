@@ -17,7 +17,7 @@ new class extends Component {
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/dashboard" wire:navigated>
-        <div class="mb-3 text-center">
+        <div class="my-3 text-center">
             <img id="logo" style="object-fit: cover" src="{{ asset('assets/sidebar-open.png') }}">
         </div>
     </a>
