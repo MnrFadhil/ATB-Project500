@@ -58,12 +58,16 @@
                                 <div class="col-7 col-md-8">: {{ $waterQuality->ph }}</div>
                             </div>
                             <div class="row">
+                                <div class="col-5 col-md-4">Turbidity</div>
+                                <div class="col-7 col-md-8">: {{ $waterQuality->turbidity }} NTU</div>
+                            </div>
+                            <div class="row">
                                 <div class="col-5 col-md-4">Warna</div>
-                                <div class="col-7 col-md-8">: {{ $waterQuality->color }} NTU</div>
+                                <div class="col-7 col-md-8">: {{ $waterQuality->color }} PCU</div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">TDS</div>
-                                <div class="col-7 col-md-8">: {{ $waterQuality->tds }} PCU</div>
+                                <div class="col-7 col-md-8">: {{ $waterQuality->tds }}</div>
                             </div>
 
                             @if ($waterQuality->type == 'reservoir')
@@ -301,72 +305,60 @@
                         <div class="row">
                             <div class="col-5 col-md-4">Bar Screen</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->barscreen == 'running')
-                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
-                                @elseif ($shifts->unitOperation->barscreen == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
+                                @if ($shifts->unitOperation->barscreen == 'normal')
+                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Air Drayer</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->air_drayer == 'running')
-                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
-                                @elseif ($shifts->unitOperation->air_drayer == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
+                                @if ($shifts->unitOperation->air_drayer == 'normal')
+                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Finescreen A</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->finescreen_a == 'running')
-                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
-                                @elseif ($shifts->unitOperation->finescreen_a == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
+                                @if ($shifts->unitOperation->finescreen_a == 'normal')
+                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Finescreen B</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->finescreen_b == 'running')
-                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
-                                @elseif ($shifts->unitOperation->finescreen_b == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
+                                @if ($shifts->unitOperation->finescreen_b == 'normal')
+                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Compressor A</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->compressor_a == 'running')
-                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
-                                @elseif ($shifts->unitOperation->compressor_a == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
+                                @if ($shifts->unitOperation->compressor_a == 'normal')
+                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Compressor B</div>
                             <div class="col-7 col-md-8 d-flex">:
-                                @if ($shifts->unitOperation->compressor_b == 'running')
-                                    <h6> <span class="badge badge-success ml-1">Running</span></h6>
-                                @elseif ($shifts->unitOperation->compressor_b == 'standby')
-                                    <h6> <span class="badge badge-info ml-1">Standby</span></h6>
+                                @if ($shifts->unitOperation->compressor_b == 'normal')
+                                    <h6> <span class="badge badge-success ml-1">Normal</span></h6>
                                 @else
-                                    <h6> <span class="badge badge-warning ml-1">Maintenance</span></h6>
+                                    <h6> <span class="badge badge-info ml-1">Maintenance</span></h6>
                                 @endif
                             </div>
                         </div>

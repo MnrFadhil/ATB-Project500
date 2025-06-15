@@ -5,6 +5,7 @@ use Livewire\Volt\Component;
 
 new class extends Component {
     public $isAdmin;
+    public $sidebarOpen = false;
 
     public function mount()
     {
@@ -12,14 +13,13 @@ new class extends Component {
     }
 }; ?>
 
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
+<ul style="background-color: #00664A;" class="navbar-nav sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/dashboard" wire:navigated>
-        <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-laugh-wink"></i>
+        <div class="mb-3 text-center">
+            <img id="logo" style="object-fit: cover" src="{{ asset('assets/sidebar-open.png') }}">
         </div>
-        <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
     </a>
 
     <!-- Divider -->
@@ -59,10 +59,33 @@ new class extends Component {
     <!-- Divider -->
     <hr class="sidebar-divider">
 
-
-
     <!-- Sidebar Toggler (Sidebar) -->
     <div class="text-center d-none d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
     </div>
 </ul>
+
+@script
+    <script>
+        sidebarCloseImage = "{{ asset('assets/sidebar-close.svg') }}";
+        sidebarOpenImage = "{{ asset('assets/sidebar-open.png') }}";
+
+        let isOpen = !$(".sidebar").hasClass("toggled")
+
+        if (isOpen) {
+            $("#logo").attr("src", sidebarOpenImage);
+        } else {
+            $("#logo").attr("src", sidebarCloseImage);
+        }
+
+        $("#sidebarToggle, #sidebarToggleTop").on("click", function(e) {
+            let isOpen = !$(".sidebar").hasClass("toggled")
+
+            if (isOpen) {
+                $("#logo").attr("src", sidebarOpenImage);
+            } else {
+                $("#logo").attr("src", sidebarCloseImage);
+            }
+        });
+    </script>
+@endscript

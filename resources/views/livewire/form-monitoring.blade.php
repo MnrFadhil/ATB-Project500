@@ -1003,8 +1003,7 @@
                         <label for="compressorB">Compressor B</label>
                         <select wire:model="form.unitOper.compressor_b" class="custom-select" id="compressorB"
                             required>
-                            <option value="standby">Standby</option>
-                            <option value="running">Running</option>
+                            <option value="normal">Normal</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
                         @error('form.unitOper.compressor_b')

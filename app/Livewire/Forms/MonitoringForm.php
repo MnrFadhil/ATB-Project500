@@ -135,12 +135,12 @@ class MonitoringForm extends Form
         'tank_level'    => 0
     ];
     public $unitOper = [
-        'barscreen'        => 'standby',
-        'finescreen_a'     => 'standby',
-        'finescreen_b'     => 'standby',
-        'compressor_a'     => 'standby',
-        'compressor_b'     => 'standby',
-        'air_drayer'       => 'standby',
+        'barscreen'        => 'normal',
+        'finescreen_a'     => 'normal',
+        'finescreen_b'     => 'normal',
+        'compressor_a'     => 'normal',
+        'compressor_b'     => 'normal',
+        'air_drayer'       => 'normal',
     ];
 
     public $wtp = [

@@ -17,12 +17,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gradient-primary">
+<body
+    style="background-image: url('{{ asset('assets/bg-login.svg') }}');  background-size: cover; background-position: center; background-repeat: no-repeat;">
     <div class="container">
         <!-- Outer Row -->
         <div class="row justify-content-center align-items-center" style="height: 100vh;">
             <div class="col-xl-6 col-lg-12 col-md-9">
-                <div class="card o-hidden border-0 shadow-lg my-5">
+                <div style="border: solid 5px #00664A; border-radius: 10px; background-color: white">
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">

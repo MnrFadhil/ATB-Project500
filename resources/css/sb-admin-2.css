@@ -3835,8 +3835,8 @@ input[type="button"].btn-block {
 
 .custom-control-input:checked ~ .custom-control-label::before {
     color: #fff;
-    border-color: #4e73df;
-    background-color: #4e73df;
+    border-color: #00664a;
+    background-color: #00664a;
 }
 
 .custom-control-input:focus ~ .custom-control-label::before {

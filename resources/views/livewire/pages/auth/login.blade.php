@@ -26,9 +26,9 @@ new #[Layout('layouts.guest')] class extends Component {
 <div>
     <!-- Session Status -->
     <form wire:submit="login">
-        <div class="p-5">
-            <div class="text-center">
-                <h1 class="h4 text-gray-900 mb-4 font-weight-bold">LOGIN</h1>
+        <div class="pb-5 px-5 pt-3">
+            <div class="mb-3 text-center">
+                <img style="width: 150px; object-fit: cover" src="{{ asset('assets/adaro-login-logo.svg') }}">
             </div>
 
             <div class="form-group">
@@ -47,7 +47,8 @@ new #[Layout('layouts.guest')] class extends Component {
                         Me</label>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary btn-user btn-block">
+            <button type="submit" class="btn btn-user btn-block"
+                style="background-color: #00664A; color:white; font-weight: bold">
                 Login
             </button>
             @error('form.username')
