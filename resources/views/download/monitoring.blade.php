@@ -150,7 +150,7 @@
     <table>
         <thead style="background-color: rgb(193, 193, 193)">
             <tr>
-                <th scope="col" colspan="2" class="text-center">Flow Meter Distribusi</th>
+                <th scope="col" colspan="2" class="text-center">Flow Air Baku</th>
                 <th scope="col" colspan="2" class="text-center">Pressure Static Mixer</th>
                 <th scope="col" colspan="2" class="text-center">
                     <div>Flow Meter Distribusi</div>
@@ -361,7 +361,7 @@
                         <td>{{ $pumpProccess['ampere'] }}</td>
                         <td>{{ $pumpProccess['frequency'] }}</td>
                         <td>{{ $pumpProccess['pressure'] }}</td>
-                        <td>{{ $pumpProccess['status'] }}</td>
+                        <td style="text-transform: capitalize;">{{ $pumpProccess['status'] }}</td>
                     @endforeach
                 </tr>
             @endforeach
@@ -427,18 +427,18 @@
                             <td>{{ $pumpChemical['tank_level'] }}</td>
                         @endif
                         @if ($pumpChemical['type'] !== 'pac')
-                            <td>{{ $pumpChemical['frequency'] }}</td>
+                            <td>{{ $pumpChemical['flow_rate'] }}</td>
                             <td>{{ $pumpChemical['dosage'] }}</td>
                             <td>{{ $pumpChemical['stirring'] }}</td>
                             <td>{{ $pumpChemical['tank_level'] }}</td>
                         @endif
                     @endforeach
-                    <td>{{ $shift['unit_operation']['air_drayer'] }}</td>
-                    <td>{{ $shift['unit_operation']['barscreen'] }}</td>
-                    <td>{{ $shift['unit_operation']['finescreen_a'] }}</td>
-                    <td>{{ $shift['unit_operation']['finescreen_b'] }}</td>
-                    <td>{{ $shift['unit_operation']['compressor_a'] }}</td>
-                    <td>{{ $shift['unit_operation']['compressor_b'] }}</td>
+                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['air_drayer'] }}</td>
+                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['barscreen'] }}</td>
+                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['finescreen_a'] }}</td>
+                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['finescreen_b'] }}</td>
+                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['compressor_a'] }}</td>
+                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['compressor_b'] }}</td>
                 </tr>
             @endforeach
         </tbody>

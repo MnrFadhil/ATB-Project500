@@ -1,7 +1,7 @@
 <table>
     <thead style="background-color: rgb(193, 193, 193)">
         <tr>
-            <th scope="col" colspan="2" class="text-center">Flow Meter Distribusi</th>
+            <th scope="col" colspan="2" class="text-center">Flow Air Baku</th>
             <th scope="col" colspan="2" class="text-center">Pressure Static Mixer</th>
             <th scope="col" colspan="2" class="text-center">
                 <div>Flow Meter Distribusi</div>

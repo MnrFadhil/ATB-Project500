@@ -8,7 +8,7 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold ">Details</h6>
+            <h6 class="m-0 font-weight-bold" style="color: #00664A">Details</h6>
 
             <i class="fas fa-fw fa-clone" style="cursor:pointer" wire:click="$js.copyClipboard" aria-hidden="true"></i>
         </div>
@@ -567,7 +567,9 @@
             pressure: '',
         })
 
-
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
 
         function transformText(dataArray, tempData) {
             dataArray.forEach((data, i) => {
@@ -644,21 +646,21 @@ Jam : ${shiftDetail.start_time.slice(0,5)} - ${shiftDetail.end_time.slice(0,5)} 
 - Air Baku :
 pH : ${airBaku.ph}
 Turbidity : ${airBaku.turbidity} NTU
-Warna :  ${airBaku.turbidity} PCU
+Warna :  ${airBaku.color} PCU
 TDS : ${airBaku.tds}
 
 - Sedimentation :
 pH : ${sedimentasi.ph}
 Turbidity : ${sedimentasi.turbidity} NTU
-Warna :  ${sedimentasi.turbidity} PCU
+Warna :  ${sedimentasi.color} PCU
 TDS : ${sedimentasi.tds}
 
 - Reservoir :
 pH : ${reservoir.ph}
 Turbidity : ${reservoir.turbidity} NTU
-Warna :  ${reservoir.turbidity} PCU
+Warna :  ${reservoir.color} PCU
 TDS : ${reservoir.tds}
-Free Chlor : ${reservoir.free_chlor} mg/L
+Free Chlorine : ${reservoir.free_chlor == 0?'-':reservoir.free_chlor} mg/L
 ORP : ${reservoir.orp} mV
 
 - Flowmeter Air Baku
@@ -704,22 +706,22 @@ Pressure : ${distri.pressure== ''?'-':distri.pressure}
 Frekuensi : ${pumpPac.frequency} Hz
 Dosis : ${pumpPac.dosage} ppm
 Konsentrasi :  ${pumpPac.concentration} %
-Pengadukan : ${pumpPac.stirring} Kg
+Pengadukan : ${pumpPac.stirring == 0?'-':pumpPac.stirring} Kg
 Level Tangki : ${pumpPac.tank_level} cm
 
 - Pompa Dosing Clorine/Kaporit :
-Frekuensi : ${pumpPac.flow_rate} l/h
-Dosis : ${pumpPac.dosage} ppm
-Konsentrasi :  ${pumpPac.concentration} %
-Pengadukan : ${pumpPac.stirring} Kg
-Level Tangki : ${pumpPac.tank_level} cm
+Frekuensi : ${pumpChlorine.flow_rate} l/h
+Dosis : ${pumpChlorine.dosage} ppm
+Konsentrasi :  ${pumpChlorine.concentration} %
+Pengadukan : ${pumpChlorine.stirring==0?'-':pumpChlorine.stirring} Kg
+Level Tangki : ${pumpChlorine.tank_level} cm
 
-- Barscreen : ${shiftDetail.unit_operation.barscreen}
-- Fine Screen A : ${shiftDetail.unit_operation.finescreen_a}
-- Fine Screen B : ${shiftDetail.unit_operation.finescreen_b}
-- Compressor A : ${shiftDetail.unit_operation.compressor_a}
-- Compressor B : ${shiftDetail.unit_operation.compressor_b}
-- Air dryer : ${shiftDetail.unit_operation.air_drayer}
+- Barscreen : ${capitalizeFirstLetter(shiftDetail.unit_operation.barscreen)}
+- Fine Screen A : ${capitalizeFirstLetter(shiftDetail.unit_operation.finescreen_a)}
+- Fine Screen B : ${capitalizeFirstLetter(shiftDetail.unit_operation.finescreen_b)}
+- Compressor A : ${capitalizeFirstLetter(shiftDetail.unit_operation.compressor_a)}
+- Compressor B : ${capitalizeFirstLetter(shiftDetail.unit_operation.compressor_b)}
+- Air dryer : ${capitalizeFirstLetter(shiftDetail.unit_operation.air_drayer)}
 
 WTP
 - Flocullation A: ${shiftDetail.wtps.flokulator_a}

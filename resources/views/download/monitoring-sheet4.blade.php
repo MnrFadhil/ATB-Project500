@@ -43,7 +43,7 @@
                     <td>{{ $pumpProccess['ampere'] }}</td>
                     <td>{{ $pumpProccess['frequency'] }}</td>
                     <td>{{ $pumpProccess['pressure'] }}</td>
-                    <td>{{ $pumpProccess['status'] }}</td>
+                    <td style="text-transform: capitalize;">{{ $pumpProccess['status'] }}</td>
                 @endforeach
             </tr>
         @endforeach

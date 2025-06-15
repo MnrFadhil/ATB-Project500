@@ -12,7 +12,7 @@
         <div class="col-md-6 mb-4">
             <div class="card shadow">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Debit Air Baku</h6>
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Debit Air Baku</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">
@@ -26,7 +26,8 @@
         <div class="col-md-6 mb-4">
             <div class="card shadow">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Total Flow Distribusi (Yos Sudarso & Veteran)</h6>
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Total Flow Distribusi (Yos Sudarso & Veteran)
+                    </h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">
@@ -44,7 +45,7 @@
             <div class="card shadow">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Reservoir A</h6>
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Reservoir A</h6>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
@@ -60,7 +61,7 @@
             <div class="card shadow">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Reservoir B</h6>
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Reservoir B</h6>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
@@ -78,7 +79,7 @@
             <div class="card shadow">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Turbidity Sedimentasi</h6>
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Turbidity Sedimentasi</h6>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
@@ -94,7 +95,7 @@
             <div class="card shadow">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Turbidity Reservoir</h6>
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Turbidity Reservoir</h6>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
@@ -112,7 +113,7 @@
             <div class="card shadow ">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Debit Air Baku & Total Flow Distribusi</h6>
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Debit Air Baku & Total Flow Distribusi</h6>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
@@ -128,7 +129,8 @@
             <div class="card shadow ">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Turbidity Reservoir & Turbidity Sedimentasi</h6>
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Turbidity Reservoir & Turbidity Sedimentasi
+                    </h6>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
@@ -146,7 +148,7 @@
             <div class="card shadow ">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Turbidity Sedimentasi & Air Baku</h6>
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Turbidity Sedimentasi & Air Baku</h6>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
@@ -162,7 +164,7 @@
             <div class="card shadow ">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Reservoir A & Reservoir B</h6>
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Reservoir A & Reservoir B</h6>
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
@@ -192,10 +194,12 @@
         $wire.on('post-created', (data) => {
             if (data.shiftChartData) shiftChartData = data.shiftChartData
 
+            console.log(shiftChartData)
+
 
             // Debit air baku chart
             if (myLineChart1) myLineChart1.destroy();
-            var labelsChart = shiftChartData.map(data => data.start_time)
+            var labelsChart = shiftChartData.map(data => data.end_time)
             var ctx = document.getElementById("airBakuChart");
             var dataDebitAirBaku = shiftChartData.map(data1 => data1.flow_meters.filter(data2 => data2.location ==
                     null)[0]
