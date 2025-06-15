@@ -33,9 +33,20 @@ new class extends Component {
                     src="img/undraw_profile.svg"> --}}
             </a>
             <!-- Dropdown - User Information -->
-            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <button wire:click="logout()" class="dropdown-item">
-                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+            <div style="background-color: #00664A;" class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="userDropdown">
+                <button wire:click="logout()"
+                    style="color: white;  display: block;
+                            width: 100%;
+                            padding: 0.25rem 1.5rem;
+                            clear: both;
+                            font-weight: 400;
+                            color: white;
+                            text-align: inherit;
+                            white-space: nowrap;
+                            background-color: transparent;
+                            border: 0;">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 "></i>
                     Logout
                 </button>
             </div>

@@ -23,7 +23,7 @@
         <!-- Outer Row -->
         <div class="row justify-content-center align-items-center" style="height: 100vh;">
             <div class="col-xl-6 col-lg-12 col-md-9">
-                <div style="border: solid 5px #00664A; border-radius: 10px; background-color: white">
+                <div style="border: solid 5px #00664A; border-radius: 10px; background:rgba(255,255,255, 0.7);">
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">

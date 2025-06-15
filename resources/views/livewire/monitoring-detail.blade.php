@@ -307,6 +307,8 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->barscreen == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->barscreen == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
                                 @elseif ($shifts->unitOperation->barscreen == 'running')
                                     <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
@@ -319,6 +321,8 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->air_drayer == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->air_drayer == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
                                 @elseif ($shifts->unitOperation->air_drayer == 'running')
                                     <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
@@ -331,6 +335,8 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->finescreen_a == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->finescreen_a == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
                                 @elseif ($shifts->unitOperation->finescreen_a == 'running')
                                     <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
@@ -343,6 +349,8 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->finescreen_b == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->finescreen_b == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
                                 @elseif ($shifts->unitOperation->finescreen_b == 'running')
                                     <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
@@ -355,6 +363,8 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->compressor_a == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->compressor_a == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
                                 @elseif ($shifts->unitOperation->compressor_a == 'running')
                                     <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
@@ -367,6 +377,8 @@
                             <div class="col-7 col-md-8 d-flex">:
                                 @if ($shifts->unitOperation->compressor_b == 'normal')
                                     <h6> <span class="badge badge-success ml-1">Normal</span></h6>
+                                @elseif ($shifts->unitOperation->compressor_b == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
                                 @elseif ($shifts->unitOperation->compressor_b == 'running')
                                     <h6> <span class="badge badge-info ml-1">Running</span></h6>
                                 @else
@@ -446,38 +458,62 @@
                     <div class="mb-3">
                         <div class="row">
                             <div class="col-5 col-md-4">A</div>
-                            <div class="col-7 col-md-8">:
-                                {{ $shifts->wtps->gravity_filter_a }} m
+                            <div class="col-7 col-md-8 d-flex">:
+                                @if ($shifts->wtps->gravity_filter_a_status == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
+                                @else
+                                    {{ $shifts->wtps->gravity_filter_a }} m
+                                @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">B</div>
-                            <div class="col-7 col-md-8">:
-                                {{ $shifts->wtps->gravity_filter_b }} m
+                            <div class="col-7 col-md-8 d-flex">:
+                                @if ($shifts->wtps->gravity_filter_b_status == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
+                                @else
+                                    {{ $shifts->wtps->gravity_filter_b }} m
+                                @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">C</div>
-                            <div class="col-7 col-md-8">:
-                                {{ $shifts->wtps->gravity_filter_c }} m
+                            <div class="col-7 col-md-8 d-flex">:
+                                @if ($shifts->wtps->gravity_filter_c_status == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
+                                @else
+                                    {{ $shifts->wtps->gravity_filter_c }} m
+                                @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">D</div>
-                            <div class="col-7 col-md-8">:
-                                {{ $shifts->wtps->gravity_filter_d }} m
+                            <div class="col-7 col-md-8 d-flex">:
+                                @if ($shifts->wtps->gravity_filter_d_status == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
+                                @else
+                                    {{ $shifts->wtps->gravity_filter_d }} m
+                                @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">E</div>
-                            <div class="col-7 col-md-8">:
-                                {{ $shifts->wtps->gravity_filter_e }} m
+                            <div class="col-7 col-md-8 d-flex">:
+                                @if ($shifts->wtps->gravity_filter_e_status == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
+                                @else
+                                    {{ $shifts->wtps->gravity_filter_e }} m
+                                @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">F</div>
-                            <div class="col-7 col-md-8">:
-                                {{ $shifts->wtps->gravity_filter_f }} m
+                            <div class="col-7 col-md-8 d-flex">:
+                                @if ($shifts->wtps->gravity_filter_f_status == 'standby')
+                                    <h6> <span class="badge badge-primary ml-1">Standby</span></h6>
+                                @else
+                                    {{ $shifts->wtps->gravity_filter_f }} m
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -692,12 +728,12 @@ WTP
 - Clarifier B : ${shiftDetail.wtps.clarifier_b}
 - Filtrasi : ${shiftDetail.wtps.filtration}
 - Level Grafity Filtrasi :
-A: ${shiftDetail.wtps.gravity_filter_a} m menuju overflow
-B: ${shiftDetail.wtps.gravity_filter_b} m menuju overflow
-C: ${shiftDetail.wtps.gravity_filter_c} m menuju overflow
-D: ${shiftDetail.wtps.gravity_filter_d} m menuju overflow
-E: ${shiftDetail.wtps.gravity_filter_e} m menuju overflow
-F: ${shiftDetail.wtps.gravity_filter_f} m menuju overflow
+A: ${shiftDetail.wtps.gravity_filter_a_status == 'standby' ? `Standby`:`${shiftDetail.wtps.gravity_filter_a} m menuju overflow` }
+B: ${shiftDetail.wtps.gravity_filter_b_status == 'standby' ? `Standby`:`${shiftDetail.wtps.gravity_filter_b} m menuju overflow` }
+C: ${shiftDetail.wtps.gravity_filter_c_status == 'standby' ? `Standby`:`${shiftDetail.wtps.gravity_filter_c} m menuju overflow` }
+D: ${shiftDetail.wtps.gravity_filter_d_status == 'standby' ? `Standby`:`${shiftDetail.wtps.gravity_filter_d} m menuju overflow` }
+E: ${shiftDetail.wtps.gravity_filter_e_status == 'standby' ? `Standby`:`${shiftDetail.wtps.gravity_filter_e} m menuju overflow` }
+F: ${shiftDetail.wtps.gravity_filter_f_status == 'standby' ? `Standby`:`${shiftDetail.wtps.gravity_filter_f} m menuju overflow` }
 
 Catatan : ${shiftDetail?.notes ?shiftDetail?.notes : '-'}`;
 

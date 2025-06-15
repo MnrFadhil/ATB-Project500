@@ -729,7 +729,7 @@
                             <div class="col-12 font-weight-bold">Pompa C</div>
                             <div class="col-6 mb-3">
                                 <label for="pompaDistribusiCStatus">Status</label>
-                                <select wire:model="form.pumpDistriC.status" class="custom-select"
+                                <select wire:model.live="form.pumpDistriC.status" class="custom-select"
                                     id="pompaDistribusiCStatus" required>
                                     <option value="standby">Standby</option>
                                     <option value="running">Running</option>
@@ -778,7 +778,7 @@
                             <div class="col-12 font-weight-bold">Pompa D</div>
                             <div class="col-6 mb-3">
                                 <label for="pompaDistribusiDStatus">Status</label>
-                                <select wire:model="form.pumpDistriD.status" class="custom-select"
+                                <select wire:model.live="form.pumpDistriD.status" class="custom-select"
                                     id="pompaDistribusiDStatus" required>
                                     <option value="standby">Standby</option>
                                     <option value="running">Running</option>
@@ -945,6 +945,7 @@
                         <label for="barScreen">Bar Screen</label>
                         <select wire:model="form.unitOper.barscreen" class="custom-select" id="barScreen" required>
                             <option value="normal">Normal</option>
+                            <option value="standby">Standby</option>
                             <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
@@ -957,6 +958,7 @@
                         <label for="airDrayer">Air Dryer</label>
                         <select wire:model="form.unitOper.air_drayer" class="custom-select" id="airDrayer" required>
                             <option value="normal">Normal</option>
+                            <option value="standby">Standby</option>
                             <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
@@ -970,6 +972,7 @@
                         <select wire:model="form.unitOper.finescreen_a" class="custom-select" id="fineScreenA"
                             required>
                             <option value="normal">Normal</option>
+                            <option value="standby">Standby</option>
                             <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
@@ -983,6 +986,7 @@
                         <select wire:model="form.unitOper.finescreen_b" class="custom-select" id="fineScreenB"
                             required>
                             <option value="normal">Normal</option>
+                            <option value="standby">Standby</option>
                             <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
@@ -996,6 +1000,7 @@
                         <select wire:model="form.unitOper.compressor_a" class="custom-select" id="compressorA"
                             required>
                             <option value="normal">Normal</option>
+                            <option value="standby">Standby</option>
                             <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
@@ -1009,6 +1014,7 @@
                         <select wire:model="form.unitOper.compressor_b" class="custom-select" id="compressorB"
                             required>
                             <option value="normal">Normal</option>
+                            <option value="standby">Standby</option>
                             <option value="running">Running</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
