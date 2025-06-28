@@ -205,7 +205,7 @@ class FormMonitoring extends Component
             $shift->pumpChemicals->where('type', 'pac')->first()->update($form['pumpPac']);
             $shift->pumpChemicals->where('type', 'chlorine/kaporit')->first()->update($form['pumpChlor']);
 
-            $shift->unitOperation->first()->update($form['unitOper']);
+            $shift->unitOperation->update($form['unitOper']);
 
             $shift->wtps->first()->update($form['wtp']);
 

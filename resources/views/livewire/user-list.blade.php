@@ -45,7 +45,7 @@
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->username }}</td>
                                 <td class="text-capitalize">{{ $user->role }}</td>
-                                <td>{{ $user->address }}</td>
+                                <td>{{ $user->address ? $user->address : '-' }}</td>
                                 <td>
                                     <div class="d-flex">
                                         <button wire:click="detailUser({{ $user }})" type="button"

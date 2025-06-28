@@ -58,9 +58,17 @@
                     <tbody>
                         @forelse ($shifts as $shift)
                             <tr>
-                                <td>{{ substr($shift->start_time, 0, 5) }} - {{ substr($shift->end_time, 0, 5) }}</td>
-                                <td>{{ strtoupper($shift->shift) }}</td>
-                                <td>{{ $shift->notes ? $shift->notes : '-' }}</td>
+                                <td>
+                                    <div style="width: 100px">
+                                        {{ substr($shift->start_time, 0, 5) }} - {{ substr($shift->end_time, 0, 5) }}</td>
+                                    </div>
+                                <td>
+                                    <div style="width: 100px">
+                                        {{ strtoupper($shift->shift) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div  style="white-space: pre-line; width: 150px">{{ $shift->notes ? $shift->notes : '-' }}</td></div>
                                 <td>
                                     <div class="d-flex">
                                         <a href="/monitoring/{{ $shift->id }}" wire:navigated type="button"

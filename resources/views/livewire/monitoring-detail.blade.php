@@ -41,7 +41,8 @@
 
                     <div class="row">
                         <div class="col-5 col-md-4">Notes</div>
-                        <div class="col-7 col-md-8">: {{ $shifts->notes ? $shifts->notes : '-' }}</div>
+                        <div class="col-7 col-md-8 d-flex" style="white-space: pre-line">: <div>{{ $shifts->notes ? $shifts->notes : '-' }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
