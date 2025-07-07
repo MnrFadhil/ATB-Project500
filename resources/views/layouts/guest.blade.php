@@ -21,17 +21,22 @@
 
 <body
     style="background-image: url('{{ asset('assets/bg-login.svg') }}');  background-size: cover; background-position: center; background-repeat: no-repeat;">
-    <div class="container">
-        <!-- Outer Row -->
-        <div class="row justify-content-center align-items-center" style="height: 100vh;">
-            <div class="col-xl-6 col-lg-12 col-md-9">
-                <div style="border: solid 5px #00664A; border-radius: 10px; background:rgba(255,255,255, 0.7);">
-                    <div class="card-body p-0">
-                        <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            {{-- <div class="col-lg-6 d-none d-lg-block bg-login-image"></div> --}}
-                            <div class="col-12">
-                                {{ $slot }}
+    <div style="height: 100vh">
+        <div class="position-absolute" style="width: 100%; background:rgba(255,255,255, 0.7);">
+            <div class="logo-unhar-style p-3 md-mx-auto" style="width: fit-content">
+                <img src="{{ asset('assets/logo-unhar.png') }}" style="width: auto; height: 50px; object-fit: cover;" />
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row justify-content-center align-items-center" style="height: 100vh;">
+                <div class="col-xl-6  col-md-9">
+                    <div style="border: solid 5px #00664A; border-radius: 10px; background:rgba(255,255,255, 0.7);">
+                        <div class="card-body p-0">
+                            <div class="row">
+                                <div class="col-12">
+                                    {{ $slot }}
+                                </div>
                             </div>
                         </div>
                     </div>

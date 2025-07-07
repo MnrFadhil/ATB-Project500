@@ -278,7 +278,7 @@ class FormMonitoring extends Component
     public function render()
     {
         return view('livewire.form-monitoring', [
-            'users' => User::all()
+            'users' => User::all()->where('role', 'user')
         ])->layout('layouts.app');
     }
 }
