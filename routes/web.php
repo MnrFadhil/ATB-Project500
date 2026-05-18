@@ -20,6 +20,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('monitoring/{id}', MonitoringDetail::class)->name('monitoring-detail');
     Route::get('monitoring/{id}/edit', FormMonitoring::class)->name('monitoring-form')->middleware(['admin']);
     Route::get('wma-evaluation', \App\Livewire\WmaEvaluation::class)->name('wma-evaluation');
+    Route::get('fuzzy-evaluation', \App\Livewire\FuzzyEvaluation::class)->name('fuzzy-evaluation');
     Route::get('wma-dosis', \App\Livewire\WmaDosisPrediksi::class)->name('wma-dosis');
     Route::get('/monitoring-create', HideFormMonitoring::class)->middleware(['admin']);
     // Route::get('/monitoring/{id}/edit', HideFormMonitoring::class);

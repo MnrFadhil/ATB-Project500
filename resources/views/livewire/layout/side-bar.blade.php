@@ -55,13 +55,6 @@ new class extends Component {
             <span>Monitoring</span>
         </a>
     </li>
-    <li class="nav-item {{ request()->routeIs('wma-evaluation') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('wma-evaluation') }}">
-            <i class="fas fa-chart-line"></i>
-            <span>Evaluasi WMA</span>
-        </a>
-    </li>
-
     <li class="nav-item {{ request()->routeIs('wma-dosis') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('wma-dosis') }}">
             <i class="fas fa-flask"></i>
@@ -72,8 +65,26 @@ new class extends Component {
     <!-- Divider -->
     <hr class="sidebar-divider">
 
+    <div class="sidebar-heading mt-4">
+        Evaluasi
+    </div>
+
+    <li class="nav-item {{ request()->routeIs('wma-evaluation') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('wma-evaluation') }}">
+            <i class="fas fa-chart-line"></i>
+            <span>Evaluasi WMA</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ request()->routeIs('fuzzy-evaluation') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('fuzzy-evaluation') }}">
+            <i class="fas fa-flask"></i>
+            <span>Evaluasi Fuzzy</span>
+        </a>
+    </li>
+
     <!-- Sidebar Toggler (Sidebar) -->
-    <div class="text-center d-none d-md-inline">
+    <div class="text-center d-none d-md-inline mt-4">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
     </div>
 </ul>

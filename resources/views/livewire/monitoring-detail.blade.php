@@ -907,7 +907,7 @@
                                 </div>
                             @endif
                         @else
-                            <p class="text-muted">Data tidak tersedia</p>
+                            <p><span class="badge badge-info">Standby</span></p>
                         @endif
                     </div>
                 </div>
@@ -951,7 +951,7 @@
                                 </div>
                             @endif
                         @else
-                            <p class="text-muted">Data tidak tersedia</p>
+                            <p><span class="badge badge-info">Standby</span></p>
                         @endif
                     </div>
                 </div>
@@ -1009,7 +1009,7 @@
                                 </div>
                             @endif
                         @else
-                            <p class="text-muted">Data tidak tersedia</p>
+                            <p><span class="badge badge-info">Standby</span></p>
                         @endif
                     </div>
                 </div>
@@ -1053,7 +1053,7 @@
                                 </div>
                             @endif
                         @else
-                            <p class="text-muted">Data tidak tersedia</p>
+                            <p><span class="badge badge-info">Standby</span></p>
                         @endif
                     </div>
                 </div>
@@ -1111,7 +1111,7 @@
                                 </div>
                             @endif
                         @else
-                            <p class="text-muted">Data tidak tersedia</p>
+                            <p><span class="badge badge-info">Standby</span></p>
                         @endif
                     </div>
                 </div>
@@ -1155,7 +1155,7 @@
                                 </div>
                             @endif
                         @else
-                            <p class="text-muted">Data tidak tersedia</p>
+                            <p><span class="badge badge-info">Standby</span></p>
                         @endif
                     </div>
                 </div>
@@ -1213,7 +1213,7 @@
                                 </div>
                             @endif
                         @else
-                            <p class="text-muted">Data tidak tersedia</p>
+                            <p><span class="badge badge-info">Standby</span></p>
                         @endif
                     </div>
                 </div>
@@ -1257,7 +1257,7 @@
                                 </div>
                             @endif
                         @else
-                            <p class="text-muted">Data tidak tersedia</p>
+                            <p><span class="badge badge-info">Standby</span></p>
                         @endif
                     </div>
                 </div>

@@ -448,9 +448,13 @@ class MonitoringDetail extends Component
         }
 
         // Hitung Fuzzy Mamdani — selalu berjalan, independen dari WMA
-        $pacChemical      = $shift->pumpChemicals()->where('type', 'pac')->first();
-        $chlorineChemical = $shift->pumpChemicals()->where('type', 'chlorine/kaporit')->first();
-        $sodaAshChemical  = $shift->pumpChemicals()->where('type', 'soda ash')->first();
+        // Prioritaskan pompa yang statusnya 'running', fallback ke first()
+        $pacChemical      = $shift->pumpChemicals()->where('type', 'pac')->where('status', 'running')->first()
+                         ?? $shift->pumpChemicals()->where('type', 'pac')->first();
+        $chlorineChemical = $shift->pumpChemicals()->where('type', 'chlorine/kaporit')->where('status', 'running')->first()
+                         ?? $shift->pumpChemicals()->where('type', 'chlorine/kaporit')->first();
+        $sodaAshChemical  = $shift->pumpChemicals()->where('type', 'soda ash')->where('status', 'running')->first()
+                         ?? $shift->pumpChemicals()->where('type', 'soda ash')->first();
 
         $sdsRecommendations = [
             'pac'     => $currentSed ? $this->fuzzyPAC($currentSed->turbidity, $pacChemical?->dosage ?? 10.0)              : null,
