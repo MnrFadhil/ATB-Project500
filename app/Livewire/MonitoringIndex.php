@@ -90,7 +90,7 @@ class MonitoringIndex extends Component
 
     public function deleteShift()
     {
-        $isSuccess = Shift::findOrFail($this->shiftDetail['id'])->delete();
+        $isSuccess = Shift::findOrFail($this->shiftDetail['id'])->forceDelete();
         if ($isSuccess) Session::flash('success', 'Success Delete Shift');
         else Session::flash('eror', 'Eror Delete Shift');
 
@@ -135,7 +135,7 @@ class MonitoringIndex extends Component
         return view('livewire.monitoring-index', [
             'shifts' => Shift::when($this->date, function ($query) {
                 return $query->where('date', $this->date);
-            })->orderBy('shift', 'asc')->orderBy('date', 'asc')->orderBy('start_time', 'asc')->paginate(15)
+            })->orderBy('end_time', 'desc')->paginate(15)
         ])->layout('layouts.app');
     }
 }

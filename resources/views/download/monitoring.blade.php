@@ -257,68 +257,6 @@
     <table>
         <thead style="background-color: rgb(193, 193, 193)">
             <tr>
-                <th scope="col" colspan="5" class="text-center">Water Treatment Plant</th>
-                <th scope="col" colspan="6" class="text-center">Level Grafity Filtrasi</th>
-            </tr>
-
-            <tr>
-                {{-- Water Treament Plant --}}
-                <th>Flocullation A</th>
-                <th>Flocullation B</th>
-                <th>Clarifier A</th>
-                <th>Clarifier B</th>
-                <th>Filtrasi</th>
-
-                {{-- Level Grafity Filtrasi --}}
-                <th>A</th>
-                <th>B</th>
-                <th>C</th>
-                <th>D</th>
-                <th>E</th>
-                <th>F</th>
-            </tr>
-
-            <tr>
-                {{-- Water Treament Plant --}}
-                <th>-</th>
-                <th>-</th>
-                <th>-</th>
-                <th>-</th>
-                <th>-</th>
-
-                {{-- Level Grafity Filtrasi --}}
-                <th>m</th>
-                <th>m</th>
-                <th>m</th>
-                <th>m</th>
-                <th>m</th>
-                <th>m</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($shifts as $shift)
-                <tr>
-                    <td style="text-transform: capitalize;">{{ $shift['wtps']['flokulator_a'] }}</td>
-                    <td style="text-transform: capitalize;">{{ $shift['wtps']['flokulator_b'] }}</td>
-                    <td style="text-transform: capitalize;">{{ $shift['wtps']['clarifier_a'] }}</td>
-                    <td style="text-transform: capitalize;">{{ $shift['wtps']['clarifier_b'] }}</td>
-                    <td style="text-transform: capitalize;">{{ $shift['wtps']['filtration'] }}</td>
-                    <td>{{ $shift['wtps']['gravity_filter_a'] }}</td>
-                    <td>{{ $shift['wtps']['gravity_filter_b'] }}</td>
-                    <td>{{ $shift['wtps']['gravity_filter_c'] }}</td>
-                    <td>{{ $shift['wtps']['gravity_filter_d'] }}</td>
-                    <td>{{ $shift['wtps']['gravity_filter_e'] }}</td>
-                    <td>{{ $shift['wtps']['gravity_filter_f'] }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="page-break"></div>
-
-    <table>
-        <thead style="background-color: rgb(193, 193, 193)">
-            <tr>
                 <th scope="col" colspan="12" class="text-center">Pump Intake</th>
                 <th scope="col" colspan="16" class="text-center">Pump Distribusi</th>
             </tr>
@@ -373,76 +311,103 @@
     <table>
         <thead style="background-color: rgb(193, 193, 193)">
             <tr>
-                <th scope="col" colspan="4" class="text-center">Pump Dosing PAC</th>
-                <th scope="col" colspan="10" class="text-center">Pump Dosing Clorine/Kaporit</th>
+                <th scope="col" colspan="8" class="text-center">Pump Dosing PAC</th>
+                <th scope="col" colspan="8" class="text-center">Pump Dosing Chlorine/Kaporit</th>
             </tr>
             <tr>
-                {{-- Pump PAC --}}
-                <th>Frekuensi</th>
-                <th>Dosis</th>
-                <th>Pengadukan</th>
-                <th>Level Tangki</th>
-
-                {{-- Clorine/Kaporit --}}
-                <th>Flow Rate</th>
-                <th>Dosis</th>
-                <th>Pengadukan</th>
-                <th>Level Tangki</th>
-                <th>Air Drayer</th>
-                <th>Bar Screen</th>
-                <th>Finescreen A</th>
-                <th>Finescreen B</th>
-                <th>Compressor A</th>
-                <th>Compressor B</th>
+                <th colspan="4" class="text-center">Pompa A</th>
+                <th colspan="4" class="text-center">Pompa B</th>
+                <th colspan="4" class="text-center">Pompa A</th>
+                <th colspan="4" class="text-center">Pompa B</th>
             </tr>
-
             <tr>
-                {{-- Pump PAC --}}
-                <th>Hz</th>
-                <th>ppm</th>
-                <th>Kg</th>
-                <th>cm</th>
-
-                {{-- Pump PAC --}}
-                <th>l/h</th>
-                <th>ppm</th>
-                <th>Kg</th>
-                <th>cm</th>
-                <th>-</th>
-                <th>-</th>
-                <th>-</th>
-                <th>-</th>
-                <th>-</th>
-                <th>-</th>
+                <th>Frekuensi</th><th>Dosis</th><th>Pengadukan</th><th>Level Tangki</th>
+                <th>Frekuensi</th><th>Dosis</th><th>Pengadukan</th><th>Level Tangki</th>
+                <th>Flow Rate</th><th>Dosis</th><th>Pengadukan</th><th>Level Tangki</th>
+                <th>Flow Rate</th><th>Dosis</th><th>Pengadukan</th><th>Level Tangki</th>
+            </tr>
+            <tr>
+                <th>Hz</th><th>ppm</th><th>Kg</th><th>cm</th>
+                <th>Hz</th><th>ppm</th><th>Kg</th><th>cm</th>
+                <th>l/h</th><th>ppm</th><th>Kg</th><th>cm</th>
+                <th>l/h</th><th>ppm</th><th>Kg</th><th>cm</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($shifts as $shift)
                 <tr>
-                    @foreach ($shift['pump_chemicals'] as $pumpChemical)
-                        @if ($pumpChemical['type'] == 'pac')
-                            <td>{{ $pumpChemical['frequency'] }}</td>
-                            <td>{{ $pumpChemical['dosage'] }}</td>
-                            <td>{{ $pumpChemical['stirring'] }}</td>
-                            <td>{{ $pumpChemical['tank_level'] }}</td>
-                        @endif
-                        @if ($pumpChemical['type'] !== 'pac')
-                            <td>{{ $pumpChemical['flow_rate'] }}</td>
-                            <td>{{ $pumpChemical['dosage'] }}</td>
-                            <td>{{ $pumpChemical['stirring'] }}</td>
-                            <td>{{ $pumpChemical['tank_level'] }}</td>
-                        @endif
+                    @php
+                        $grouped = collect($shift['pump_chemicals'])->groupBy(function($p) {
+                            return $p['type'] . '|' . $p['pump_unit'];
+                        });
+                    @endphp
+                    @foreach ([['pac','A'],['pac','B']] as [$type,$unit])
+                        @php $pump = $grouped->get("$type|$unit")?->first(); @endphp
+                        <td>{{ $pump['frequency'] ?? '-' }}</td>
+                        <td>{{ $pump['dosage'] ?? '-' }}</td>
+                        <td>{{ $pump['stirring'] ?? '-' }}</td>
+                        <td>{{ $pump['tank_level'] ?? '-' }}</td>
                     @endforeach
-                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['air_drayer'] }}</td>
-                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['barscreen'] }}</td>
-                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['finescreen_a'] }}</td>
-                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['finescreen_b'] }}</td>
-                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['compressor_a'] }}</td>
-                    <td style="text-transform: capitalize;">{{ $shift['unit_operation']['compressor_b'] }}</td>
+                    @foreach ([['chlorine/kaporit','A'],['chlorine/kaporit','B']] as [$type,$unit])
+                        @php $pump = $grouped->get("$type|$unit")?->first(); @endphp
+                        <td>{{ $pump['flow_rate'] ?? '-' }}</td>
+                        <td>{{ $pump['dosage'] ?? '-' }}</td>
+                        <td>{{ $pump['stirring'] ?? '-' }}</td>
+                        <td>{{ $pump['tank_level'] ?? '-' }}</td>
+                    @endforeach
                 </tr>
             @endforeach
         </tbody>
     </table>
+
+    <div class="page-break"></div>
+
+    <table>
+        <thead style="background-color: rgb(193, 193, 193)">
+            <tr>
+                <th scope="col" colspan="8" class="text-center">Pump Dosing Soda Ash</th>
+                <th scope="col" colspan="8" class="text-center">Pump Dosing Polymer</th>
+            </tr>
+            <tr>
+                <th colspan="4" class="text-center">Pompa A</th>
+                <th colspan="4" class="text-center">Pompa B</th>
+                <th colspan="4" class="text-center">Pompa A</th>
+                <th colspan="4" class="text-center">Pompa B</th>
+            </tr>
+            <tr>
+                <th>Flow Rate</th><th>Dosis</th><th>Pengadukan</th><th>Level Tangki</th>
+                <th>Flow Rate</th><th>Dosis</th><th>Pengadukan</th><th>Level Tangki</th>
+                <th>Flow Rate</th><th>Dosis</th><th>Pengadukan</th><th>Level Tangki</th>
+                <th>Flow Rate</th><th>Dosis</th><th>Pengadukan</th><th>Level Tangki</th>
+            </tr>
+            <tr>
+                <th>l/h</th><th>ppm</th><th>Kg</th><th>cm</th>
+                <th>l/h</th><th>ppm</th><th>Kg</th><th>cm</th>
+                <th>l/h</th><th>ppm</th><th>Kg</th><th>cm</th>
+                <th>l/h</th><th>ppm</th><th>Kg</th><th>cm</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($shifts as $shift)
+                <tr>
+                    @php
+                        $grouped = collect($shift['pump_chemicals'])->groupBy(function($p) {
+                            return $p['type'] . '|' . $p['pump_unit'];
+                        });
+                    @endphp
+                    @foreach ([['soda ash','A'],['soda ash','B'],['polymer','A'],['polymer','B']] as [$type,$unit])
+                        @php $pump = $grouped->get("$type|$unit")?->first(); @endphp
+                        <td>{{ $pump['flow_rate'] ?? '-' }}</td>
+                        <td>{{ $pump['dosage'] ?? '-' }}</td>
+                        <td>{{ $pump['stirring'] ?? '-' }}</td>
+                        <td>{{ $pump['tank_level'] ?? '-' }}</td>
+                    @endforeach
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+
 </body>
 
 </html>

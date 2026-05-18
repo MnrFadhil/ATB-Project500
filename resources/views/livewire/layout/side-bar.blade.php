@@ -55,6 +55,19 @@ new class extends Component {
             <span>Monitoring</span>
         </a>
     </li>
+    <li class="nav-item {{ request()->routeIs('wma-evaluation') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('wma-evaluation') }}">
+            <i class="fas fa-chart-line"></i>
+            <span>Evaluasi WMA</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ request()->routeIs('wma-dosis') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('wma-dosis') }}">
+            <i class="fas fa-flask"></i>
+            <span>Prediksi Dosis WMA</span>
+        </a>
+    </li>
 
     <!-- Divider -->
     <hr class="sidebar-divider">

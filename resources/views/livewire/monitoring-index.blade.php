@@ -36,7 +36,7 @@
             </div>
             <div>
                 @if (!$isAdmin)
-                    <a href="/monitoring/create" wire:navigated class="btn btn-sm btn-primary shadow-sm"><i
+                    <a href="/monitoring-create" wire:navigated class="btn btn-sm btn-primary shadow-sm"><i
                             class="fas fa-add fa-sm text-white"></i>
                         <span class="d-none d-sm-inline-block">Add Record</span>
                     </a>
@@ -68,7 +68,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div  style="white-space: pre-line; width: 150px">{{ $shift->notes ? $shift->notes : '-' }}</td></div>
+                                    <div  style="white-space: pre-line;">{{ $shift->notes ? $shift->notes : '-' }}</td></div>
                                 <td>
                                     <div class="d-flex">
                                         <a href="/monitoring/{{ $shift->id }}" wire:navigated type="button"

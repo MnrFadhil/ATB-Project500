@@ -119,19 +119,95 @@ class MonitoringForm extends Form
         'status'       => 'standby'
     ];
 
-    public $pumpPac = [
+    // ========== POMPA PAC A & B ==========
+    public $pumpPacA = [
+        'type'          => 'pac',
+        'pump_unit'     => 'A',
+        'status'        => 'standby',
         'frequency'     => '',
         'dosage'        => '',
         'concentration' => '',
-        'stirring'      => '',
+        'stirring'      => 0,
         'tank_level'    => 0
     ];
 
-    public $pumpChlor = [
+    public $pumpPacB = [
+        'type'          => 'pac',
+        'pump_unit'     => 'B',
+        'status'        => 'standby',
+        'frequency'     => '',
+        'dosage'        => '',
+        'concentration' => '',
+        'stirring'      => 0,
+        'tank_level'    => 0
+    ];
+
+    // ========== POMPA CHLORINE A & B ==========
+    public $pumpChlorA = [
+        'type'          => 'chlorine/kaporit',
+        'pump_unit'     => 'A',
+        'status'        => 'standby',
         'flow_rate'     => '',
         'dosage'        => '',
         'concentration' => '',
-        'stirring'      => '',
+        'stirring'      => 0,
+        'tank_level'    => 0
+    ];
+
+    public $pumpChlorB = [
+        'type'          => 'chlorine/kaporit',
+        'pump_unit'     => 'B',
+        'status'        => 'standby',
+        'flow_rate'     => '',
+        'dosage'        => '',
+        'concentration' => '',
+        'stirring'      => 0,
+        'tank_level'    => 0
+    ];
+
+    // ========== POMPA SODA ASH A & B ==========
+    public $pumpSodaA = [
+        'type'          => 'soda ash',
+        'pump_unit'     => 'A',
+        'status'        => 'standby',
+        'flow_rate'     => '',
+        'dosage'        => '',
+        'concentration' => '',
+        'stirring'      => 0,
+        'tank_level'    => 0
+    ];
+
+    public $pumpSodaB = [
+        'type'          => 'soda ash',
+        'pump_unit'     => 'B',
+        'status'        => 'standby',
+        'flow_rate'     => '',
+        'dosage'        => '',
+        'concentration' => '',
+        'stirring'      => 0,
+        'tank_level'    => 0
+    ];
+
+    // ========== POMPA POLYMER A & B ==========
+    public $pumpPolymerA = [
+        'type'          => 'polymer',
+        'pump_unit'     => 'A',
+        'status'        => 'standby',
+        'flow_rate'     => '',
+        'dosage'        => '',
+        'concentration' => '',
+        'stirring'      => 0,
+        'tank_level'    => 0
+    ];
+
+    public $pumpPolymerB = [
+        'type'          => 'polymer',
+        'pump_unit'     => 'B',
+        'status'        => 'standby',
+        'flow_rate'     => '',
+        'dosage'        => '',
+        'concentration' => '',
+        'stirring'      => 0,
         'tank_level'    => 0
     ];
     public $unitOper = [
@@ -261,19 +337,69 @@ class MonitoringForm extends Form
         'pumpDistriD.pressure'  => 'Pump Distribusi D Pressure',
         'pumpDistriD.status'    => 'Pump Distribusi D Status',
 
-        // pumpPac
-        'pumpPac.frequency'     => 'Pump PAC Frequency',
-        'pumpPac.dosage'        => 'Pump PAC Dosage',
-        'pumpPac.concentration' => 'Pump PAC Concentration',
-        'pumpPac.stirring'      => 'Pump PAC Stirring',
-        'pumpPac.tank_level'    => 'Pump PAC Tank Level',
+        // pumpPac A
+        'pumpPacA.status'        => 'Pump PAC A Status',
+        'pumpPacA.frequency'     => 'Pump PAC A Frequency',
+        'pumpPacA.dosage'        => 'Pump PAC A Dosage',
+        'pumpPacA.concentration' => 'Pump PAC A Concentration',
+        'pumpPacA.stirring'      => 'Pump PAC A Stirring',
+        'pumpPacA.tank_level'    => 'Pump PAC A Tank Level',
 
-        // pumpChlor
-        'pumpChlor.flow_rate'    => 'Pump Chlorine Flow Rate',
-        'pumpChlor.dosage'       => 'Pump Chlorine Dosage',
-        'pumpChlor.concentration' => 'Pump Chlorine Concentration',
-        'pumpChlor.stirring'     => 'Pump Chlorine Stirring',
-        'pumpChlor.tank_level'   => 'Pump Chlorine Tank Level',
+        // pumpPac B
+        'pumpPacB.status'        => 'Pump PAC B Status',
+        'pumpPacB.frequency'     => 'Pump PAC B Frequency',
+        'pumpPacB.dosage'        => 'Pump PAC B Dosage',
+        'pumpPacB.concentration' => 'Pump PAC B Concentration',
+        'pumpPacB.stirring'      => 'Pump PAC B Stirring',
+        'pumpPacB.tank_level'    => 'Pump PAC B Tank Level',
+
+        // pumpChlor A
+        'pumpChlorA.status'        => 'Pump Chlorine A Status',
+        'pumpChlorA.flow_rate'     => 'Pump Chlorine A Flow Rate',
+        'pumpChlorA.dosage'        => 'Pump Chlorine A Dosage',
+        'pumpChlorA.concentration' => 'Pump Chlorine A Concentration',
+        'pumpChlorA.stirring'      => 'Pump Chlorine A Stirring',
+        'pumpChlorA.tank_level'    => 'Pump Chlorine A Tank Level',
+
+        // pumpChlor B
+        'pumpChlorB.status'        => 'Pump Chlorine B Status',
+        'pumpChlorB.flow_rate'     => 'Pump Chlorine B Flow Rate',
+        'pumpChlorB.dosage'        => 'Pump Chlorine B Dosage',
+        'pumpChlorB.concentration' => 'Pump Chlorine B Concentration',
+        'pumpChlorB.stirring'      => 'Pump Chlorine B Stirring',
+        'pumpChlorB.tank_level'    => 'Pump Chlorine B Tank Level',
+
+        // pumpSoda A
+        'pumpSodaA.status'        => 'Pump Soda Ash A Status',
+        'pumpSodaA.flow_rate'     => 'Pump Soda Ash A Flow Rate',
+        'pumpSodaA.dosage'        => 'Pump Soda Ash A Dosage',
+        'pumpSodaA.concentration' => 'Pump Soda Ash A Concentration',
+        'pumpSodaA.stirring'      => 'Pump Soda Ash A Stirring',
+        'pumpSodaA.tank_level'    => 'Pump Soda Ash A Tank Level',
+
+        // pumpSoda B
+        'pumpSodaB.status'        => 'Pump Soda Ash B Status',
+        'pumpSodaB.flow_rate'     => 'Pump Soda Ash B Flow Rate',
+        'pumpSodaB.dosage'        => 'Pump Soda Ash B Dosage',
+        'pumpSodaB.concentration' => 'Pump Soda Ash B Concentration',
+        'pumpSodaB.stirring'      => 'Pump Soda Ash B Stirring',
+        'pumpSodaB.tank_level'    => 'Pump Soda Ash B Tank Level',
+
+        // pumpPolymer A
+        'pumpPolymerA.status'        => 'Pump Polymer A Status',
+        'pumpPolymerA.flow_rate'     => 'Pump Polymer A Flow Rate',
+        'pumpPolymerA.dosage'        => 'Pump Polymer A Dosage',
+        'pumpPolymerA.concentration' => 'Pump Polymer A Concentration',
+        'pumpPolymerA.stirring'      => 'Pump Polymer A Stirring',
+        'pumpPolymerA.tank_level'    => 'Pump Polymer A Tank Level',
+
+        // pumpPolymer B
+        'pumpPolymerB.status'        => 'Pump Polymer B Status',
+        'pumpPolymerB.flow_rate'     => 'Pump Polymer B Flow Rate',
+        'pumpPolymerB.dosage'        => 'Pump Polymer B Dosage',
+        'pumpPolymerB.concentration' => 'Pump Polymer B Concentration',
+        'pumpPolymerB.stirring'      => 'Pump Polymer B Stirring',
+        'pumpPolymerB.tank_level'    => 'Pump Polymer B Tank Level',
 
         // unitOper
         'unitOper.barscreen'    => 'Barscreen',
@@ -405,19 +531,69 @@ class MonitoringForm extends Form
             'pumpDistriD.pressure'  => 'required_if:pumpDistriD.status,running|numeric',
             'pumpDistriD.status'    => 'required|string',
 
-            // pumpPac
-            'pumpPac.frequency'     => 'required|numeric',
-            'pumpPac.dosage'        => 'required|numeric',
-            'pumpPac.concentration' => 'required|numeric',
-            'pumpPac.stirring'      => 'required|numeric',
-            'pumpPac.tank_level'    => 'required|numeric',
+            // pumpPac A
+            'pumpPacA.status'        => 'required|string',
+            'pumpPacA.frequency'     => 'required_if:pumpPacA.status,running|numeric',
+            'pumpPacA.dosage'        => 'required_if:pumpPacA.status,running|numeric',
+            'pumpPacA.concentration' => 'required_if:pumpPacA.status,running|numeric',
+            'pumpPacA.stirring'      => 'required_if:pumpPacA.status,running|numeric',
+            'pumpPacA.tank_level'    => 'required_if:pumpPacA.status,running|numeric',
 
-            // pumpChlor
-            'pumpChlor.flow_rate'     => 'required|numeric',
-            'pumpChlor.dosage'        => 'required|numeric',
-            'pumpChlor.concentration' => 'required|numeric',
-            'pumpChlor.stirring'      => 'required|numeric',
-            'pumpChlor.tank_level'    => 'required|numeric',
+            // pumpPac B
+            'pumpPacB.status'        => 'required|string',
+            'pumpPacB.frequency'     => 'required_if:pumpPacB.status,running|numeric',
+            'pumpPacB.dosage'        => 'required_if:pumpPacB.status,running|numeric',
+            'pumpPacB.concentration' => 'required_if:pumpPacB.status,running|numeric',
+            'pumpPacB.stirring'      => 'required_if:pumpPacB.status,running|numeric',
+            'pumpPacB.tank_level'    => 'required_if:pumpPacB.status,running|numeric',
+
+            // pumpChlor A
+            'pumpChlorA.status'        => 'required|string',
+            'pumpChlorA.flow_rate'     => 'required_if:pumpChlorA.status,running|numeric',
+            'pumpChlorA.dosage'        => 'required_if:pumpChlorA.status,running|numeric',
+            'pumpChlorA.concentration' => 'required_if:pumpChlorA.status,running|numeric',
+            'pumpChlorA.stirring'      => 'required_if:pumpChlorA.status,running|numeric',
+            'pumpChlorA.tank_level'    => 'required_if:pumpChlorA.status,running|numeric',
+
+            // pumpChlor B
+            'pumpChlorB.status'        => 'required|string',
+            'pumpChlorB.flow_rate'     => 'required_if:pumpChlorB.status,running|numeric',
+            'pumpChlorB.dosage'        => 'required_if:pumpChlorB.status,running|numeric',
+            'pumpChlorB.concentration' => 'required_if:pumpChlorB.status,running|numeric',
+            'pumpChlorB.stirring'      => 'required_if:pumpChlorB.status,running|numeric',
+            'pumpChlorB.tank_level'    => 'required_if:pumpChlorB.status,running|numeric',
+
+            // pumpSoda A
+            'pumpSodaA.status'        => 'required|string',
+            'pumpSodaA.flow_rate'     => 'required_if:pumpSodaA.status,running|numeric',
+            'pumpSodaA.dosage'        => 'required_if:pumpSodaA.status,running|numeric',
+            'pumpSodaA.concentration' => 'required_if:pumpSodaA.status,running|numeric',
+            'pumpSodaA.stirring'      => 'required_if:pumpSodaA.status,running|numeric',
+            'pumpSodaA.tank_level'    => 'required_if:pumpSodaA.status,running|numeric',
+
+            // pumpSoda B
+            'pumpSodaB.status'        => 'required|string',
+            'pumpSodaB.flow_rate'     => 'required_if:pumpSodaB.status,running|numeric',
+            'pumpSodaB.dosage'        => 'required_if:pumpSodaB.status,running|numeric',
+            'pumpSodaB.concentration' => 'required_if:pumpSodaB.status,running|numeric',
+            'pumpSodaB.stirring'      => 'required_if:pumpSodaB.status,running|numeric',
+            'pumpSodaB.tank_level'    => 'required_if:pumpSodaB.status,running|numeric',
+
+            // pumpPolymer A
+            'pumpPolymerA.status'        => 'required|string',
+            'pumpPolymerA.flow_rate'     => 'required_if:pumpPolymerA.status,running|numeric',
+            'pumpPolymerA.dosage'        => 'required_if:pumpPolymerA.status,running|numeric',
+            'pumpPolymerA.concentration' => 'required_if:pumpPolymerA.status,running|numeric',
+            'pumpPolymerA.stirring'      => 'required_if:pumpPolymerA.status,running|numeric',
+            'pumpPolymerA.tank_level'    => 'required_if:pumpPolymerA.status,running|numeric',
+
+            // pumpPolymer B
+            'pumpPolymerB.status'        => 'required|string',
+            'pumpPolymerB.flow_rate'     => 'required_if:pumpPolymerB.status,running|numeric',
+            'pumpPolymerB.dosage'        => 'required_if:pumpPolymerB.status,running|numeric',
+            'pumpPolymerB.concentration' => 'required_if:pumpPolymerB.status,running|numeric',
+            'pumpPolymerB.stirring'      => 'required_if:pumpPolymerB.status,running|numeric',
+            'pumpPolymerB.tank_level'    => 'required_if:pumpPolymerB.status,running|numeric',
 
             // unitOper
             'unitOper.barscreen'    => 'required|string',

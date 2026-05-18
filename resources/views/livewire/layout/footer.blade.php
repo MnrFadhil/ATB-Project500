@@ -1,7 +1,7 @@
 <footer class="sticky-footer bg-white">
     <div class="container my-auto">
         <div class="copyright text-center my-auto">
-            <span style="color: gray">Copyright &copy; KKNAdaroTirtaBrayan {{ date('Y') }}</span>
+            <span style="color: gray">Copyright &copy;Adaro Tirta Brayan {{ date('Y') }}</span>
         </div>
     </div>
 </footer>

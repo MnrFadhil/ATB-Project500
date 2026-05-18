@@ -1,68 +1,47 @@
-<table>
-    <thead style="background-color: rgb(193, 193, 193)">
+@php
+    $thBase   = "background-color: rgb(193,193,193); border: 1.5px solid #333; text-align: center; font-weight: bold; padding: 4px 6px;";
+    $thNarrow = $thBase . " width: 60px;";
+    $thMedium = $thBase . " width: 90px;";
+    $thWide   = $thBase . " width: 110px;";
+    $tdStyle  = "border: 1px solid #555; text-align: center; padding: 3px 5px;";
+@endphp
+<table style="border-collapse: collapse; width: 100%;">
+    <thead>
         <tr>
-            <th scope="col" colspan="2" class="text-center">Flow Air Baku</th>
-            <th scope="col" colspan="2" class="text-center">Pressure Static Mixer</th>
-            <th scope="col" colspan="2" class="text-center">
-                <div>Flow Meter Distribusi</div>
-                <div>Yos Sudarso</div>
-            </th>
-            <th scope="col" colspan="2" class="text-center">
-                <div>Flow Meter Distribusi</div>
-                <div>Veteran</div>
-            </th>
-            <th scope="col" colspan="2" class="text-center">Reservoir</th>
-            <th scope="col" colspan="4" class="text-center">In Comer MDP Panel </th>
+            <th colspan="2" style="{{ $thBase }}">Flow Air Baku</th>
+            <th colspan="2" style="{{ $thBase }}">Pressure Static Mixer</th>
+            <th colspan="2" style="{{ $thBase }}">Flow Meter Distribusi Yos Sudarso</th>
+            <th colspan="2" style="{{ $thBase }}">Flow Meter Distribusi Veteran</th>
+            <th colspan="2" style="{{ $thBase }}">Reservoir</th>
+            <th colspan="4" style="{{ $thBase }}">In Comer MDP Panel</th>
         </tr>
         <tr>
-            {{-- Flow Meter Distribusi --}}
-            <th>Flow</th>
-            <th>Totalizer</th>
-
-            {{-- Pressure Static Mixer --}}
-            <th>Inlet</th>
-            <th>Outler</th>
-
-            {{-- Flow Meter Sudarso --}}
-            <th>Flow</th>
-            <th>Totalizer</th>
-
-            {{-- Flow Meter Veteran --}}
-            <th>Flow</th>
-            <th>Totalizer</th>
-
-            {{-- Reservoir --}}
-            <th>Reservoir A</th>
-            <th>Reservoir B</th>
-
-            {{-- In Comer MDP Panel --}}
-            <th rowspan="2">KWH Total</th>
-            <th rowspan="2">WBP</th>
-            <th rowspan="2">LWBP</th>
-            <th rowspan="2">KVARH</th>
+            <th style="{{ $thMedium }}">Flow</th>
+            <th style="{{ $thMedium }}">Totalizer</th>
+            <th style="{{ $thNarrow }}">Inlet</th>
+            <th style="{{ $thNarrow }}">Outlet</th>
+            <th style="{{ $thMedium }}">Flow</th>
+            <th style="{{ $thMedium }}">Totalizer</th>
+            <th style="{{ $thMedium }}">Flow</th>
+            <th style="{{ $thMedium }}">Totalizer</th>
+            <th style="{{ $thMedium }}">Reservoir A</th>
+            <th style="{{ $thMedium }}">Reservoir B</th>
+            <th rowspan="2" style="{{ $thMedium }}">KWH Total</th>
+            <th rowspan="2" style="{{ $thNarrow }}">WBP</th>
+            <th rowspan="2" style="{{ $thNarrow }}">LWBP</th>
+            <th rowspan="2" style="{{ $thNarrow }}">KVARH</th>
         </tr>
-
         <tr>
-            {{-- Flow Meter Distribusi --}}
-            <th>L/s</th>
-            <th>m³</th>
-
-            {{-- Pressure Static Mixer --}}
-            <th>Bar</th>
-            <th>Bar</th>
-
-            {{-- Flow Meter Sudarso --}}
-            <th>L/s</th>
-            <th>m³</th>
-
-            {{-- Flow Meter Veteran --}}
-            <th>L/s</th>
-            <th>m³</th>
-
-
-            {{-- Reservoir --}}
-            <th>m</th>
-            <th>m</th>
+            <th style="{{ $thNarrow }}">L/s</th>
+            <th style="{{ $thNarrow }}">m³</th>
+            <th style="{{ $thNarrow }}">Bar</th>
+            <th style="{{ $thNarrow }}">Bar</th>
+            <th style="{{ $thNarrow }}">L/s</th>
+            <th style="{{ $thNarrow }}">m³</th>
+            <th style="{{ $thNarrow }}">L/s</th>
+            <th style="{{ $thNarrow }}">m³</th>
+            <th style="{{ $thNarrow }}">m</th>
+            <th style="{{ $thNarrow }}">m</th>
         </tr>
     </thead>
     <tbody>
@@ -70,34 +49,28 @@
             <tr>
                 @foreach ($shift['flow_meters'] as $flowMeter)
                     @if (!$flowMeter['location'])
-                        <td>{{ $flowMeter['flow'] }}</td>
-                        <td>{{ $flowMeter['totalizer'] }}</td>
+                        <td style="{{ $tdStyle }}">{{ $flowMeter['flow'] }}</td>
+                        <td style="{{ $tdStyle }}">{{ $flowMeter['totalizer'] }}</td>
                     @endif
                 @endforeach
-
-                <td>{{ $shift['pressure_static_mixer']['inlet'] }}</td>
-                <td>{{ $shift['pressure_static_mixer']['outlet'] }}</td>
-
+                <td style="{{ $tdStyle }}">{{ $shift['pressure_static_mixer']['inlet'] }}</td>
+                <td style="{{ $tdStyle }}">{{ $shift['pressure_static_mixer']['outlet'] }}</td>
                 @foreach ($shift['flow_meters'] as $flowMeter)
                     @if ($flowMeter['location'] == 'yos sudarso')
-                        <td>{{ $flowMeter['flow'] }}</td>
-                        <td>{{ $flowMeter['totalizer'] }}</td>
+                        <td style="{{ $tdStyle }}">{{ $flowMeter['flow'] }}</td>
+                        <td style="{{ $tdStyle }}">{{ $flowMeter['totalizer'] }}</td>
                     @endif
-
                     @if ($flowMeter['location'] == 'veteran')
-                        <td>{{ $flowMeter['flow'] }}</td>
-                        <td>{{ $flowMeter['totalizer'] }}</td>
+                        <td style="{{ $tdStyle }}">{{ $flowMeter['flow'] }}</td>
+                        <td style="{{ $tdStyle }}">{{ $flowMeter['totalizer'] }}</td>
                     @endif
                 @endforeach
-
-                <td>{{ $shift['reservoir_levels']['level_a'] }}</td>
-                <td>{{ $shift['reservoir_levels']['level_b'] }}</td>
-
-
-                <td>{{ $shift['mdp_panels']['kwh_total'] }}</td>
-                <td>{{ $shift['mdp_panels']['wdp'] }}</td>
-                <td>{{ $shift['mdp_panels']['lwbp'] }}</td>
-                <td>{{ $shift['mdp_panels']['kvar'] }}</td>
+                <td style="{{ $tdStyle }}">{{ $shift['reservoir_levels']['level_a'] }}</td>
+                <td style="{{ $tdStyle }}">{{ $shift['reservoir_levels']['level_b'] }}</td>
+                <td style="{{ $tdStyle }}">{{ $shift['mdp_panels']['kwh_total'] }}</td>
+                <td style="{{ $tdStyle }}">{{ $shift['mdp_panels']['wdp'] }}</td>
+                <td style="{{ $tdStyle }}">{{ $shift['mdp_panels']['lwbp'] }}</td>
+                <td style="{{ $tdStyle }}">{{ $shift['mdp_panels']['kvar'] }}</td>
             </tr>
         @endforeach
     </tbody>

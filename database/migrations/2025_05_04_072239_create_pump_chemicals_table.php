@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('pump_chemicals', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('shift_id');
-            $table->enum('type', ['pac', 'chlorine/kaporit']);
+            $table->enum('type', ['pac', 'chlorine/kaporit', 'soda ash', 'polymer']);
+            $table->enum('status', ['standby', 'running'])->default('running');
             $table->float('frequency')->default(0);
             $table->float('dosage')->default(0);
             $table->float('concentration')->default(0);

@@ -26,7 +26,7 @@ class Dashboard extends Component
 
     public function updatedDate($value)
     {
-        $shiftChart = Shift::whereDate('date', $this->date)->orderBy('start_time', 'asc')->with(['flowMeters', 'reservoirLevels', 'waterQualities'])->get()->toArray();
+        $shiftChart = Shift::whereDate('date', $this->date)->orderBy('end_time', 'asc')->with(['flowMeters', 'reservoirLevels', 'waterQualities'])->get()->toArray();
         $this->dispatch('post-created', shiftChartData: $shiftChart);
     }
 
@@ -35,7 +35,7 @@ class Dashboard extends Component
     {
         $this->dispatch('post-created');
 
-        $shiftChart = Shift::whereDate('date', $this->date)->orderBy('start_time', 'asc')->with(['flowMeters', 'reservoirLevels', 'waterQualities'])->get()->toArray();
+        $shiftChart = Shift::whereDate('date', $this->date)->orderBy('end_time', 'asc')->with(['flowMeters', 'reservoirLevels', 'waterQualities'])->get()->toArray();
         return view('livewire.dashboard', [
             'shiftChart' => $shiftChart
         ])->layout('layouts.app');

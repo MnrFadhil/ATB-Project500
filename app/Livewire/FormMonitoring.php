@@ -88,10 +88,38 @@ class FormMonitoring extends Component
 
 
         foreach ($shift['pump_chemicals'] as $pumpChemic) {
-            if ($pumpChemic['type'] == 'pac')  $this->form->pumpPac = $pumpChemic;
-            if ($pumpChemic['type'] == 'chlorine/kaporit')  $this->form->pumpChlor = $pumpChemic;
-        };
-
+            // PAC
+            if ($pumpChemic['type'] == 'pac' && $pumpChemic['pump_unit'] == 'A') {
+                $this->form->pumpPacA = $pumpChemic;
+            }
+            if ($pumpChemic['type'] == 'pac' && $pumpChemic['pump_unit'] == 'B') {
+                $this->form->pumpPacB = $pumpChemic;
+            }
+            
+            // Chlorine
+            if ($pumpChemic['type'] == 'chlorine/kaporit' && $pumpChemic['pump_unit'] == 'A') {
+                $this->form->pumpChlorA = $pumpChemic;
+            }
+            if ($pumpChemic['type'] == 'chlorine/kaporit' && $pumpChemic['pump_unit'] == 'B') {
+                $this->form->pumpChlorB = $pumpChemic;
+            }
+            
+            // Soda Ash
+            if ($pumpChemic['type'] == 'soda ash' && $pumpChemic['pump_unit'] == 'A') {
+                $this->form->pumpSodaA = $pumpChemic;
+            }
+            if ($pumpChemic['type'] == 'soda ash' && $pumpChemic['pump_unit'] == 'B') {
+                $this->form->pumpSodaB = $pumpChemic;
+            }
+            
+            // Polymer
+            if ($pumpChemic['type'] == 'polymer' && $pumpChemic['pump_unit'] == 'A') {
+                $this->form->pumpPolymerA = $pumpChemic;
+            }
+            if ($pumpChemic['type'] == 'polymer' && $pumpChemic['pump_unit'] == 'B') {
+                $this->form->pumpPolymerB = $pumpChemic;
+            }
+        }
         $this->form->unitOper = $shift['unit_operation'];
 
         $this->form->wtp = $shift['wtps'];
@@ -141,8 +169,14 @@ class FormMonitoring extends Component
                 ['type' => 'distribusi d', ...$form['pumpDistriD']],
             ]);
             $shift->pumpChemicals()->createMany([
-                ['type' => 'pac', ...$form['pumpPac']],
-                ['type' => 'chlorine/kaporit', ...$form['pumpChlor']]
+                ['type' => 'pac', 'pump_unit' => 'A', ...$form['pumpPacA']],
+                ['type' => 'pac', 'pump_unit' => 'B', ...$form['pumpPacB']],
+                ['type' => 'chlorine/kaporit', 'pump_unit' => 'A', ...$form['pumpChlorA']],
+                ['type' => 'chlorine/kaporit', 'pump_unit' => 'B', ...$form['pumpChlorB']],
+                ['type' => 'soda ash', 'pump_unit' => 'A', ...$form['pumpSodaA']],
+                ['type' => 'soda ash', 'pump_unit' => 'B', ...$form['pumpSodaB']],
+                ['type' => 'polymer', 'pump_unit' => 'A', ...$form['pumpPolymerA']],
+                ['type' => 'polymer', 'pump_unit' => 'B', ...$form['pumpPolymerB']],
             ]);
             $shift->unitOperation()->createMany([
                 $form['unitOper'],
@@ -187,10 +221,9 @@ class FormMonitoring extends Component
             $shift->flowMeters->where('location', 'yos sudarso')->first()->update($form['flowSudarso']);
             $shift->flowMeters->where('location', 'veteran')->first()->update($form['flowVeteran']);
 
+            $shift->reservoirLevels->update(($form['reservoirLevel']));
 
-            $shift->reservoirLevels->first()->update(($form['reservoirLevel']));
-
-            $shift->mdpPanels->first()->update($form['mdpPanel']);
+            $shift->mdpPanels->update($form['mdpPanel']);
 
             $shift->pressureStaticMixer()->first()->update($form['pressStatic']);
 
@@ -202,8 +235,16 @@ class FormMonitoring extends Component
             $shift->pumpProccess->where('type', 'distribusi c')->first()->update($form['pumpDistriC']);
             $shift->pumpProccess->where('type', 'distribusi d')->first()->update($form['pumpDistriD']);
 
-            $shift->pumpChemicals->where('type', 'pac')->first()->update($form['pumpPac']);
-            $shift->pumpChemicals->where('type', 'chlorine/kaporit')->first()->update($form['pumpChlor']);
+            // Update atau Create Pump Chemicals A & B
+            $this->updateOrCreatePumpChemical($shift, 'pac', 'A', $form['pumpPacA']);
+            $this->updateOrCreatePumpChemical($shift, 'pac', 'B', $form['pumpPacB']);
+            $this->updateOrCreatePumpChemical($shift, 'chlorine/kaporit', 'A', $form['pumpChlorA']);
+            $this->updateOrCreatePumpChemical($shift, 'chlorine/kaporit', 'B', $form['pumpChlorB']);
+            $this->updateOrCreatePumpChemical($shift, 'soda ash', 'A', $form['pumpSodaA']);
+            $this->updateOrCreatePumpChemical($shift, 'soda ash', 'B', $form['pumpSodaB']);
+            $this->updateOrCreatePumpChemical($shift, 'polymer', 'A', $form['pumpPolymerA']);
+            $this->updateOrCreatePumpChemical($shift, 'polymer', 'B', $form['pumpPolymerB']);
+
 
             $shift->unitOperation->update($form['unitOper']);
 
@@ -213,6 +254,24 @@ class FormMonitoring extends Component
             else Session::flash('eror', 'Eror Update Monitoring Data');
             return redirect("/monitoring/$shift->id");
         });
+    }
+
+    private function updateOrCreatePumpChemical($shift, $type, $pumpUnit, $data)
+    {
+        $existing = $shift->pumpChemicals()
+            ->where('type', $type)
+            ->where('pump_unit', $pumpUnit)
+            ->first();
+
+        if ($existing) {
+            $existing->update($data);
+        } else {
+            $shift->pumpChemicals()->create([
+                'type' => $type,
+                'pump_unit' => $pumpUnit,
+                ...$data
+            ]);
+        }
     }
 
     public function setDefaultValueForStatus($form)
@@ -258,6 +317,79 @@ class FormMonitoring extends Component
         if ($form['wtp']['gravity_filter_d_status'] !== 'running') $form['wtp']['gravity_filter_d'] = 0;
         if ($form['wtp']['gravity_filter_e_status'] !== 'running') $form['wtp']['gravity_filter_e'] = 0;
         if ($form['wtp']['gravity_filter_f_status'] !== 'running') $form['wtp']['gravity_filter_f'] = 0;
+
+        // PAC A
+        if ($form['pumpPacA']['status'] !== 'running') {
+            $form['pumpPacA']['frequency'] = 0;
+            $form['pumpPacA']['dosage'] = 0;
+            $form['pumpPacA']['concentration'] = 0;
+            $form['pumpPacA']['stirring'] = 0;
+            $form['pumpPacA']['tank_level'] = 0;
+        }
+
+        // PAC B
+        if ($form['pumpPacB']['status'] !== 'running') {
+            $form['pumpPacB']['frequency'] = 0;
+            $form['pumpPacB']['dosage'] = 0;
+            $form['pumpPacB']['concentration'] = 0;
+            $form['pumpPacB']['stirring'] = 0;
+            $form['pumpPacB']['tank_level'] = 0;
+        }
+
+        // Chlorine A
+        if ($form['pumpChlorA']['status'] !== 'running') {
+            $form['pumpChlorA']['flow_rate'] = 0;
+            $form['pumpChlorA']['dosage'] = 0;
+            $form['pumpChlorA']['concentration'] = 0;
+            $form['pumpChlorA']['stirring'] = 0;
+            $form['pumpChlorA']['tank_level'] = 0;
+        }
+
+        // Chlorine B
+        if ($form['pumpChlorB']['status'] !== 'running') {
+            $form['pumpChlorB']['flow_rate'] = 0;
+            $form['pumpChlorB']['dosage'] = 0;
+            $form['pumpChlorB']['concentration'] = 0;
+            $form['pumpChlorB']['stirring'] = 0;
+            $form['pumpChlorB']['tank_level'] = 0;
+        }
+
+        // Soda Ash A
+        if ($form['pumpSodaA']['status'] !== 'running') {
+            $form['pumpSodaA']['flow_rate'] = 0;
+            $form['pumpSodaA']['dosage'] = 0;
+            $form['pumpSodaA']['concentration'] = 0;
+            $form['pumpSodaA']['stirring'] = 0;
+            $form['pumpSodaA']['tank_level'] = 0;
+        }
+
+        // Soda Ash B
+        if ($form['pumpSodaB']['status'] !== 'running') {
+            $form['pumpSodaB']['flow_rate'] = 0;
+            $form['pumpSodaB']['dosage'] = 0;
+            $form['pumpSodaB']['concentration'] = 0;
+            $form['pumpSodaB']['stirring'] = 0;
+            $form['pumpSodaB']['tank_level'] = 0;
+        }
+
+        // Polymer A
+        if ($form['pumpPolymerA']['status'] !== 'running') {
+            $form['pumpPolymerA']['flow_rate'] = 0;
+            $form['pumpPolymerA']['dosage'] = 0;
+            $form['pumpPolymerA']['concentration'] = 0;
+            $form['pumpPolymerA']['stirring'] = 0;
+            $form['pumpPolymerA']['tank_level'] = 0;
+        }
+
+        // Polymer B
+        if ($form['pumpPolymerB']['status'] !== 'running') {
+            $form['pumpPolymerB']['flow_rate'] = 0;
+            $form['pumpPolymerB']['dosage'] = 0;
+            $form['pumpPolymerB']['concentration'] = 0;
+            $form['pumpPolymerB']['stirring'] = 0;
+            $form['pumpPolymerB']['tank_level'] = 0;
+        }
+
 
 
         return $form;

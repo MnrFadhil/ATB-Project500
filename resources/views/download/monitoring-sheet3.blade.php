@@ -1,59 +1,50 @@
-<table>
-    <thead style="background-color: rgb(193, 193, 193)">
+@php
+    $thBase   = "background-color: rgb(193,193,193); border: 1.5px solid #333; text-align: center; font-weight: bold; padding: 4px 6px;";
+    $thNarrow = $thBase . " width: 50px;";
+    $thMedium = $thBase . " width: 75px;";
+    $tdStyle  = "border: 1px solid #555; text-align: center; padding: 3px 5px;";
+@endphp
+<table style="border-collapse: collapse; width: 100%;">
+    <thead>
         <tr>
-            <th scope="col" colspan="5" class="text-center">Water Treatment Plant</th>
-            <th scope="col" colspan="6" class="text-center">Level Grafity Filtrasi</th>
+            <th colspan="12" style="{{ $thBase }}">Pump Intake</th>
+            <th colspan="16" style="{{ $thBase }}">Pump Distribusi</th>
         </tr>
-
         <tr>
-            {{-- Water Treament Plant --}}
-            <th>Flocullation A</th>
-            <th>Flocullation B</th>
-            <th>Clarifier A</th>
-            <th>Clarifier B</th>
-            <th>Filtrasi</th>
-
-            {{-- Level Grafity Filtrasi --}}
-            <th>A</th>
-            <th>B</th>
-            <th>C</th>
-            <th>D</th>
-            <th>E</th>
-            <th>F</th>
+            <th colspan="4" style="{{ $thBase }}">Intake A</th>
+            <th colspan="4" style="{{ $thBase }}">Intake B</th>
+            <th colspan="4" style="{{ $thBase }}">Intake C</th>
+            <th colspan="4" style="{{ $thBase }}">Distribusi A</th>
+            <th colspan="4" style="{{ $thBase }}">Distribusi B</th>
+            <th colspan="4" style="{{ $thBase }}">Distribusi C</th>
+            <th colspan="4" style="{{ $thBase }}">Distribusi D</th>
         </tr>
-
         <tr>
-            {{-- Water Treament Plant --}}
-            <th>-</th>
-            <th>-</th>
-            <th>-</th>
-            <th>-</th>
-            <th>-</th>
-
-            {{-- Level Grafity Filtrasi --}}
-            <th>m</th>
-            <th>m</th>
-            <th>m</th>
-            <th>m</th>
-            <th>m</th>
-            <th>m</th>
+            @foreach ([1,2,3] as $i)
+                <th style="{{ $thNarrow }}">A</th>
+                <th style="{{ $thNarrow }}">Hz</th>
+                <th style="{{ $thNarrow }}">Bar</th>
+                <th style="{{ $thNarrow }}">-</th>
+            @endforeach
+            @foreach ([1,2,3,4] as $i)
+                <th style="{{ $thNarrow }}">A</th>
+                <th style="{{ $thNarrow }}">Hz</th>
+                <th style="{{ $thNarrow }}">Bar</th>
+                <th style="{{ $thNarrow }}">-</th>
+            @endforeach
         </tr>
     </thead>
     <tbody>
         @foreach ($shifts as $shift)
             <tr>
-                <td style="text-transform: capitalize;">{{ $shift['wtps']['flokulator_a'] }}</td>
-                <td style="text-transform: capitalize;">{{ $shift['wtps']['flokulator_b'] }}</td>
-                <td style="text-transform: capitalize;">{{ $shift['wtps']['clarifier_a'] }}</td>
-                <td style="text-transform: capitalize;">{{ $shift['wtps']['clarifier_b'] }}</td>
-                <td style="text-transform: capitalize;">{{ $shift['wtps']['filtration'] }}</td>
-                <td>{{ $shift['wtps']['gravity_filter_a'] }}</td>
-                <td>{{ $shift['wtps']['gravity_filter_b'] }}</td>
-                <td>{{ $shift['wtps']['gravity_filter_c'] }}</td>
-                <td>{{ $shift['wtps']['gravity_filter_d'] }}</td>
-                <td>{{ $shift['wtps']['gravity_filter_e'] }}</td>
-                <td>{{ $shift['wtps']['gravity_filter_f'] }}</td>
+                @foreach ($shift['pump_proccess'] as $pumpProccess)
+                    <td style="{{ $tdStyle }}">{{ $pumpProccess['ampere'] }}</td>
+                    <td style="{{ $tdStyle }}">{{ $pumpProccess['frequency'] }}</td>
+                    <td style="{{ $tdStyle }}">{{ $pumpProccess['pressure'] }}</td>
+                    <td style="{{ $tdStyle }}; text-transform: capitalize;">{{ $pumpProccess['status'] }}</td>
+                @endforeach
             </tr>
         @endforeach
     </tbody>
 </table>
+

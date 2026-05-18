@@ -18,6 +18,8 @@ class PumpChemical extends Model
     protected $fillable = [
         'shift_id',
         'type',
+        'pump_unit',
+        'status',
         'frequency',
         'dosage',
         'concentration',
