@@ -2,20 +2,92 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-        <div class="mt-4 mt-md-0">
+    </div>
+
+    <hr class="my-4">
+
+    {{-- ===== SESI PERBULAN ===== --}}
+    <div class="d-sm-flex align-items-center justify-content-between mb-3">
+        <h5 class="h5 mb-0 font-weight-bold text-gray-700">
+            <i class="fas fa-calendar-alt mr-2"></i>Data Perbulan
+        </h5>
+        <div class="mt-2 mt-md-0">
+            <input wire:model.live="selectedMonth" type="month" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Debit Air Baku (L/s)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="monthlyDebitAirBaku"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Total Flow Yos Sudarso & Veteran (L/s)</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="monthlyTotalFlow"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">NTU Air Baku</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="monthlyNtuAirBaku"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">NTU Reservoir</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="monthlyNtuReservoir"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    {{-- ===== SESI PERHARI ===== --}}
+    <div class="d-sm-flex align-items-center justify-content-between mb-3">
+        <h5 class="h5 mb-0 font-weight-bold text-gray-700">
+            <i class="fas fa-calendar-day mr-2"></i>Data Perhari
+        </h5>
+        <div class="mt-2 mt-md-0">
             <input wire:model.live="date" type="date" class="form-control" id="date" required>
         </div>
     </div>
 
     <div class="row">
-        {{-- Charts --}}
         <div class="col-md-6 mb-4">
             <div class="card shadow ">
-                <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold" style="color: #00664A">Debit Air Baku & Total Flow Distribusi</h6>
                 </div>
-                <!-- Card Body -->
                 <div class="card-body">
                     <div class="chart-area">
                         <canvas id="airbakuDanTotalFlow"></canvas>
@@ -24,15 +96,11 @@
             </div>
         </div>
 
-        {{-- Charts --}}
         <div class="col-md-6 mb-4">
             <div class="card shadow ">
-                <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Turbidity Reservoir & Turbidity Sedimentasi
-                    </h6>
+                    <h6 class="m-0 font-weight-bold" style="color: #00664A">Turbidity Reservoir & Turbidity Sedimentasi</h6>
                 </div>
-                <!-- Card Body -->
                 <div class="card-body">
                     <div class="chart-area">
                         <canvas id="TReservoirdanTSedimentasi"></canvas>
@@ -43,14 +111,11 @@
     </div>
 
     <div class="row">
-        {{-- Charts --}}
         <div class="col-md-6 mb-4">
             <div class="card shadow ">
-                <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold" style="color: #00664A">Turbidity Sedimentasi & Air Baku</h6>
                 </div>
-                <!-- Card Body -->
                 <div class="card-body">
                     <div class="chart-area">
                         <canvas id="TSedimentasidanAirBaku"></canvas>
@@ -59,14 +124,11 @@
             </div>
         </div>
 
-        {{-- Charts --}}
         <div class="col-md-6 mb-4">
             <div class="card shadow ">
-                <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold" style="color: #00664A">Reservoir A & Reservoir B</h6>
                 </div>
-                <!-- Card Body -->
                 <div class="card-body">
                     <div class="chart-area">
                         <canvas id="ReservoirAdanReservoirB"></canvas>
@@ -94,6 +156,31 @@
 
 @script
     <script>
+        // ===== MONTHLY CHARTS =====
+        $wire.on('monthly-data-ready', (data) => {
+            if (!data || !data.monthlyData || data.monthlyData.length === 0) return;
+            var rows   = data.monthlyData;
+            var labels = rows.map(function(d) { return d.label; });
+            var base   = { lineTension: 0.3, pointRadius: 3, pointHoverRadius: 5, pointBorderWidth: 2, pointHitRadius: 10, fill: false };
+            var specs  = [
+                { id: 'monthlyDebitAirBaku',  label: 'Debit Air Baku',          color: 'rgba(78,115,223,1)', vals: rows.map(function(d){ return d.debit_air_baku; }),  unit: 'L/s' },
+                { id: 'monthlyTotalFlow',     label: 'Total Flow Yos & Veteran', color: 'rgba(223,109,78,1)', vals: rows.map(function(d){ return d.total_flow; }),     unit: 'L/s' },
+                { id: 'monthlyNtuAirBaku',    label: 'NTU Air Baku',             color: 'rgba(78,115,223,1)', vals: rows.map(function(d){ return d.ntu_air_baku; }),   unit: 'NTU' },
+                { id: 'monthlyNtuReservoir',  label: 'NTU Reservoir',            color: 'rgb(241,196,15)',    vals: rows.map(function(d){ return d.ntu_reservoir; }),  unit: 'NTU' },
+            ];
+            specs.forEach(function(s) {
+                var canvas  = document.getElementById(s.id);
+                var existing = Chart.getChart(canvas);
+                if (existing) existing.destroy();
+                new Chart(canvas, {
+                    type: 'line',
+                    data: { labels: labels, datasets: [Object.assign({}, base, { label: s.label, borderColor: s.color, pointBackgroundColor: s.color, data: s.vals })] },
+                    options: { maintainAspectRatio: false, scales: { y: { ticks: { callback: function(v){ return v + ' ' + s.unit; } } } } },
+                });
+            });
+        });
+
+        // ===== DAILY CHARTS =====
         let myLineChart7 = null;
         let myLineChart8 = null;
         let myLineChart9 = null;
@@ -103,9 +190,6 @@
 
         $wire.on('post-created', (data) => {
             if (data.shiftChartData) shiftChartData = data.shiftChartData
-
-            console.log(shiftChartData)
-
 
             var labelsChart = shiftChartData.map(data => data.end_time)
             var dataDebitAirBaku = shiftChartData.map(data1 => data1.flow_meters.filter(data2 => data2.location == null)[0].flow)
@@ -119,7 +203,6 @@
             // Airbaku Dan TotalFlow
             if (myLineChart7) myLineChart7.destroy();
             var ctx = document.getElementById("airbakuDanTotalFlow");
-
 
             myLineChart7 = new Chart(ctx, {
                 type: 'line',
@@ -212,8 +295,7 @@
             // TSedimentasi Dan AirBaku
             if (myLineChart9) myLineChart9.destroy();
             var ctx = document.getElementById("TSedimentasidanAirBaku");
-            var turbidityAirbakuChart = shiftChartData.map(data1 => data1.water_qualities.find(val => val
-                .type == 'air baku')).map(val => val.turbidity)
+            var turbidityAirbakuChart = shiftChartData.map(data1 => data1.water_qualities.find(val => val.type == 'air baku')).map(val => val.turbidity)
 
             myLineChart9 = new Chart(ctx, {
                 type: 'line',
@@ -302,6 +384,7 @@
                     }
                 },
             });
+
             // Turbidity Air Baku & Dosis PAC
             if (myLineChart11) myLineChart11.destroy();
             var ctx = document.getElementById("turbidAirBakuDosisPac");

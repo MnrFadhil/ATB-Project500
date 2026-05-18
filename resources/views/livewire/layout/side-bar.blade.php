@@ -72,14 +72,14 @@ new class extends Component {
     <li class="nav-item {{ request()->routeIs('wma-evaluation') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('wma-evaluation') }}">
             <i class="fas fa-chart-line"></i>
-            <span>Evaluasi WMA</span>
+            <span>Evaluasi WMA Air Baku</span>
         </a>
     </li>
 
     <li class="nav-item {{ request()->routeIs('fuzzy-evaluation') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('fuzzy-evaluation') }}">
             <i class="fas fa-flask"></i>
-            <span>Evaluasi Fuzzy</span>
+            <span>Evaluasi Fuzzy Dosis Kimia</span>
         </a>
     </li>
 
