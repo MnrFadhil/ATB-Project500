@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid" style="position:relative;min-height:300px;">
 
     {{-- Header --}}
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -65,12 +65,12 @@
         </div>
     </div>
 
-    {{-- Loading Overlay untuk Tabel --}}
-    <div wire:loading wire:target="applyFilter" class="text-center py-4">
-        <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Loading...</span>
+    {{-- Loading Overlay --}}
+    <div wire:loading.delay wire:target="applyFilter" style="position:absolute;top:0;left:0;width:100%;min-height:100%;height:calc(100vh - 70px);background:rgba(255,255,255,0.85);z-index:100;border-radius:4px;">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:calc(100vh - 70px);">
+            <div class="spinner-border text-primary" style="width:3rem;height:3rem;"><span class="sr-only">Loading...</span></div>
+            <p class="mt-3 text-primary font-weight-bold" style="font-size:16px;">Menghitung evaluasi WMA...</p>
         </div>
-        <p class="mt-2 text-primary font-weight-bold">Menghitung evaluasi WMA...</p>
     </div>
 
     <div wire:loading.remove wire:target="applyFilter">

@@ -10,17 +10,15 @@ class WmaDosisService
     protected array $weights = [1, 1, 10]; // [terlama, tengah, terbaru]
 
     private const CHEM_TYPES = [
-        'pac' => 'pac',
+        'pac'      => 'pac',
         'chlorine' => 'chlorine/kaporit',
         'soda_ash' => 'soda ash',
-        'polymer' => 'polymer',
     ];
 
     private const CHEM_LABELS = [
-        'pac' => 'PAC (Koagulan)',
+        'pac'      => 'PAC (Koagulan)',
         'chlorine' => 'Klorin (Desinfektan)',
         'soda_ash' => 'Soda Ash (pH)',
-        'polymer' => 'Polymer',
     ];
 
     public function getWeights(): array
@@ -80,6 +78,96 @@ class WmaDosisService
             ])->values()->toArray();
         }
         return $result;
+    }
+
+    public function interpretMape(float $mape): string
+    {
+        if ($mape < 10)  return 'Sangat Akurat';
+        if ($mape < 20)  return 'Akurat / Baik';
+        if ($mape < 50)  return 'Cukup / Wajar';
+        return 'Tidak Akurat';
+    }
+
+    private function calculateDosisMetrics(array $rows): array
+    {
+        $n = count($rows);
+        if ($n === 0) return ['rmse' => 0, 'mae' => 0, 'mape' => 0, 'n' => 0, 'interpretasi' => '-'];
+
+        $sumSquare = 0;
+        $sumAbs    = 0;
+        $sumPct    = 0;
+        $countPct  = 0;
+
+        foreach ($rows as $r) {
+            $err        = $r['prediksi'] - $r['aktual'];
+            $sumSquare += $err * $err;
+            $sumAbs    += abs($err);
+            if ($r['aktual'] != 0) {
+                $sumPct += abs($err / $r['aktual']);
+                $countPct++;
+            }
+        }
+
+        $mape = $countPct > 0 ? round(($sumPct / $countPct) * 100, 2) : 0;
+        return [
+            'rmse'        => round(sqrt($sumSquare / $n), 4),
+            'mae'         => round($sumAbs / $n, 4),
+            'mape'        => $mape,
+            'n'           => $n,
+            'interpretasi'=> $this->interpretMape($mape),
+        ];
+    }
+
+    /**
+     * Evaluasi prediksi terhadap data aktual bulan target
+     */
+    public function evaluatePredictions(array $predictions, string $targetMonth): array
+    {
+        $target = Carbon::parse($targetMonth . '-01');
+        $start  = $target->copy()->startOfMonth()->format('Y-m-d');
+        $end    = $target->copy()->endOfMonth()->format('Y-m-d');
+
+        $actualWeekly = $this->getWeeklyAverages($start, $end);
+
+        // Keluarkan minggu yang sedang berjalan (belum selesai)
+        $todayIsoWeek = Carbon::today()->isoWeek();
+        $todayIsoYear = Carbon::today()->isoWeekYear();
+        foreach ($actualWeekly as $key => $weeks) {
+            $actualWeekly[$key] = array_values(array_filter($weeks, function ($w) use ($todayIsoWeek, $todayIsoYear) {
+                $wDate = Carbon::parse($w['start']);
+                return !($wDate->isoWeek() === $todayIsoWeek && $wDate->isoWeekYear() === $todayIsoYear);
+            }));
+        }
+
+        $evaluation = [];
+        foreach ($predictions as $chemKey => $preds) {
+            $actuals = array_values($actualWeekly[$chemKey] ?? []);
+            $rows    = [];
+
+            foreach ($preds as $i => $pred) {
+                if (!isset($actuals[$i])) continue;
+
+                $aktual  = $actuals[$i]['avg_dosage'];
+                $predVal = $pred['avg_dosage'];
+                $error   = round($predVal - $aktual, 2);
+
+                $rows[] = [
+                    'week_num'    => $i + 1,
+                    'aktual'      => $aktual,
+                    'prediksi'    => $predVal,
+                    'error'       => $error,
+                    'aktual_count'=> $actuals[$i]['count'],
+                    'prior_data'  => $pred['prior_data'] ?? [],
+                ];
+            }
+
+            $evaluation[$chemKey] = [
+                'rows'    => $rows,
+                'metrics' => $this->calculateDosisMetrics($rows),
+            ];
+        }
+
+        return $evaluation;
     }
 
     /**

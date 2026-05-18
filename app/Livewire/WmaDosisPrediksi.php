@@ -21,11 +21,11 @@ class WmaDosisPrediksi extends Component
         $this->filteredMonth = $month ?: $this->selectedMonth;
         $this->selectedMonth = $this->filteredMonth;
          // Build data
-    [$weekly, $predictions, $weightInfo, $chemLabels] = $this->buildData();
+    [$weekly, $predictions, $weightInfo, $chemLabels, $evaluation] = $this->buildData();
     
     // Prepare chart data
     $jsChartsData = [];
-    foreach (['pac', 'chlorine', 'soda_ash', 'polymer'] as $chemKey) {
+    foreach (['pac', 'chlorine', 'soda_ash'] as $chemKey) {
         if (isset($weekly[$chemKey]) && count($weekly[$chemKey]) > 0) {
             $jsChartsData[$chemKey] = [
                 'labels' => array_map(function($w) { return 'Mg ' . $w['week_num']; }, $weekly[$chemKey]),
@@ -43,7 +43,7 @@ class WmaDosisPrediksi extends Component
 
     private function buildData(): array
     {
-        if (!$this->filteredMonth) return [[], [], [], []];
+        if (!$this->filteredMonth) return [[], [], [], [], []];
 
         $service = new WmaDosisService();
 
@@ -52,12 +52,13 @@ class WmaDosisPrediksi extends Component
         $start = $target->copy()->subMonths(3)->startOfMonth()->format('Y-m-d');
         $end = $target->copy()->subDay()->format('Y-m-d'); // akhir bulan sebelumnya
 
-        $weekly = $service->getWeeklyAverages($start, $end);
+        $weekly      = $service->getWeeklyAverages($start, $end);
         $predictions = $service->predictNextMonth($weekly);
-        $weightInfo = $service->getWeights();
-        $chemLabels = $service->getChemLabels();
+        $weightInfo  = $service->getWeights();
+        $chemLabels  = $service->getChemLabels();
+        $evaluation  = $service->evaluatePredictions($predictions, $this->filteredMonth);
 
-        return [$weekly, $predictions, $weightInfo, $chemLabels];
+        return [$weekly, $predictions, $weightInfo, $chemLabels, $evaluation];
     }
 
 public function getMonthOptions(): array
@@ -76,7 +77,7 @@ public function getMonthOptions(): array
 
 public function render()
 {
-    [$weekly, $predictions, $weightInfo, $chemLabels] = $this->buildData();
+    [$weekly, $predictions, $weightInfo, $chemLabels, $evaluation] = $this->buildData();
 
     // Hitung periode historis untuk display
     $historisLabel = '';
@@ -90,7 +91,7 @@ public function render()
     // Prepare data untuk chart
     if ($this->filteredMonth && $chemLabels) {
         $jsChartsData = [];
-        foreach (['pac', 'chlorine', 'soda_ash', 'polymer'] as $chemKey) {
+        foreach (['pac', 'chlorine', 'soda_ash'] as $chemKey) {
             $jsChartsData[$chemKey] = [
                 'labels' => array_map(function($w) { return 'Mg ' . $w['week_num']; }, $weekly[$chemKey] ?? []),
                 'hist' => array_column($weekly[$chemKey] ?? [], 'avg_dosage'),
@@ -102,7 +103,7 @@ public function render()
     }
 
     return view('livewire.wma-dosis-prediksi', compact(
-        'weekly', 'predictions', 'weightInfo', 'chemLabels', 'historisLabel'
+        'weekly', 'predictions', 'weightInfo', 'chemLabels', 'historisLabel', 'evaluation'
     ))->layout('layouts.app');
 }
 }
