@@ -20,8 +20,11 @@ class HideFormMonitoring extends Component
     
     // Section visibility
     public $showMonitoringData = false;  // 1 group besar untuk semua
-    public $showShiftInfo = true;   
+    public $showShiftInfo = true;
     public $monitoringDataLoaded = false;
+
+    // Stores previous shift totalizer values for change detection
+    public array $prevTotalizers = [];
 
     /* -------------------------------------------------------------------------- */
     /*                           Toggle Sections                                  */
@@ -404,6 +407,12 @@ class HideFormMonitoring extends Component
                 if ($fm['location'] == 'yos sudarso') $this->form->flowSudarso = $data;
                 if ($fm['location'] == 'veteran') $this->form->flowVeteran = $data;
             }
+
+            $this->prevTotalizers = [
+                'air_baku' => (string) ($this->form->flowAirBaku['totalizer'] ?? ''),
+                'sudarso'  => (string) ($this->form->flowSudarso['totalizer'] ?? ''),
+                'veteran'  => (string) ($this->form->flowVeteran['totalizer'] ?? ''),
+            ];
 
             // ========== LOAD RESERVOIR LEVELS ==========
             if (!empty($shift['reservoir_levels'])) {

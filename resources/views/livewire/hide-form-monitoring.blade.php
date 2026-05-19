@@ -10,14 +10,6 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold">{{ $id ? 'Edit Monitoring Data' : 'Create Monitoring Data' }}</h6>
-            <div class="btn-group btn-group-sm">
-                <button class="btn btn-outline-primary" wire:click="expandAll" type="button">
-                    <i class="fas fa-expand"></i> Expand All
-                </button>
-                <button class="btn btn-outline-secondary" wire:click="collapseAll" type="button">
-                    <i class="fas fa-compress"></i> Collapse All
-                </button>
-            </div>
         </div>
 
         <div class="card-body">
@@ -36,32 +28,45 @@
                             <div class="form-row">
                             <div class="col-md-6 mb-3">
                                 <label for="date">Date <span class="text-danger">*</span></label>
-                                <input 
-                                    wire:model.live="form.shift.date" 
-                                    type="date" 
-                                    class="form-control @error('form.shift.date') is-invalid @enderror" 
-                                    id="date" 
-                                    required>
+                                <div class="d-flex align-items-center">
+                                    <input
+                                        wire:model.live="form.shift.date"
+                                        type="date"
+                                        class="form-control flex-grow-1 @error('form.shift.date') is-invalid @enderror"
+                                        style="min-width:0"
+                                        id="date"
+                                        required>
+                                    @if(empty($form->shift['date'] ?? ''))
+                                        <i class="fas fa-exclamation-triangle text-warning ml-2" title="Wajib diisi"></i>
+                                    @endif
+                                </div>
                                 @error('form.shift.date') <span class="invalid-feedback">{{ $message }}</span> @enderror
                             </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label for="shift">Shift <span class="text-danger">*</span></label>
-                                    <select wire:model.live="form.shift.shift" class="custom-select @error('form.shift.shift') is-invalid @enderror" id="shift" required>
-                                        <option value="">Select Shift</option>
-                                        <option value="shift i">Shift I</option>
-                                        <option value="shift ii">Shift II</option>
-                                        <option value="shift iii">Shift III</option>
-                                    </select>
+                                    <div class="d-flex align-items-center">
+                                        <select wire:model.live="form.shift.shift" class="custom-select flex-grow-1 @error('form.shift.shift') is-invalid @enderror" style="min-width:0" id="shift" required>
+                                            <option value="">Select Shift</option>
+                                            <option value="shift i">Shift I</option>
+                                            <option value="shift ii">Shift II</option>
+                                            <option value="shift iii">Shift III</option>
+                                        </select>
+                                        @if(empty($form->shift['shift'] ?? ''))
+                                            <i class="fas fa-exclamation-triangle text-warning ml-2" title="Wajib diisi"></i>
+                                        @endif
+                                    </div>
                                     @error('form.shift.shift') <span class="invalid-feedback">{{ $message }}</span> @enderror
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label for="startTime">Start Shift Time <span class="text-danger">*</span></label>
+                                    <div class="d-flex align-items-center">
                                     <select
                                         wire:model.live="form.shift.start_time"
                                         wire:change="loadPreviousShiftData(form.shift.date, form.shift.start_time)"
-                                        class="custom-select @error('form.shift.start_time') is-invalid @enderror"
+                                        class="custom-select flex-grow-1 @error('form.shift.start_time') is-invalid @enderror"
+                                        style="min-width:0"
                                         id="startTime"
                                         required>
                                         <option value="">Select Start Time</option>
@@ -84,12 +89,17 @@
                                             @endfor
                                         @endforelse
                                     </select>
+                                    @if(in_array($form->shift['start_time'] ?? '', ['', '00:00']))
+                                        <i class="fas fa-exclamation-triangle text-warning ml-2" title="Wajib diisi"></i>
+                                    @endif
+                                    </div>
                                     @error('form.shift.start_time') <span class="invalid-feedback">{{ $message }}</span> @enderror
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label for="endTime">End Shift Time <span class="text-danger">*</span></label>
-                                    <select wire:model.live="form.shift.end_time" class="custom-select @error('form.shift.end_time') is-invalid @enderror" id="endTime" required>
+                                    <div class="d-flex align-items-center">
+                                    <select wire:model.live="form.shift.end_time" class="custom-select flex-grow-1 @error('form.shift.end_time') is-invalid @enderror" style="min-width:0" id="endTime" required>
                                         <option value="">Select End Time</option>
                                         @php
                                             $endOptions = $shiftTimes[$selectedShift] ?? [];
@@ -104,32 +114,46 @@
                                             @endfor
                                         @endforelse
                                     </select>
+                                    @if(in_array($form->shift['end_time'] ?? '', ['', '00:00']))
+                                        <i class="fas fa-exclamation-triangle text-warning ml-2" title="Wajib diisi"></i>
+                                    @endif
+                                    </div>
                                     @error('form.shift.end_time') <span class="invalid-feedback">{{ $message }}</span> @enderror
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label for="operator1">Operator 1 <span class="text-danger">*</span></label>
-                                    <select wire:model.live="form.shift.operator_1" class="custom-select @error('form.shift.operator_1') is-invalid @enderror" id="operator1" required>
-                                        <option value="">Select Operator</option>
-                                        @forelse ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @empty
-                                            <option value="">Users Not Available</option>
-                                        @endforelse
-                                    </select>
+                                    <div class="d-flex align-items-center">
+                                        <select wire:model.live="form.shift.operator_1" class="custom-select flex-grow-1 @error('form.shift.operator_1') is-invalid @enderror" style="min-width:0" id="operator1" required>
+                                            <option value="">Select Operator</option>
+                                            @forelse ($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            @empty
+                                                <option value="">Users Not Available</option>
+                                            @endforelse
+                                        </select>
+                                        @if(empty($form->shift['operator_1'] ?? ''))
+                                            <i class="fas fa-exclamation-triangle text-warning ml-2" title="Wajib diisi"></i>
+                                        @endif
+                                    </div>
                                     @error('form.shift.operator_1') <span class="invalid-feedback">{{ $message }}</span> @enderror
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label for="operator2">Operator 2</label>
-                                    <select wire:model.live="form.shift.operator_2" class="custom-select" id="operator2" required>
-                                        <option value="">Select Operator</option>
-                                        @forelse ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @empty
-                                            <option value="">Users Not Available</option>
-                                        @endforelse
-                                    </select>
+                                    <div class="d-flex align-items-center">
+                                        <select wire:model.live="form.shift.operator_2" class="custom-select flex-grow-1" style="min-width:0" id="operator2">
+                                            <option value="">Select Operator</option>
+                                            @forelse ($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            @empty
+                                                <option value="">Users Not Available</option>
+                                            @endforelse
+                                        </select>
+                                        @if(empty($form->shift['operator_2'] ?? ''))
+                                            <i class="fas fa-exclamation-triangle text-warning ml-2" title="Belum diisi"></i>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <!-- NEXT BUTTON -->
@@ -168,10 +192,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- AIR BAKU -->
-                            <h6 class="font-weight-bold mb-3">💧 Air Baku</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">💧 Air Baku</h6>
                             <div class="form-row">
                                 <div class="col-md-3 mb-3">
                                     <label>pH</label>
@@ -191,10 +215,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- SEDIMENTATION -->
-                            <h6 class="font-weight-bold mb-3">🏭 Sedimentation</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">🏭 Sedimentation</h6>
                             <div class="form-row">
                                 <div class="col-md-3 mb-3">
                                     <label>pH</label>
@@ -214,10 +238,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- RESERVOIR -->
-                            <h6 class="font-weight-bold mb-3">🏊 Reservoir</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">🏊 Reservoir</h6>
                             <div class="form-row">
                                 <div class="col-md-3 mb-3">
                                     <label>pH</label>
@@ -245,10 +269,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- FLOW METER AIR BAKU -->
-                            <h6 class="font-weight-bold mb-3">📊 Flow Meter Air Baku</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">📊 Flow Meter Air Baku</h6>
                             <div class="form-row">
                                 <div class="col-md-6 mb-3">
                                     <label>Flow (L/s)</label>
@@ -256,14 +280,19 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label>Totalizer (m³)</label>
-                                    <input wire:model="form.flowAirBaku.totalizer" type="number" step="any" class="form-control" required>
+                                    <div class="d-flex align-items-center">
+                                        <input wire:model.blur="form.flowAirBaku.totalizer" type="number" step="any" class="form-control flex-grow-1" style="min-width:0" required>
+                                        @if(!empty($prevTotalizers) && isset($prevTotalizers['air_baku']) && $prevTotalizers['air_baku'] !== '' && (string)($form->flowAirBaku['totalizer'] ?? '') === $prevTotalizers['air_baku'])
+                                            <i class="fas fa-exclamation-triangle text-warning ml-2" title="Totalizer tidak berubah dari shift sebelumnya"></i>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- FLOWMETER DISTRIBUSI -->
-                            <h6 class="font-weight-bold mb-3">📌 Flowmeter Distribusi</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">📌 Flowmeter Distribusi</h6>
                             <div class="row">
                                 <div class="col-md-6">
                                     <h6 class="font-weight-bold mb-2">Yos Sudarso</h6>
@@ -274,7 +303,12 @@
                                         </div>
                                         <div class="col-6 mb-3">
                                             <label>Totalizer (m³)</label>
-                                            <input wire:model="form.flowSudarso.totalizer" type="number" step="any" class="form-control" required>
+                                            <div class="d-flex align-items-center">
+                                                <input wire:model.blur="form.flowSudarso.totalizer" type="number" step="any" class="form-control flex-grow-1" style="min-width:0" required>
+                                                @if(!empty($prevTotalizers) && isset($prevTotalizers['sudarso']) && $prevTotalizers['sudarso'] !== '' && (string)($form->flowSudarso['totalizer'] ?? '') === $prevTotalizers['sudarso'])
+                                                    <i class="fas fa-exclamation-triangle text-warning ml-2" title="Totalizer tidak berubah dari shift sebelumnya"></i>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -287,16 +321,21 @@
                                         </div>
                                         <div class="col-6 mb-3">
                                             <label>Totalizer (m³)</label>
-                                            <input wire:model="form.flowVeteran.totalizer" type="number" step="any" class="form-control" required>
+                                            <div class="d-flex align-items-center">
+                                                <input wire:model.blur="form.flowVeteran.totalizer" type="number" step="any" class="form-control flex-grow-1" style="min-width:0" required>
+                                                @if(!empty($prevTotalizers) && isset($prevTotalizers['veteran']) && $prevTotalizers['veteran'] !== '' && (string)($form->flowVeteran['totalizer'] ?? '') === $prevTotalizers['veteran'])
+                                                    <i class="fas fa-exclamation-triangle text-warning ml-2" title="Totalizer tidak berubah dari shift sebelumnya"></i>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- LEVEL RESERVOIR -->
-                            <h6 class="font-weight-bold mb-3">📏 Level Reservoir</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">📏 Level Reservoir</h6>
                             <div class="form-row">
                                 <div class="col-md-6 mb-3">
                                     <label>Level A (m)</label>
@@ -308,10 +347,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- MDP PANEL -->
-                            <h6 class="font-weight-bold mb-3">⚡ In Comer MDP Panel</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">⚡ In Comer MDP Panel</h6>
                             <div class="form-row">
                                 <div class="col-md-3 mb-3">
                                     <label>Kwh</label>
@@ -331,10 +370,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- LEVEL AIR BAK PENGUMPUL -->
-                            <h6 class="font-weight-bold mb-3">🔧 Level Air Bak Pengumpul</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">🔧 Level Air Bak Pengumpul</h6>
                             <div class="form-row">
                                 <div class="col-md-6 mb-3">
                                     <label>Level (m)</label>
@@ -342,10 +381,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- PRESSURE STATIC MIXER -->
-                            <h6 class="font-weight-bold mb-3">⚙️ Pressure Static Mixer</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">⚙️ Pressure Static Mixer</h6>
                             <div class="form-row">
                                 <div class="col-md-6 mb-3">
                                     <label>Inlet (Bar)</label>
@@ -357,10 +396,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- POMPA INTAKE -->
-                            <h6 class="font-weight-bold mb-3">🚰 Pompa Intake</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">🚰 Pompa Intake</h6>
                             <div class="row">
                                 <div class="col-md-4">
                                     <h6 class="font-weight-bold mb-2">Pompa A</h6>
@@ -389,7 +428,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-4 mt-4">
                                     <h6 class="font-weight-bold mb-2">Pompa B</h6>
                                     <div class="form-row">
                                         <div class="col-12 mb-3">
@@ -416,7 +455,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-4 mt-4">
                                     <h6 class="font-weight-bold mb-2">Pompa C</h6>
                                     <div class="form-row">
                                         <div class="col-12 mb-3">
@@ -445,10 +484,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- POMPA DISTRIBUSI -->
-                            <h6 class="font-weight-bold mb-3">💧 Pompa Distribusi</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">💧 Pompa Distribusi</h6>
                             <div class="row">
                                 <div class="col-md-3">
                                     <h6 class="font-weight-bold mb-2">Pompa A</h6>
@@ -477,7 +516,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-3 mt-4">
                                     <h6 class="font-weight-bold mb-2">Pompa B</h6>
                                     <div class="form-row">
                                         <div class="col-12 mb-3">
@@ -504,7 +543,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-3 mt-4">
                                     <h6 class="font-weight-bold mb-2">Pompa C</h6>
                                     <div class="form-row">
                                         <div class="col-12 mb-3">
@@ -531,7 +570,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-3 mt-4">
                                     <h6 class="font-weight-bold mb-2">Pompa D</h6>
                                     <div class="form-row">
                                         <div class="col-12 mb-3">
@@ -560,10 +599,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- POMPA DOSING PAC -->
-                            <h6 class="font-weight-bold mb-3">💉 Pompa Dosing PAC</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">💉 Pompa Dosing PAC</h6>
                             <div class="row">
                                 <div class="col-md-6">
                                     <h6 class="font-weight-bold mb-2">Pompa A</h6>
@@ -595,7 +634,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 mt-4">
                                     <h6 class="font-weight-bold mb-2">Pompa B</h6>
                                     <div class="form-row">
                                         <div class="col-12 mb-3">
@@ -627,10 +666,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- POMPA DOSING CHLORINE -->
-                            <h6 class="font-weight-bold mb-3">🧪 Pompa Dosing Chlorine/Kaporit</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">🧪 Pompa Dosing Chlorine/Kaporit</h6>
                             <div class="row">
                                 <div class="col-md-6">
                                     <h6 class="font-weight-bold mb-2">Pompa A</h6>
@@ -666,7 +705,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 mt-4">
                                     <h6 class="font-weight-bold mb-2">Pompa B</h6>
                                     <div class="form-row">
                                         <div class="col-12 mb-3">
@@ -702,10 +741,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- POMPA DOSING SODA ASH -->
-                            <h6 class="font-weight-bold mb-3">🧪 Pompa Dosing Soda Ash</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">🧪 Pompa Dosing Soda Ash</h6>
                             <div class="row">
                                 <div class="col-md-6">
                                     <h6 class="font-weight-bold mb-2">Pompa A</h6>
@@ -741,7 +780,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 mt-4">
                                     <h6 class="font-weight-bold mb-2">Pompa B</h6>
                                     <div class="form-row">
                                         <div class="col-12 mb-3">
@@ -777,10 +816,10 @@
                                 </div>
                             </div>
 
-                            <hr>
+                            <hr style="border-color: #00664A; border-width: 2px;">
 
                             <!-- POMPA DOSING POLYMER -->
-                            <h6 class="font-weight-bold mb-3">🧪 Pompa Dosing Polymer</h6>
+                            <h6 class="font-weight-bolder mb-3 mt-5" style="color: #00664A;">🧪 Pompa Dosing Polymer</h6>
                             <div class="row">
                                 <div class="col-md-6">
                                     <h6 class="font-weight-bold mb-2">Pompa A</h6>
@@ -816,7 +855,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 mt-4">
                                     <h6 class="font-weight-bold mb-2">Pompa B</h6>
                                     <div class="form-row">
                                         <div class="col-12 mb-3">
@@ -864,9 +903,11 @@
                 <!-- BUTTON SUBMIT -->
                 <div class="d-flex justify-content-between mt-4">
                     <a class="btn btn-secondary" href="/monitoring-index" wire:navigated>Back</a>
-                    <button class="btn btn-primary" type="submit">
-                        {{ $id ? 'Update' : 'Create' }} Data ✓
-                    </button>
+                    @if($this->monitoringDataLoaded)
+                        <button class="btn btn-primary" type="submit">
+                            {{ $id ? 'Update' : 'Create' }} Data ✓
+                        </button>
+                    @endif
                 </div>
             </form>
         </div>
