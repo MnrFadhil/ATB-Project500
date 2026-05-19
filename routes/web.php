@@ -6,6 +6,7 @@ use App\Livewire\MonitoringDetail;
 use App\Livewire\MonitoringIndex;
 use App\Livewire\UserList;
 use App\Livewire\HideFormMonitoring;
+use App\Livewire\WaterLoss;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -24,6 +25,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('wma-dosis', \App\Livewire\WmaDosisPrediksi::class)->name('wma-dosis');
     Route::get('/monitoring-create', HideFormMonitoring::class)->middleware(['admin']);
     // Route::get('/monitoring/{id}/edit', HideFormMonitoring::class);
+    Route::get('water-loss', WaterLoss::class)->name('water-loss');
 });
 
 require __DIR__ . '/auth.php';

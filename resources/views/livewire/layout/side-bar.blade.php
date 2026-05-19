@@ -55,6 +55,14 @@ new class extends Component {
             <span>Monitoring</span>
         </a>
     </li>
+
+    <!-- Nav Item - Water Loss -->
+    <li class="nav-item {{ request()->routeIs('water-loss') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('water-loss') }}" wire:navigated>
+            <i class="fas fa-fw fa-tint"></i>
+            <span>Water Loss</span>
+        </a>
+    </li>
     <li class="nav-item {{ request()->routeIs('wma-dosis') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('wma-dosis') }}">
             <i class="fas fa-flask"></i>
