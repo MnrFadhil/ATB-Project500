@@ -63,6 +63,14 @@ new class extends Component {
             <span>Water Loss</span>
         </a>
     </li>
+
+    <!-- Nav Item - SCADA -->
+    <li class="nav-item {{ request()->routeIs('scada') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('scada') }}" wire:navigated>
+            <i class="fas fa-fw fa-satellite-dish"></i>
+            <span>SCADA</span>
+        </a>
+    </li>
     <li class="nav-item {{ request()->routeIs('wma-dosis') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('wma-dosis') }}">
             <i class="fas fa-flask"></i>
