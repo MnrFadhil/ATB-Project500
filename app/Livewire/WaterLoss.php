@@ -42,7 +42,8 @@ class WaterLoss extends Component
 
         return [
             'air_baku' => $airBaku?->totalizer,
-            'dist'     => ($yos?->totalizer ?? 0) + ($vet?->totalizer ?? 0),
+            'yos'      => $yos?->totalizer,
+            'vet'      => $vet?->totalizer,
         ];
     }
 
@@ -61,7 +62,8 @@ class WaterLoss extends Component
 
         $prev                 = $this->getPrevTotalizers();
         $prevAirBakuTotalizer = $prev['air_baku'] ?? null;
-        $prevDistTotalizer    = $prev['dist']     ?? null;
+        $prevYosTotalizer     = $prev['yos']      ?? null;
+        $prevVetTotalizer     = $prev['vet']      ?? null;
 
         $rows = [];
 
@@ -71,25 +73,29 @@ class WaterLoss extends Component
             $vet     = $shift->flowMeters->firstWhere('location', 'veteran');
             $resv    = $shift->reservoirLevels;
 
-            $airBakuFlow = $airBaku?->flow ?? 0;
-            $yosFlow     = $yos?->flow ?? 0;
-            $vetFlow     = $vet?->flow ?? 0;
-            $totalFlow   = $yosFlow + $vetFlow;
-
             $airBakuTotalizer = $airBaku?->totalizer;
-            $distTotalizer    = ($yos?->totalizer ?? 0) + ($vet?->totalizer ?? 0);
+            $yosTotalizer     = $yos?->totalizer;
+            $vetTotalizer     = $vet?->totalizer;
+            $distTotalizer    = ($yosTotalizer ?? 0) + ($vetTotalizer ?? 0);
 
-            if ($prevAirBakuTotalizer !== null && $airBakuTotalizer !== null) {
-                $airBakuSelisih = $airBakuTotalizer - $prevAirBakuTotalizer;
-            } else {
-                $airBakuSelisih = $airBakuFlow * 7.2;
-            }
+            $airBakuSelisih = ($prevAirBakuTotalizer !== null && $airBakuTotalizer !== null)
+                ? $airBakuTotalizer - $prevAirBakuTotalizer
+                : ($airBaku?->flow ?? 0) * 7.2;
 
-            if ($prevDistTotalizer !== null && $distTotalizer > 0) {
-                $distSelisih = $distTotalizer - $prevDistTotalizer;
-            } else {
-                $distSelisih = $totalFlow * 7.2;
-            }
+            $yosSelisih = ($prevYosTotalizer !== null && $yosTotalizer !== null)
+                ? $yosTotalizer - $prevYosTotalizer
+                : ($yos?->flow ?? 0) * 7.2;
+
+            $vetSelisih = ($prevVetTotalizer !== null && $vetTotalizer !== null)
+                ? $vetTotalizer - $prevVetTotalizer
+                : ($vet?->flow ?? 0) * 7.2;
+
+            $distSelisih = $yosSelisih + $vetSelisih;
+
+            $airBakuFlow = $airBakuSelisih > 0 ? round($airBakuSelisih / 7.2, 1) : 0;
+            $yosFlow     = round($yosSelisih / 7.2, 1);
+            $vetFlow     = round($vetSelisih / 7.2, 1);
+            $totalFlow   = round($yosFlow + $vetFlow, 1);
 
             $waterLossPct = $airBakuSelisih > 0
                 ? (($airBakuSelisih - $distSelisih) / $airBakuSelisih) * 100
@@ -102,9 +108,9 @@ class WaterLoss extends Component
                 'air_baku_totalizer'  => $airBakuTotalizer,
                 'air_baku_selisih'    => round($airBakuSelisih),
                 'yos_flow'            => $yosFlow,
-                'yos_totalizer'       => $yos?->totalizer,
+                'yos_totalizer'       => $yosTotalizer,
                 'vet_flow'            => $vetFlow,
-                'vet_totalizer'       => $vet?->totalizer,
+                'vet_totalizer'       => $vetTotalizer,
                 'total_flow'          => $totalFlow,
                 'total_totalizer'     => $distTotalizer ?: null,
                 'total_selisih'       => round($distSelisih),
@@ -114,7 +120,8 @@ class WaterLoss extends Component
             ];
 
             $prevAirBakuTotalizer = $airBakuTotalizer;
-            $prevDistTotalizer    = $distTotalizer;
+            $prevYosTotalizer     = $yosTotalizer;
+            $prevVetTotalizer     = $vetTotalizer;
         }
 
         return $rows;

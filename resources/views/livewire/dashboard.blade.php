@@ -152,6 +152,52 @@
             </div>
         </div>
     </div>
+
+    {{-- ===== PIE CHARTS ===== --}}
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold" style="color:#00664A">
+                        <i class="fas fa-chart-pie mr-1"></i> Proporsi Distribusi
+                    </h6>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div style="position:relative; width:100%; max-width:280px;">
+                        <canvas id="pieDistribusi"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold" style="color:#00664A">
+                        <i class="fas fa-chart-pie mr-1"></i> Komposisi Water Loss
+                    </h6>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div style="position:relative; width:100%; max-width:280px;">
+                        <canvas id="pieWaterLoss"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold" style="color:#00664A">
+                        <i class="fas fa-chart-pie mr-1"></i> Pemakaian Kimia
+                    </h6>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div style="position:relative; width:100%; max-width:280px;">
+                        <canvas id="pieKimia"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @script
@@ -455,6 +501,69 @@
                         }
                     }
                 },
+            });
+        });
+
+        // ===== PIE CHARTS =====
+        $wire.on('pie-charts-ready', function(data) {
+            var p = data.pieData;
+            if (!p) return;
+
+            var pieBase = {
+                borderWidth: 2,
+                hoverOffset: 6,
+            };
+
+            var pieColors = {
+                distribusi: ['rgba(78,115,223,0.85)', 'rgba(223,109,78,0.85)'],
+                waterLoss:  ['rgba(28,200,138,0.85)', 'rgba(231,74,59,0.85)'],
+                kimia:      [
+                    'rgba(78,115,223,0.85)',
+                    'rgba(231,74,59,0.85)',
+                    'rgba(241,196,15,0.85)',
+                    'rgba(138,78,223,0.85)',
+                ],
+            };
+
+            var pieOpts = {
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                var total = ctx.dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                                var pct   = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
+                                return ctx.label + ': ' + ctx.parsed.toLocaleString() + ' (' + pct + '%)';
+                            },
+                        },
+                    },
+                },
+            };
+
+            var specs = [
+                { id: 'pieDistribusi', labels: p.distribution.labels, values: p.distribution.values, colors: pieColors.distribusi },
+                { id: 'pieWaterLoss',  labels: p.water_loss.labels,   values: p.water_loss.values,   colors: pieColors.waterLoss },
+                { id: 'pieKimia',      labels: p.chemicals.labels,     values: p.chemicals.values,    colors: pieColors.kimia },
+            ];
+
+            specs.forEach(function(s) {
+                var cv  = document.getElementById(s.id);
+                var old = Chart.getChart(cv);
+                if (old) old.destroy();
+                if (!s.values || s.values.length === 0) return;
+                new Chart(cv, {
+                    type: 'pie',
+                    data: {
+                        labels: s.labels,
+                        datasets: [Object.assign({}, pieBase, {
+                            data: s.values,
+                            backgroundColor: s.colors,
+                            borderColor: s.colors.map(function(c) { return c.replace('0.85', '1'); }),
+                        })],
+                    },
+                    options: pieOpts,
+                });
             });
         });
     </script>

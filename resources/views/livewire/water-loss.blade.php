@@ -5,7 +5,6 @@
         <h1 class="h3 mb-0 font-weight-bold text-gray-800">
             Daily Water Loss Monitoring
         </h1>
-        <small class="text-muted">WTP Brayan</small>
     </div>
 
     {{-- Date Picker Card --}}
