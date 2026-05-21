@@ -624,7 +624,8 @@
 .scada-page .bn-label { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
 .scada-page .bn-val { font-family: var(--f-mono); font-size: 36px; font-weight: 700; letter-spacing: -.5px; line-height: 1; color: var(--text); display: flex; align-items: baseline; gap: 6px; }
 .scada-page .bn-val span { font-size: 14px; color: var(--text-3); font-weight: 400; }
-.scada-page .bn-foot { margin-top: 8px; font-size: 15px; color: var(--text-3); font-family: var(--f-mono); }
+.scada-page #fb-intake, .scada-page #fb-ds { font-size: 18px; font-weight: 700; color: var(--text); }
+.scada-page .bn-foot { margin-top: 8px; font-size: 11px; color: var(--text-3); font-family: var(--f-mono); }
 .scada-page .bn-foot strong { font-size: 18px; }
 .scada-page .bn-breakdown { margin-top: 6px; display: flex; gap: 12px; font-size: 13px; font-family: var(--f-mono); color: var(--text-2); }
 .scada-page .balance-arrow { height: 44px; display: grid; place-items: center; }
@@ -745,4 +746,32 @@
   .scada-page .balance-card { padding: 14px; }
   .scada-page .scm-card  { padding: 14px; }
   .scada-page .scm-value { font-size: 30px; }
+}
+
+/* Raw sensor data grid */
+.scada-page .raw-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.scada-page .raw-item {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 10px 6px 0;
+  border-bottom: 1px solid rgba(0,0,0,.05);
+}
+.scada-page .raw-key {
+  font-size: 10px;
+  color: var(--text-3);
+  font-family: var(--f-mono);
+  margin-bottom: 2px;
+}
+.scada-page .raw-val {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--f-mono);
+}
+@media (max-width: 640px) {
+  .scada-page .raw-grid { grid-template-columns: repeat(2, 1fr); }
 }

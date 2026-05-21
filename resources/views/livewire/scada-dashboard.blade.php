@@ -20,7 +20,7 @@
         @if($latest)
             <div class="status-badge {{ $isStale ? ($staleMinutes > 30 ? 'dead' : 'stale') : 'live' }}" id="status-badge">
                 <span class="dot"></span>
-                <span id="status-text">@if($isStale)Stale · {{ $staleMinutes }} mnt lalu@else Live @endif</span>
+                <span id="status-text">{{ $isStale ? 'Stale · '.$staleMinutes.' mnt lalu' : 'Live' }}</span>
             </div>
         @endif
         <button class="refresh-btn" onclick="window.location.reload()">
@@ -60,7 +60,7 @@
      ============================================================ --}}
 <div class="section">
     <div class="section-head">
-        <h2 class="section-title">Flow &amp; Neraca Aliran</h2>
+        <h2 class="section-title">Flow &amp; Losses Indicator</h2>
         <span class="section-meta">4 sensor · balance card</span>
     </div>
 
@@ -81,7 +81,7 @@
     <div class="balance-card" id="fb-card" style="--diff-color:{{ $fbColor }}">
         <div class="balance-head">
             <div>
-                <div class="balance-title">Neraca Aliran (Flow Balance)</div>
+                <div class="balance-title">Flow Balance</div>
                 <div class="balance-sub">Intake vs total distribusi (Yos Sudarso + Veteran)</div>
             </div>
             <div class="balance-state" id="fb-state" style="color:{{ $fbColor }};background:{{ $fbTone }}">
@@ -93,7 +93,7 @@
             <div class="balance-node intake">
                 <div class="bn-label">Flow Intake</div>
                 <div class="bn-val"><span id="fb-intake">{{ number_format($fbIntake, 1) }}</span><span>L/s</span></div>
-                <div class="bn-foot">masuk dari sumber</div>
+                <div class="bn-foot">supply dari sungai brayan</div>
             </div>
             <div class="balance-arrow">
                 <svg viewBox="0 0 100 60" preserveAspectRatio="none">
@@ -110,7 +110,7 @@
                 </svg>
             </div>
             <div class="balance-node downstream">
-                <div class="bn-label">Yos + Veteran</div>
+                <div class="bn-label">Flow Yos Sudarso + Veteran</div>
                 <div class="bn-val"><span id="fb-ds">{{ number_format($fbDs, 1) }}</span><span>L/s</span></div>
                 <div class="bn-breakdown">
                     <span><b style="color:#1cc88a">●</b> Yos <span id="fb-yos">{{ number_format($fbYos, 1) }}</span></span>
@@ -262,6 +262,53 @@
 </div>
 
 {{-- ============================================================
+     SECTION 3b — RESERVOIR
+     ============================================================ --}}
+<div class="section">
+    <div class="section-head">
+        <h2 class="section-title">Level Reservoir</h2>
+    </div>
+    @php
+    $maxLvl = 6;
+    $resA   = $latest->level_reservoir_a ?? 0;
+    $resB   = $latest->level_reservoir_b ?? 0;
+    $resFn  = function($v) use ($maxLvl) {
+        $pct = $maxLvl > 0 ? ($v / $maxLvl) * 100 : 0;
+        if ($pct > 90 || $pct < 30) return '#B0473B';
+        if ($pct < 50) return '#C28C2E';
+        return '#3D7E92';
+    };
+    $pctA = round(min(100, $resA / $maxLvl * 100), 1);
+    $pctB = round(min(100, $resB / $maxLvl * 100), 1);
+    @endphp
+    <div class="reservoirs" id="reservoir-section" wire:ignore>
+        <div class="reservoir-pair">
+            <div class="res-card">
+                <div class="res-name">Reservoir A</div>
+                <div class="res-tank">
+                    <div class="res-fill" id="res-fill-a" style="height:{{ $pctA }}%;--res-fill-color:{{ $resFn($resA) }}"></div>
+                </div>
+                <div class="res-val"><span id="res-val-a">{{ number_format($resA, 3) }}</span><span class="unit"> m</span></div>
+                <div class="res-pct" id="res-pct-a">{{ $pctA }}% / {{ $maxLvl }}m</div>
+            </div>
+            <div class="res-card">
+                <div class="res-name">Reservoir B</div>
+                <div class="res-tank">
+                    <div class="res-fill" id="res-fill-b" style="height:{{ $pctB }}%;--res-fill-color:{{ $resFn($resB) }}"></div>
+                </div>
+                <div class="res-val"><span id="res-val-b">{{ number_format($resB, 3) }}</span><span class="unit"> m</span></div>
+                <div class="res-pct" id="res-pct-b">{{ $pctB }}% / {{ $maxLvl }}m</div>
+            </div>
+        </div>
+        <div class="res-legend">
+            <span><span class="res-legend-dot" style="background:#3D7E92"></span>Normal 50–90%</span>
+            <span><span class="res-legend-dot" style="background:#C28C2E"></span>Rendah 30–50%</span>
+            <span><span class="res-legend-dot" style="background:#B0473B"></span>Kritis</span>
+        </div>
+    </div>
+</div>
+
+{{-- ============================================================
      SECTION 4 — SCM
      ============================================================ --}}
 <div class="section">
@@ -355,95 +402,71 @@
 </div>
 
 {{-- DEBUG: raw latest record --}}
-<pre id="debug-raw" style="background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:10px;font-size:11px;line-height:1.6;overflow-x:auto;margin-bottom:16px">{{ json_encode($latest, JSON_PRETTY_PRINT) }}</pre>
+<div style="background:var(--glass);backdrop-filter:var(--glass-blur);border:0.5px solid var(--glass-border);border-radius:var(--r-md);padding:16px 20px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#3D7E92;display:inline-block"></span>
+        <span style="font-size:11px;font-weight:600;color:var(--text-2);letter-spacing:.06em;text-transform:uppercase;font-family:var(--f-mono)">Raw Sensor Data Terbaru</span>
+        <span style="margin-left:auto;font-size:10px;color:var(--text-3);font-family:var(--f-mono)" id="debug-raw-ts">{{ \Carbon\Carbon::parse($latest->timestamp)->format('d/m/Y H:i:s') }}</span>
+    </div>
+    <div id="debug-raw" class="raw-grid">
+        @php
+        $skip   = ['id','created_at','updated_at'];
+        $arr    = $latest->toArray();
+        $fields = array_filter($arr, fn($k) => !in_array($k, $skip), ARRAY_FILTER_USE_KEY);
+        @endphp
+        @foreach($fields as $key => $val)
+        <div class="raw-item">
+            <span class="raw-key">{{ $key }}</span>
+            <span class="raw-val">{{ $key === 'timestamp' ? \Carbon\Carbon::parse($val)->format('d/m/Y H:i:s') : ($val ?? '—') }}</span>
+        </div>
+        @endforeach
+    </div>
+</div>
 
-@if(false) {{-- SECTION 6 — RESERVOIR & TREN HISTORIS (HIDDEN) --}}
+
+@if(false) {{-- SECTION 6b — TREN HISTORIS (HIDDEN) --}}
 <div class="section">
     <div class="section-head">
-        <h2 class="section-title">Reservoir &amp; Tren Historis</h2>
+        <h2 class="section-title">Tren Historis</h2>
         <span class="section-meta">100 titik terakhir</span>
     </div>
-    <div class="split-row">
-        {{-- Reservoir tanks --}}
-        @php
-        $maxLvl = 6;
-        $resA   = $latest->level_reservoir_a ?? 0;
-        $resB   = $latest->level_reservoir_b ?? 0;
-        $resFn  = function($v) use ($maxLvl) {
-            $pct = $maxLvl > 0 ? ($v / $maxLvl) * 100 : 0;
-            if ($pct > 90 || $pct < 30) return '#B0473B';
-            if ($pct < 50) return '#C28C2E';
-            return '#3D7E92';
-        };
-        $pctA = round(min(100, $resA / $maxLvl * 100), 1);
-        $pctB = round(min(100, $resB / $maxLvl * 100), 1);
-        @endphp
-        <div class="reservoirs" id="reservoir-section" wire:ignore>
-            <h3>Level Reservoir</h3>
-            <div class="reservoir-pair">
-                <div class="res-card">
-                    <div class="res-name">Reservoir A</div>
-                    <div class="res-tank">
-                        <div class="res-fill" id="res-fill-a" style="height:{{ $pctA }}%;--res-fill-color:{{ $resFn($resA) }}"></div>
-                    </div>
-                    <div class="res-val"><span id="res-val-a">{{ number_format($resA, 2) }}</span><span class="unit"> m</span></div>
-                    <div class="res-pct" id="res-pct-a">{{ $pctA }}% / {{ $maxLvl }}m</div>
-                </div>
-                <div class="res-card">
-                    <div class="res-name">Reservoir B</div>
-                    <div class="res-tank">
-                        <div class="res-fill" id="res-fill-b" style="height:{{ $pctB }}%;--res-fill-color:{{ $resFn($resB) }}"></div>
-                    </div>
-                    <div class="res-val"><span id="res-val-b">{{ number_format($resB, 2) }}</span><span class="unit"> m</span></div>
-                    <div class="res-pct" id="res-pct-b">{{ $pctB }}% / {{ $maxLvl }}m</div>
+    <div class="chart-stack" wire:ignore>
+        <div class="chart-card">
+            <div class="chart-head">
+                <h4><span class="ic" style="background:var(--s1)"></span>Flow Rate</h4>
+                <div class="chart-legend">
+                    <span class="legend-item"><span class="sw" style="background:var(--s1)"></span>Flow Intake</span>
+                    <span class="legend-item"><span class="sw" style="background:var(--s2)"></span>Yos + Veteran</span>
+                    <span style="color:var(--text-3)">L/s</span>
                 </div>
             </div>
-            <div class="res-legend">
-                <span><span class="res-legend-dot" style="background:#3D7E92"></span>Normal 50–90%</span>
-                <span><span class="res-legend-dot" style="background:#C28C2E"></span>Rendah 30–50%</span>
-                <span><span class="res-legend-dot" style="background:#B0473B"></span>Kritis</span>
-            </div>
+            <div class="chart-wrap"><div id="chartFlow" style="width:100%;height:140px"></div></div>
         </div>
-
-        {{-- Area charts --}}
-        <div class="chart-stack" wire:ignore>
-            <div class="chart-card">
-                <div class="chart-head">
-                    <h4><span class="ic" style="background:var(--s1)"></span>Flow Rate</h4>
-                    <div class="chart-legend">
-                        <span class="legend-item"><span class="sw" style="background:var(--s1)"></span>Flow Intake</span>
-                        <span class="legend-item"><span class="sw" style="background:var(--s2)"></span>Yos + Veteran</span>
-                        <span style="color:var(--text-3)">L/s</span>
-                    </div>
+        <div class="chart-card">
+            <div class="chart-head">
+                <h4><span class="ic" style="background:var(--s1)"></span>Turbidity</h4>
+                <div class="chart-legend">
+                    <span class="legend-item"><span class="sw" style="background:var(--s1)"></span>Reservoir</span>
+                    <span class="legend-item"><span class="sw" style="background:var(--s2)"></span>Sedimen</span>
+                    <span class="legend-item"><span class="sw" style="background:var(--s3)"></span>Filter</span>
+                    <span style="color:var(--text-3)">NTU</span>
                 </div>
-                <div class="chart-wrap"><div id="chartFlow" style="width:100%;height:140px"></div></div>
             </div>
-            <div class="chart-card">
-                <div class="chart-head">
-                    <h4><span class="ic" style="background:var(--s1)"></span>Turbidity</h4>
-                    <div class="chart-legend">
-                        <span class="legend-item"><span class="sw" style="background:var(--s1)"></span>Reservoir</span>
-                        <span class="legend-item"><span class="sw" style="background:var(--s2)"></span>Sedimen</span>
-                        <span class="legend-item"><span class="sw" style="background:var(--s3)"></span>Filter</span>
-                        <span style="color:var(--text-3)">NTU</span>
-                    </div>
+            <div class="chart-wrap"><div id="chartTurbidity" style="width:100%;height:140px"></div></div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-head">
+                <h4><span class="ic" style="background:var(--s1)"></span>pH</h4>
+                <div class="chart-legend">
+                    <span class="legend-item"><span class="sw" style="background:var(--s1)"></span>pH Baku</span>
+                    <span class="legend-item"><span class="sw" style="background:var(--s2)"></span>pH Reservoir</span>
                 </div>
-                <div class="chart-wrap"><div id="chartTurbidity" style="width:100%;height:140px"></div></div>
             </div>
-            <div class="chart-card">
-                <div class="chart-head">
-                    <h4><span class="ic" style="background:var(--s1)"></span>pH</h4>
-                    <div class="chart-legend">
-                        <span class="legend-item"><span class="sw" style="background:var(--s1)"></span>pH Baku</span>
-                        <span class="legend-item"><span class="sw" style="background:var(--s2)"></span>pH Reservoir</span>
-                    </div>
-                </div>
-                <div class="chart-wrap"><div id="chartQuality" style="width:100%;height:140px"></div></div>
-            </div>
+            <div class="chart-wrap"><div id="chartQuality" style="width:100%;height:140px"></div></div>
         </div>
     </div>
 </div>
-@endif {{-- end SECTION 6 --}}
+@endif {{-- end SECTION 6b --}}
 
 @if(false) {{-- SECTION 7 — LOG TABLE (HIDDEN) --}}
 <div class="section" style="margin-bottom:0">
@@ -539,7 +562,7 @@
     var _latestPressure = @json($pressure);
     var _last4          = @json($last4);
     var _sparkData      = @json($sparkData);
-    window._scadaTs     = @json($latest ? \Carbon\Carbon::parse($latest->timestamp)->timestamp : null);
+    window._scadaElapsed = @json($elapsedSeconds);
 
     function tryInit() {
         if (typeof echarts === 'undefined' || typeof window._scadaInit === 'undefined') {
@@ -971,6 +994,26 @@ function updateScm(val) {
 var _buf4     = [];   /* array of complete record objects, newest first */
 var _cycleIdx = 0;    /* index record yang sedang ditampilkan */
 
+var _RES_MAX = 6;
+function _resColor(v) { var p=v/_RES_MAX*100; return (p>90||p<30)?'#B0473B':(p<50?'#C28C2E':'#3D7E92'); }
+function updateReservoir(rec) {
+    var rA = parseFloat(rec.level_reservoir_a), rB = parseFloat(rec.level_reservoir_b);
+    if (!isNaN(rA)) {
+        var pA = Math.min(100, rA/_RES_MAX*100).toFixed(1);
+        var fa = document.getElementById('res-fill-a');
+        if (fa) { fa.style.height = pA+'%'; fa.style.setProperty('--res-fill-color', _resColor(rA)); }
+        var va = document.getElementById('res-val-a'); if (va) va.textContent = rA.toFixed(3);
+        var pa = document.getElementById('res-pct-a'); if (pa) pa.textContent = pA+'% / '+_RES_MAX+'m';
+    }
+    if (!isNaN(rB)) {
+        var pB = Math.min(100, rB/_RES_MAX*100).toFixed(1);
+        var fb = document.getElementById('res-fill-b');
+        if (fb) { fb.style.height = pB+'%'; fb.style.setProperty('--res-fill-color', _resColor(rB)); }
+        var vb = document.getElementById('res-val-b'); if (vb) vb.textContent = rB.toFixed(3);
+        var pb = document.getElementById('res-pct-b'); if (pb) pb.textContent = pB+'% / '+_RES_MAX+'m';
+    }
+}
+
 function showRecord(rec) {
     if (!rec) return;
 
@@ -996,7 +1039,7 @@ function showRecord(rec) {
         updateGauges({
             intake:     pIntake,
             distribusi: parseFloat(rec.pressure_distribusi),
-            service:    parseFloat(rec.pressure_service),
+            service:    parseFloat(rec.pressure_service2),
             backwash:   parseFloat(rec.pressure_backwash),
             kompressor: parseFloat(rec.pressure_kompressor),
         });
@@ -1011,12 +1054,17 @@ function showRecord(rec) {
     /* SCM */
     var scm = parseFloat(rec.scm);
     if (!isNaN(scm)) updateScm(scm);
+    /* Reservoir */
+    updateReservoir(rec);
 }
 
 function initBuffer(last4) {
     _buf4     = Array.isArray(last4) ? last4.slice() : [];
     _cycleIdx = 0;
-    if (_buf4.length > 0) showRecord(_buf4[0]);
+    if (_buf4.length > 0) {
+        showRecord(_buf4[0]);
+        // _scadaTs is already set correctly from PHP (Asia/Jakarta epoch) — do not override here
+    }
 }
 
 function _fakeLiveTick() {
@@ -1133,23 +1181,22 @@ function initEcho() {
         .listen('.sensor.update', function(payload) {
             var d = payload.data || payload;
 
-            /* Timestamp untuk elapsed timer + header update */
+            /* Reset elapsed timer + update header on new data */
             if (d.timestamp) {
-                var tsDate = new Date(d.timestamp);
-                var tsUnix = tsDate.getTime() / 1000;
-                if (!isNaN(tsUnix)) {
-                    window._scadaTs = tsUnix;
-                    var headerTs = document.getElementById('header-ts');
-                    if (headerTs) {
-                        var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
-                        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                        headerTs.textContent = pad(tsDate.getDate()) + ' ' + months[tsDate.getMonth()] + ' ' + tsDate.getFullYear() + ', ' + pad(tsDate.getHours()) + ':' + pad(tsDate.getMinutes());
+                _elapsed = 0;
+                var headerTs = document.getElementById('header-ts');
+                if (headerTs) {
+                    var tsStr = d.timestamp.replace('T', ' ').replace(/\.\d+.*$/, '');
+                    var parts = tsStr.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/);
+                    if (parts) {
+                        var months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+                        headerTs.textContent = parts[3] + ' ' + months[+parts[2]-1] + ' ' + parts[1] + ', ' + parts[4] + ':' + parts[5];
                     }
-                    var badge = document.getElementById('status-badge');
-                    var statusTxt = document.getElementById('status-text');
-                    if (badge) { badge.className = badge.className.replace(/\b(live|stale|dead)\b/g, ''); badge.className = (badge.className.trim() + ' live').trim(); }
-                    if (statusTxt) statusTxt.textContent = 'Live';
                 }
+                var badge = document.getElementById('status-badge');
+                var statusTxt = document.getElementById('status-text');
+                if (badge) { badge.className = badge.className.replace(/\b(live|stale|dead)\b/g, ''); badge.className = (badge.className.trim() + ' live').trim(); }
+                if (statusTxt) statusTxt.textContent = 'Live';
             }
 
             /* Sparklines — update hanya pada data real baru */
@@ -1172,26 +1219,33 @@ function initEcho() {
 
             /* Debug raw block */
             var dbg = document.getElementById('debug-raw');
-            if (dbg) dbg.textContent = JSON.stringify(d, null, 2);
+            if (dbg) {
+                var skip = ['id','created_at','updated_at'];
+                var html = '';
+                Object.keys(d).filter(function(k){ return skip.indexOf(k)===-1; }).forEach(function(k){
+                    var v = (d[k] !== null && d[k] !== undefined) ? d[k] : '—';
+                    if (k === 'timestamp') v = d[k].replace('T',' ').replace(/\.\d+.*$/,'').replace(/^(\d{4})-(\d{2})-(\d{2})/,'$3/$2/$1');
+                    html += '<div class="raw-item"><span class="raw-key">'+k+'</span><span class="raw-val">'+v+'</span></div>';
+                });
+                dbg.innerHTML = html;
+                var tsEl = document.getElementById('debug-raw-ts');
+                if (tsEl && d.timestamp) tsEl.textContent = d.timestamp.replace('T',' ').replace(/\.\d+.*$/,'').replace(/^(\d{4})-(\d{2})-(\d{2})/,'$3/$2/$1');
+            }
         });
 }
 initEcho();
 
-/* Real-time elapsed ticker — update every second */
+/* Real-time elapsed ticker — counts up from PHP-computed elapsed seconds */
+var _elapsed = (window._scadaElapsed || 0);
+function _fmtElapsed(s) {
+    if (s < 60) return s + 's lalu';
+    if (s < 3600) { var m = Math.floor(s/60), r = s%60; return m+'m'+(r>0?' '+r+'s':'')+' lalu'; }
+    var h = Math.floor(s/3600), rm = Math.floor((s%3600)/60);
+    return h+'j'+(rm>0?' '+rm+'m':'')+' lalu';
+}
 setInterval(function() {
-    var ts = window._scadaTs;
-    if (!ts) return;
-    var diff = Math.max(0, Math.round(Date.now() / 1000 - ts));
-    var txt;
-    if (diff < 60) {
-        txt = diff + 's lalu';
-    } else if (diff < 3600) {
-        var m = Math.floor(diff / 60), s = diff % 60;
-        txt = m + 'm' + (s > 0 ? ' ' + s + 's' : '') + ' lalu';
-    } else {
-        var h = Math.floor(diff / 3600), rem = diff % 3600, hm = Math.floor(rem / 60);
-        txt = h + 'j' + (hm > 0 ? ' ' + hm + 'm' : '') + ' lalu';
-    }
+    _elapsed++;
+    var txt = _fmtElapsed(_elapsed);
     document.querySelectorAll('.kpi-meta-time').forEach(function(el) { el.textContent = txt; });
 }, 1000);
 

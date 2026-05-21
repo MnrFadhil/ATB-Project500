@@ -46,16 +46,20 @@ class ScadaDashboard extends Component
         $pressure = $latestPressure ? [
             'intake'     => $latestPressure->pressure_intake,
             'distribusi' => $latestPressure->pressure_distribusi,
-            'service'    => $latestPressure->pressure_service,
+            'service'    => $latestPressure->pressure_service2,
             'backwash'   => $latestPressure->pressure_backwash,
             'kompressor' => $latestPressure->pressure_kompressor,
         ] : null;
 
-        $staleMinutes = 0;
-        $isStale      = false;
+        $staleMinutes   = 0;
+        $isStale        = false;
+        $elapsedSeconds = 0;
         if ($latest) {
-            $staleMinutes = (int) Carbon::parse($latest->timestamp)->diffInMinutes(now());
-            $isStale      = $staleMinutes >= 5;
+            // Timestamps stored as WIB (UTC+7), compare against current WIB time naively
+            $nowWib         = Carbon::now('Asia/Jakarta')->toDateTimeString();
+            $elapsedSeconds = (int) abs(strtotime($latest->timestamp) - strtotime($nowWib));
+            $staleMinutes   = (int) floor($elapsedSeconds / 60);
+            $isStale        = $staleMinutes >= 5;
         }
 
         // 4 latest complete records (newest first) — dipakai JS untuk fake-live cycling
@@ -64,8 +68,8 @@ class ScadaDashboard extends Component
             'flow_intake', 'flow_yos_sudarso', 'flow_veteran', 'flow_backwash',
             'turbidity_baku', 'turbidity_reservoir', 'turbidity_sedimen', 'turbidity_filter',
             'ph_baku', 'ph_reservoir', 'free_chlorine',
-            'pressure_intake', 'pressure_distribusi', 'pressure_service', 'pressure_backwash', 'pressure_kompressor',
-            'scm',
+            'pressure_intake', 'pressure_distribusi', 'pressure_service2', 'pressure_backwash', 'pressure_kompressor',
+            'scm', 'level_reservoir_a', 'level_reservoir_b',
         ];
         $last4 = $logs->take(4)->map(fn($l) =>
             collect($last4Fields)->mapWithKeys(fn($f) => [$f => $l->$f])->toArray()
@@ -89,7 +93,7 @@ class ScadaDashboard extends Component
 
         return view('livewire.scada-dashboard', compact(
             'latest', 'logs', 'chartData', 'pressure',
-            'isStale', 'staleMinutes', 'last4', 'sparkData', 'reservoirWarn'
+            'isStale', 'staleMinutes', 'elapsedSeconds', 'last4', 'sparkData', 'reservoirWarn'
         ))->layout('layouts.app');
     }
 }
