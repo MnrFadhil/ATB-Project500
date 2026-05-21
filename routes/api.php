@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\SensorDataReceived;
 use App\Models\SensorLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -11,6 +12,9 @@ Route::middleware('sensor.key')->post('/sensor', function (Request $request) {
         'flow_intake'          => 'nullable|numeric',
         'turbidity_baku'       => 'nullable|numeric',
         'ph_baku'              => 'nullable|numeric',
+        'level_reservoir_a'    => 'nullable|numeric',
+        'level_reservoir_b'    => 'nullable|numeric',
+        // backward compat — sensor lama masih kirim nama lama
         'pressure_reservoir_a' => 'nullable|numeric',
         'pressure_reservoir_b' => 'nullable|numeric',
         'pressure_distribusi'  => 'nullable|numeric',
@@ -32,7 +36,21 @@ Route::middleware('sensor.key')->post('/sensor', function (Request $request) {
         'freq_distribusi_c'    => 'nullable|numeric',
     ]);
 
+    // map nama lama ke nama baru jika sensor belum diupdate
+    if (isset($data['pressure_reservoir_a'])) {
+        $data['level_reservoir_a'] = $data['level_reservoir_a'] ?? $data['pressure_reservoir_a'];
+        unset($data['pressure_reservoir_a']);
+    }
+    if (isset($data['pressure_reservoir_b'])) {
+        $data['level_reservoir_b'] = $data['level_reservoir_b'] ?? $data['pressure_reservoir_b'];
+        unset($data['pressure_reservoir_b']);
+    }
+
     SensorLog::create($data);
+
+    // Broadcast ke semua browser yang terhubung via WebSocket (Reverb)
+    // Data langsung dikirim tanpa query DB tambahan
+    broadcast(new SensorDataReceived($data));
 
     return response()->json(['status' => 'ok']);
 });
