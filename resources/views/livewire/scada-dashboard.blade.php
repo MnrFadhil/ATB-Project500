@@ -1179,6 +1179,7 @@ function initEcho() {
 
     window.Echo.channel('sensor')
         .listen('.sensor.update', function(payload) {
+            console.log('[SCADA WS]', payload);
             var d = payload.data || payload;
 
             /* Reset elapsed timer + update header on new data */

@@ -1395,7 +1395,7 @@
                         tempData.tittle1 = `${idx} Running`
                     } else {
                         let test = tempData.tittle1.split(' ')
-                        test[test.length - 2] += `, ${idx}`
+                        test[test.length - 2] += ` & ${idx}`
                         tempData.tittle1 = test.join(' ')
                     }
 
@@ -1419,7 +1419,7 @@
                         tempData.tittle2 = `${idx} Standby`
                     } else {
                         let test = tempData.tittle2.split(' ')
-                        test[test.length - 2] += `, ${idx}`
+                        test[test.length - 2] += ` & ${idx}`
                         tempData.tittle2 = test.join(' ')
                     }
                 } else {
@@ -1450,7 +1450,7 @@
                         tempData.tittle1 = `${idx} Running`
                     } else {
                         let test = tempData.tittle1.split(' ')
-                        test[test.length - 2] += `, ${idx}`
+                        test[test.length - 2] += ` & ${idx}`
                         tempData.tittle1 = test.join(' ')
                     }
 
@@ -1512,7 +1512,7 @@
                         tempData.tittle2 = `${idx} Standby`
                     } else {
                         let test = tempData.tittle2.split(' ')
-                        test[test.length - 2] += `, ${idx}`
+                        test[test.length - 2] += ` & ${idx}`
                         tempData.tittle2 = test.join(' ')
                     }
                 } else {
