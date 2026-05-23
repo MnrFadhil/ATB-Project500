@@ -61,28 +61,30 @@
 <div class="section">
     <div class="section-head">
         <h2 class="section-title">Flow &amp; Losses Indicator</h2>
-        <span class="section-meta">4 sensor · balance card</span>
+        <span class="section-meta">6 sensor · balance card</span>
     </div>
 
     {{-- Flow Balance Card --}}
     @php
-        $fbIntake = $latest->flow_intake ?? 0;
-        $fbYos    = $latest->flow_yos_sudarso ?? 0;
-        $fbVet    = $latest->flow_veteran ?? 0;
-        $fbDs     = round($fbYos + $fbVet, 1);
-        $fbDiff   = round($fbIntake - $fbDs, 1);
-        $fbPct    = $fbIntake > 0 ? abs($fbDiff / $fbIntake * 100) : 0;
-        $fbState  = $fbPct > 2.8 ? 'KRITIS' : ($fbPct > 1.5 ? 'WASPADA' : 'NORMAL');
-        $fbColor  = $fbPct > 2.8 ? '#e74a3b' : ($fbPct > 1.5 ? '#E7A52F' : '#1cc88a');
-        $fbTone   = $fbPct > 2.8 ? 'rgba(231,74,59,.12)' : ($fbPct > 1.5 ? 'rgba(231,165,47,.14)' : 'rgba(28,200,138,.12)');
-        $fbBarW   = $fbIntake > 0 ? min(100, $fbDs / $fbIntake * 100) : 0;
-        $fbDir    = $fbDiff >= 0 ? 'kehilangan' : 'surplus';
+        $fbIntake  = $latest->flow_intake ?? 0;
+        $fbYos     = $latest->flow_yos_sudarso ?? 0;
+        $fbVet     = $latest->flow_veteran ?? 0;
+        $fbBypYos  = $latest->flow_bypass_yoss ?? 0;
+        $fbBypVet  = $latest->flow_bypass_vet ?? 0;
+        $fbDs      = round($fbYos + $fbVet + $fbBypYos + $fbBypVet, 1);
+        $fbDiff    = round($fbIntake - $fbDs, 1);
+        $fbPct     = $fbIntake > 0 ? abs($fbDiff / $fbIntake * 100) : 0;
+        $fbState   = $fbPct > 2.8 ? 'KRITIS' : ($fbPct > 1.5 ? 'WASPADA' : 'NORMAL');
+        $fbColor   = $fbPct > 2.8 ? '#e74a3b' : ($fbPct > 1.5 ? '#E7A52F' : '#1cc88a');
+        $fbTone    = $fbPct > 2.8 ? 'rgba(231,74,59,.12)' : ($fbPct > 1.5 ? 'rgba(231,165,47,.14)' : 'rgba(28,200,138,.12)');
+        $fbBarW    = $fbIntake > 0 ? min(100, $fbDs / $fbIntake * 100) : 0;
+        $fbDir     = $fbDiff >= 0 ? 'kehilangan' : 'surplus';
     @endphp
     <div class="balance-card" id="fb-card" style="--diff-color:{{ $fbColor }}">
         <div class="balance-head">
             <div>
                 <div class="balance-title">Flow Balance</div>
-                <div class="balance-sub">Intake vs total distribusi (Yos Sudarso + Veteran)</div>
+                <div class="balance-sub">Intake vs total distribusi (Yos + Veteran + Bypass Yos + Bypass Vet)</div>
             </div>
             <div class="balance-state" id="fb-state" style="color:{{ $fbColor }};background:{{ $fbTone }}">
                 <span style="width:6px;height:6px;border-radius:50%;background:{{ $fbColor }};display:inline-block;margin-right:6px;"></span>
@@ -110,11 +112,13 @@
                 </svg>
             </div>
             <div class="balance-node downstream">
-                <div class="bn-label">Flow Yos Sudarso + Veteran</div>
+                <div class="bn-label">Total Distribusi</div>
                 <div class="bn-val"><span id="fb-ds">{{ number_format($fbDs, 1) }}</span><span>L/s</span></div>
                 <div class="bn-breakdown">
                     <span><b style="color:#1cc88a">●</b> Yos <span id="fb-yos">{{ number_format($fbYos, 1) }}</span></span>
                     <span><b style="color:#36b9cc">●</b> Vet <span id="fb-vet">{{ number_format($fbVet, 1) }}</span></span>
+                    <span><b style="color:#C28C2E">●</b> Byp.Yos <span id="fb-byp-yos">{{ number_format($fbBypYos, 1) }}</span></span>
+                    <span><b style="color:#AF8CB1">●</b> Byp.Vet <span id="fb-byp-vet">{{ number_format($fbBypVet, 1) }}</span></span>
                 </div>
             </div>
             <div class="balance-node diff" id="fb-diff-node" style="--diff-color:{{ $fbColor }};--diff-tone:{{ $fbTone }}">
@@ -143,10 +147,12 @@
     {{-- 4 Flow KPI cards --}}
     @php
     $flowCards = [
-        ['field'=>'flow_intake',      'id'=>'flow-intake', 'label'=>'Flow Intake',      'accent'=>'#4e73df','soft'=>'rgba(78,115,223,.1)', 'icon'=>'drop','dec'=>1,'unit'=>'L/s'],
-        ['field'=>'flow_yos_sudarso', 'id'=>'flow-yos',   'label'=>'Flow Yos Sudarso', 'accent'=>'#1cc88a','soft'=>'rgba(28,200,138,.1)','icon'=>'drop','dec'=>1,'unit'=>'L/s'],
-        ['field'=>'flow_veteran',     'id'=>'flow-vet',   'label'=>'Flow Veteran',      'accent'=>'#36b9cc','soft'=>'rgba(54,185,204,.1)','icon'=>'drop','dec'=>1,'unit'=>'L/s'],
-        ['field'=>'flow_backwash',    'id'=>'flow-bw',    'label'=>'Flow Backwash',     'accent'=>'#AF8CB1','soft'=>'rgba(175,140,177,.12)','icon'=>'drop','dec'=>1,'unit'=>'L/s'],
+        ['field'=>'flow_intake',       'id'=>'flow-intake',   'label'=>'Flow Intake',       'accent'=>'#4e73df','soft'=>'rgba(78,115,223,.1)',  'icon'=>'drop','dec'=>1,'unit'=>'L/s'],
+        ['field'=>'flow_yos_sudarso',  'id'=>'flow-yos',      'label'=>'Flow Yos Sudarso',  'accent'=>'#1cc88a','soft'=>'rgba(28,200,138,.1)', 'icon'=>'drop','dec'=>1,'unit'=>'L/s'],
+        ['field'=>'flow_veteran',      'id'=>'flow-vet',      'label'=>'Flow Veteran',       'accent'=>'#36b9cc','soft'=>'rgba(54,185,204,.1)', 'icon'=>'drop','dec'=>1,'unit'=>'L/s'],
+        ['field'=>'flow_backwash',     'id'=>'flow-bw',       'label'=>'Flow Backwash',      'accent'=>'#AF8CB1','soft'=>'rgba(175,140,177,.12)','icon'=>'drop','dec'=>1,'unit'=>'L/s'],
+        ['field'=>'flow_bypass_yoss',  'id'=>'flow-byp-yos',  'label'=>'Flow Bypass Yoss',   'accent'=>'#C28C2E','soft'=>'rgba(194,140,46,.12)', 'icon'=>'drop','dec'=>1,'unit'=>'L/s'],
+        ['field'=>'flow_bypass_vet',   'id'=>'flow-byp-vet',  'label'=>'Flow Bypass Veteran', 'accent'=>'#E4509A','soft'=>'rgba(228,80,154,.1)', 'icon'=>'drop','dec'=>1,'unit'=>'L/s'],
     ];
     @endphp
     <div class="kpi-grid">
@@ -180,13 +186,12 @@
 <div class="section">
     <div class="section-head">
         <h2 class="section-title">Turbidity</h2>
-        <span class="section-meta">4 titik pengukuran · NTU</span>
+        <span class="section-meta">3 titik pengukuran · NTU</span>
     </div>
     @php
     $turbCards = [
         ['field'=>'turbidity_baku',      'id'=>'turb-baku','label'=>'Air Baku',  'accent'=>'#f6c23e','soft'=>'rgba(246,194,62,.12)','dec'=>1],
         ['field'=>'turbidity_reservoir', 'id'=>'turb-res', 'label'=>'Reservoir', 'accent'=>'#36b9cc','soft'=>'rgba(54,185,204,.1)', 'dec'=>2],
-        ['field'=>'turbidity_sedimen',   'id'=>'turb-sed', 'label'=>'Sedimen',   'accent'=>'#E4509A','soft'=>'rgba(228,80,154,.1)', 'dec'=>2],
         ['field'=>'turbidity_filter',    'id'=>'turb-fil', 'label'=>'Filter',    'accent'=>'#5FDA5A','soft'=>'rgba(95,218,90,.12)', 'dec'=>2],
     ];
     @endphp
@@ -447,8 +452,7 @@
                 <h4><span class="ic" style="background:var(--s1)"></span>Turbidity</h4>
                 <div class="chart-legend">
                     <span class="legend-item"><span class="sw" style="background:var(--s1)"></span>Reservoir</span>
-                    <span class="legend-item"><span class="sw" style="background:var(--s2)"></span>Sedimen</span>
-                    <span class="legend-item"><span class="sw" style="background:var(--s3)"></span>Filter</span>
+                    <span class="legend-item"><span class="sw" style="background:var(--s2)"></span>Filter</span>
                     <span style="color:var(--text-3)">NTU</span>
                 </div>
             </div>
@@ -594,31 +598,33 @@ var GAUGE_DEFS = [
 ];
 
 var CARD_DEFS = [
-    { id: 'flow-intake', field: 'flow_intake',         dec: 1 },
-    { id: 'flow-yos',    field: 'flow_yos_sudarso',    dec: 1 },
-    { id: 'flow-vet',    field: 'flow_veteran',         dec: 1 },
-    { id: 'flow-bw',     field: 'flow_backwash',        dec: 1 },
-    { id: 'turb-baku',   field: 'turbidity_baku',       dec: 1 },
-    { id: 'turb-res',    field: 'turbidity_reservoir',  dec: 2 },
-    { id: 'turb-sed',    field: 'turbidity_sedimen',    dec: 2 },
-    { id: 'turb-fil',    field: 'turbidity_filter',     dec: 2 },
-    { id: 'ph-baku',     field: 'ph_baku',              dec: 2 },
-    { id: 'ph-res',      field: 'ph_reservoir',         dec: 2 },
-    { id: 'free-cl',     field: 'free_chlorine',        dec: 2 },
+    { id: 'flow-intake',   field: 'flow_intake',         dec: 1 },
+    { id: 'flow-yos',      field: 'flow_yos_sudarso',    dec: 1 },
+    { id: 'flow-vet',      field: 'flow_veteran',         dec: 1 },
+    { id: 'flow-bw',       field: 'flow_backwash',        dec: 1 },
+    { id: 'flow-byp-yos',  field: 'flow_bypass_yoss',    dec: 1 },
+    { id: 'flow-byp-vet',  field: 'flow_bypass_vet',     dec: 1 },
+    { id: 'turb-baku',     field: 'turbidity_baku',       dec: 1 },
+    { id: 'turb-res',      field: 'turbidity_reservoir',  dec: 2 },
+    { id: 'turb-fil',      field: 'turbidity_filter',     dec: 2 },
+    { id: 'ph-baku',       field: 'ph_baku',              dec: 2 },
+    { id: 'ph-res',        field: 'ph_reservoir',         dec: 2 },
+    { id: 'free-cl',       field: 'free_chlorine',        dec: 2 },
 ];
 
 var SPARK_COLORS = {
-    'flow-intake': '#4e73df',
-    'flow-yos':    '#1cc88a',
-    'flow-vet':    '#36b9cc',
-    'flow-bw':     '#AF8CB1',
-    'turb-baku':   '#f6c23e',
-    'turb-res':    '#36b9cc',
-    'turb-sed':    '#E4509A',
-    'turb-fil':    '#5FDA5A',
-    'ph-baku':     '#4e73df',
-    'ph-res':      '#E4509A',
-    'free-cl':     '#1cc88a',
+    'flow-intake':  '#4e73df',
+    'flow-yos':     '#1cc88a',
+    'flow-vet':     '#36b9cc',
+    'flow-bw':      '#AF8CB1',
+    'flow-byp-yos': '#C28C2E',
+    'flow-byp-vet': '#E4509A',
+    'turb-baku':    '#f6c23e',
+    'turb-res':     '#36b9cc',
+    'turb-fil':     '#5FDA5A',
+    'ph-baku':      '#4e73df',
+    'ph-res':       '#E4509A',
+    'free-cl':      '#1cc88a',
 };
 
 var FIELD_TO_SPARK_ID = {
@@ -626,9 +632,10 @@ var FIELD_TO_SPARK_ID = {
     'flow_yos_sudarso':    'flow-yos',
     'flow_veteran':        'flow-vet',
     'flow_backwash':       'flow-bw',
+    'flow_bypass_yoss':    'flow-byp-yos',
+    'flow_bypass_vet':     'flow-byp-vet',
     'turbidity_baku':      'turb-baku',
     'turbidity_reservoir': 'turb-res',
-    'turbidity_sedimen':   'turb-sed',
     'turbidity_filter':    'turb-fil',
     'ph_baku':             'ph-baku',
     'ph_reservoir':        'ph-res',
@@ -852,7 +859,6 @@ function updateCharts(d) {
     if (_charts.chartTurbidity) {
         _charts.chartTurbidity.setOption(makeChartOption([
             makeAreaSeries('Reservoir', '#52B0ED', d.turbidity.turbidity_reservoir),
-            makeAreaSeries('Sedimen',   '#E4509A', d.turbidity.turbidity_sedimen),
             makeAreaSeries('Filter',    '#5FDA5A', d.turbidity.turbidity_filter)
         ], L));
     }
@@ -916,8 +922,9 @@ function updateSparkline(sid, newVal) {
 /* ================================================================
    FLOW BALANCE UPDATE
    ================================================================ */
-function updateFlowBalance(intake, yos, vet) {
-    var ds   = +(yos + vet).toFixed(1);
+function updateFlowBalance(intake, yos, vet, bypYos, bypVet) {
+    bypYos = bypYos || 0; bypVet = bypVet || 0;
+    var ds   = +(yos + vet + bypYos + bypVet).toFixed(1);
     var diff = +(intake - ds).toFixed(1);
     var pct  = intake > 0 ? Math.abs(diff / intake * 100) : 0;
     var color, label, tone;
@@ -930,6 +937,8 @@ function updateFlowBalance(intake, yos, vet) {
     if (_t('fb-intake'))   _t('fb-intake').textContent   = intake.toFixed(1);
     if (_t('fb-yos'))      _t('fb-yos').textContent      = yos.toFixed(1);
     if (_t('fb-vet'))      _t('fb-vet').textContent      = vet.toFixed(1);
+    if (_t('fb-byp-yos'))  _t('fb-byp-yos').textContent  = bypYos.toFixed(1);
+    if (_t('fb-byp-vet'))  _t('fb-byp-vet').textContent  = bypVet.toFixed(1);
     if (_t('fb-ds'))       _t('fb-ds').textContent       = ds.toFixed(1);
     if (_t('fb-diff'))     _t('fb-diff').textContent     = (diff > 0 ? '−' : diff < 0 ? '+' : '') + Math.abs(diff).toFixed(1);
     if (_t('fb-pct'))  { _t('fb-pct').textContent = pct.toFixed(1) + '%'; _t('fb-pct').style.color = color; }
@@ -1046,10 +1055,12 @@ function showRecord(rec) {
     }
 
     /* Flow Balance */
-    var fi = parseFloat(rec.flow_intake);
-    var fy = parseFloat(rec.flow_yos_sudarso);
-    var fv = parseFloat(rec.flow_veteran);
-    if (!isNaN(fi) && !isNaN(fy) && !isNaN(fv)) updateFlowBalance(fi, fy, fv);
+    var fi  = parseFloat(rec.flow_intake);
+    var fy  = parseFloat(rec.flow_yos_sudarso);
+    var fv  = parseFloat(rec.flow_veteran);
+    var fby = parseFloat(rec.flow_bypass_yoss) || 0;
+    var fbv = parseFloat(rec.flow_bypass_vet)  || 0;
+    if (!isNaN(fi) && !isNaN(fy) && !isNaN(fv)) updateFlowBalance(fi, fy, fv, fby, fbv);
 
     /* SCM */
     var scm = parseFloat(rec.scm);
@@ -1127,7 +1138,6 @@ function appendChartPoint(label, d) {
             inst: _charts.chartTurbidity,
             series: [
                 parseFloat(d.turbidity_reservoir),
-                parseFloat(d.turbidity_sedimen),
                 parseFloat(d.turbidity_filter),
             ]
         },

@@ -33,7 +33,6 @@ class ScadaDashboard extends Component
             ],
             'turbidity' => [
                 'turbidity_reservoir' => $chronological->pluck('turbidity_reservoir')->toArray(),
-                'turbidity_sedimen'   => $chronological->pluck('turbidity_sedimen')->toArray(),
                 'turbidity_filter'    => $chronological->pluck('turbidity_filter')->toArray(),
             ],
             'quality' => [
@@ -66,7 +65,8 @@ class ScadaDashboard extends Component
         $last4Fields = [
             'timestamp',
             'flow_intake', 'flow_yos_sudarso', 'flow_veteran', 'flow_backwash',
-            'turbidity_baku', 'turbidity_reservoir', 'turbidity_sedimen', 'turbidity_filter',
+            'flow_bypass_yoss', 'flow_bypass_vet',
+            'turbidity_baku', 'turbidity_reservoir', 'turbidity_filter',
             'ph_baku', 'ph_reservoir', 'free_chlorine',
             'pressure_intake', 'pressure_distribusi', 'pressure_service2', 'pressure_backwash', 'pressure_kompressor',
             'scm', 'level_reservoir_a', 'level_reservoir_b',
@@ -78,7 +78,8 @@ class ScadaDashboard extends Component
         // Sparklines — 30 titik per field untuk tampilan awal
         $sparkFields = [
             'flow_intake', 'flow_yos_sudarso', 'flow_veteran', 'flow_backwash',
-            'turbidity_baku', 'turbidity_reservoir', 'turbidity_sedimen', 'turbidity_filter',
+            'flow_bypass_yoss', 'flow_bypass_vet',
+            'turbidity_baku', 'turbidity_reservoir', 'turbidity_filter',
             'ph_baku', 'ph_reservoir', 'free_chlorine',
         ];
         $sparkData = [];
