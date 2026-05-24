@@ -145,14 +145,13 @@ class FuzzyEvaluationService
     }
 
     // -------------------------------------------------------------------------
-    // Cari "next shift" berikutnya (2 jam setelah end_time shift saat ini)
+    // Cari "next shift" berikutnya — O(1) lookup via index
     // -------------------------------------------------------------------------
 
-    private function findNextShift(array $series, int $currentIndex): ?array
+    private function findNextShiftByIndex(array $index, array $current): ?array
     {
-        $current   = $series[$currentIndex];
-        $endTime   = substr($current['end_time'], 0, 5); // HH:MM
-        $date      = $current['date'];
+        $endTime = substr($current['end_time'], 0, 5);
+        $date    = $current['date'];
 
         if ($endTime === '23:00') {
             $nextDate    = date('Y-m-d', strtotime('+1 day', strtotime($date)));
@@ -162,14 +161,7 @@ class FuzzyEvaluationService
             $nextEndTime = date('H:i', strtotime('+2 hours', strtotime($endTime)));
         }
 
-        // Cari di series
-        foreach ($series as $item) {
-            if ($item['date'] === $nextDate && substr($item['end_time'], 0, 5) === $nextEndTime) {
-                return $item;
-            }
-        }
-
-        return null;
+        return $index[$nextDate . '|' . $nextEndTime] ?? null;
     }
 
     // -------------------------------------------------------------------------
@@ -178,17 +170,27 @@ class FuzzyEvaluationService
 
     public function buildEvaluationData(string $startDate, string $endDate): array
     {
+        // Safety net — range panjang butuh lebih dari default 128M
+        ini_set('memory_limit', '512M');
+
         // Extend end by 1 day untuk mengambil "next shift" dari shift terakhir
         $extendedEnd = date('Y-m-d', strtotime('+1 day', strtotime($endDate)));
 
-        $shifts = Shift::with(['waterQualities', 'pumpChemicals'])
+        // Hanya select kolom yang dibutuhkan — hemat memory
+        $shifts = Shift::select(['id', 'date', 'shift', 'end_time'])
+            ->with([
+                'waterQualities:id,shift_id,type,turbidity,free_chlor,ph',
+                'pumpChemicals:id,shift_id,type,status,dosage',
+            ])
             ->whereBetween('date', [$startDate, $extendedEnd])
             ->orderBy('date', 'asc')
             ->orderBy('end_time', 'asc')
             ->get();
 
-        // Bangun series
-        $series = [];
+        // Bangun series + index untuk O(1) findNextShift lookup
+        $series      = [];
+        $seriesIndex = []; // key: "date|HH:MM"
+
         foreach ($shifts as $shift) {
             $sed = $shift->waterQualities->firstWhere('type', 'sedimentation');
             $res = $shift->waterQualities->firstWhere('type', 'reservoir');
@@ -200,8 +202,7 @@ class FuzzyEvaluationService
             $sodaashRunning  = $shift->pumpChemicals->where('type', 'soda ash')->where('status', 'running')->first()
                             ?? $shift->pumpChemicals->firstWhere('type', 'soda ash');
 
-            // Aktual dosis = 0 jika pompa standby (tidak sedang dosing)
-            $series[] = [
+            $entry = [
                 'shift_id'          => $shift->id,
                 'date'              => $shift->date,
                 'shift'             => $shift->shift,
@@ -212,23 +213,28 @@ class FuzzyEvaluationService
                 'prev_pac'          => ($pacRunning && $pacRunning->status === 'running') ? (float) $pacRunning->dosage : 10.0,
                 'prev_klorin'       => ($klorinRunning && $klorinRunning->status === 'running') ? (float) $klorinRunning->dosage : 1.5,
                 'prev_sodaash'      => ($sodaashRunning && $sodaashRunning->status === 'running') ? (float) $sodaashRunning->dosage : 2.0,
-                // Aktual dosis yang benar-benar dipakai: 0 jika standby
                 'aktual_pac'        => ($pacRunning && $pacRunning->status === 'running') ? (float) $pacRunning->dosage : 0.0,
                 'aktual_klorin'     => ($klorinRunning && $klorinRunning->status === 'running') ? (float) $klorinRunning->dosage : 0.0,
                 'aktual_sodaash'    => ($sodaashRunning && $sodaashRunning->status === 'running') ? (float) $sodaashRunning->dosage : 0.0,
             ];
+
+            $series[] = $entry;
+            $seriesIndex[$shift->date . '|' . substr($shift->end_time, 0, 5)] = $entry;
         }
 
+        // Bebaskan Eloquent collection — data sudah di $series
+        unset($shifts);
+
         $rows = [];
-        foreach ($series as $i => $current) {
+        foreach ($series as $current) {
             // Hanya tampilkan shift dalam range filter
             if ($current['date'] < $startDate || $current['date'] > $endDate) continue;
 
             // Skip jika data kualitas air tidak lengkap
             if ($current['turb_sed'] === null || $current['free_chlor'] === null || $current['ph_res'] === null) continue;
 
-            // Cari next shift
-            $next = $this->findNextShift($series, $i);
+            // Cari next shift via O(1) index lookup
+            $next = $this->findNextShiftByIndex($seriesIndex, $current);
             if ($next === null) continue;
 
             // Hitung rekomendasi fuzzy
