@@ -68,7 +68,15 @@ new class extends Component {
     <li class="nav-item {{ request()->routeIs('scada') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('scada') }}" wire:navigated>
             <i class="fas fa-fw fa-satellite-dish"></i>
-            <span>SCADA</span>
+            <span>Dashboard Scada</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Data Logs -->
+    <li class="nav-item {{ request()->routeIs('data-logs') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('data-logs') }}" wire:navigated>
+            <i class="fas fa-fw fa-database"></i>
+            <span>Data Logs Scada</span>
         </a>
     </li>
     <li class="nav-item {{ request()->routeIs('wma-dosis') ? 'active' : '' }}">

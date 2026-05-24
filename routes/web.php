@@ -7,6 +7,7 @@ use App\Livewire\MonitoringIndex;
 use App\Livewire\UserList;
 use App\Livewire\HideFormMonitoring;
 use App\Livewire\WaterLoss;
+use App\Livewire\DataLogs;
 use App\Livewire\ScadaDashboard;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -28,6 +29,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Route::get('/monitoring/{id}/edit', HideFormMonitoring::class);
     Route::get('water-loss', WaterLoss::class)->name('water-loss');
     Route::get('scada', ScadaDashboard::class)->name('scada');
+    Route::get('data-logs', DataLogs::class)->name('data-logs');
 });
 
 require __DIR__ . '/auth.php';
