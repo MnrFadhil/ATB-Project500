@@ -8,6 +8,7 @@ export default defineConfig({
                 "resources/js/app.js",
                 "resources/js/sb-admin-2.js",
                 "resources/css/app.css",
+                "resources/css/atb-login.css",
             ],
             refresh: true,
         }),

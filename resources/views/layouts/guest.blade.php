@@ -1,49 +1,96 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Masuk · Adaro Tirta Brayan</title>
 
-    <title>Adaro Tirta Brayan</title>
+    {{-- Favicon --}}
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/adaro-login-logo.svg') }}">
 
-    <link rel="icon" type="image/x-icon" href="{{ asset('assets/sidebar-close.svg') }}">
+    {{-- Fonts: Nunito --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,600&display=swap" rel="stylesheet">
 
-    {{-- Fonts --}}
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- App + Login CSS --}}
+    @vite(['resources/css/app.css', 'resources/css/atb-login.css', 'resources/js/app.js'])
 </head>
+<body>
 
-<body
-    style="background-image: url('{{ asset('assets/bg-login.svg') }}');  background-size: cover; background-position: center; background-repeat: no-repeat;">
-    <div style="height: 100vh">
-        <div class="position-absolute" style="width: 100%; background:rgba(255,255,255, 0.7);">
-            <div class="logo-unhar-style p-3 md-mx-auto" style="width: fit-content">
-                <img src="{{ asset('assets/logo-unhar.png') }}" style="width: auto; height: 50px; object-fit: cover;" />
-            </div>
-        </div>
+<div class="atb-page">
 
-        <div class="container">
-            <div class="row justify-content-center align-items-center" style="height: 100vh;">
-                <div class="col-xl-6  col-md-9">
-                    <div style="border: solid 5px #00664A; border-radius: 10px; background:rgba(255,255,255, 0.7);">
-                        <div class="card-body p-0">
-                            <div class="row">
-                                <div class="col-12">
-                                    {{ $slot }}
-                                </div>
-                            </div>
-                        </div>
+    {{-- ── Brand panel (left) ───────────────────────────────────────── --}}
+    <aside class="atb-brand">
+
+        {{-- Decorative ripple / topographic pattern --}}
+        <svg class="atb-brand-pattern" viewBox="0 0 600 800"
+             preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+                <radialGradient id="atb-vign" cx="50%" cy="35%" r="75%">
+                    <stop offset="0%"   stop-color="#fff" stop-opacity="0.10"/>
+                    <stop offset="100%" stop-color="#000" stop-opacity="0.35"/>
+                </radialGradient>
+            </defs>
+            <g stroke="#ffffff" stroke-opacity="0.07" fill="none" stroke-width="1">
+                @for ($i = 0; $i < 22; $i++)
+                    @php $r = 60 + $i * 38; $ry = round($r * 0.62, 2); @endphp
+                    <ellipse cx="120" cy="640"
+                             rx="{{ $r }}" ry="{{ $ry }}"
+                             transform="rotate(-12 120 640)"/>
+                @endfor
+            </g>
+            <rect width="600" height="800" fill="url(#atb-vign)"/>
+        </svg>
+
+        <div class="atb-brand-inner">
+
+            {{-- Adaro mark --}}
+            <div class="atb-brand-top">
+                <div class="atb-adaro-mark">
+                    <img src="{{ asset('assets/adaro-login-logo.svg') }}" alt="Adaro Tirta Brayan">
+                    <span class="atb-mark-divider"></span>
+                    <div class="atb-mark-text">
+                        <span class="atb-mark-line-1">Adaro Tirta Brayan</span>
+                        <span class="atb-mark-line-2">Sistem Monitoring Produksi</span>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</body>
 
+            {{-- Tagline --}}
+            <div class="atb-brand-mid">
+                <h2>Mengalir bersama,<br>tumbuh berkelanjutan.</h2>
+                <p>Portal terpadu untuk monitoring produksi Instalasi
+                   Pengolahan Air Adaro Tirta Brayan.</p>
+            </div>
+
+            {{-- Version --}}
+            <div class="atb-brand-bottom">
+                <span class="atb-version">v 1 &middot; &copy; {{ date('Y') }} ATB</span>
+            </div>
+
+        </div>
+    </aside>
+
+    {{-- ── Form panel (right) ──────────────────────────────────────── --}}
+    <main class="atb-panel">
+        <div class="atb-panel-frame">
+
+            {{-- Mobile-only Adaro mark (hidden ≥620 px) --}}
+            <div class="atb-mobile-mark">
+                <img src="{{ asset('assets/adaro-login-logo.svg') }}" alt="Adaro Tirta Brayan">
+                <span class="atb-mark-divider"></span>
+                <span>Adaro Tirta Brayan</span>
+            </div>
+
+            {{-- Livewire component slot --}}
+            {{ $slot }}
+
+        </div>
+    </main>
+
+</div>
+
+</body>
 </html>

@@ -1,7 +1,10 @@
 <div>
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <button onclick="window.location.reload()" class="btn btn-sm btn-outline-secondary flex-shrink-0" title="Refresh halaman">
+            <i class="fas fa-sync-alt mr-1"></i> Refresh
+        </button>
     </div>
 
     <hr class="my-4">
