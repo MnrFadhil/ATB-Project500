@@ -971,10 +971,10 @@ function updateScm(val) {
     var color, label, tone, txt;
     if (!safe && !warn) {
         color = '#e74a3b'; label = 'BAHAYA'; tone = 'rgba(231,74,59,.14)';
-        txt = 'Nilai jauh di luar rentang aman. Periksa WTP & Dosis Kimia.';
+        txt = 'Nilai jauh di luar rentang aman. Hentikan proses & periksa sistem.';
     } else if (warn) {
         color = '#E7A52F'; label = 'WASPADA'; tone = 'rgba(231,165,47,.14)';
-        txt = 'Mendekati / melewati ambang. Waspada.';
+        txt = 'Mendekati / melewati ambang. Operator wajib mengecek.';
     } else {
         color = '#1cc88a'; label = 'AMAN'; tone = 'rgba(28,200,138,.12)';
         txt = 'Beroperasi dalam rentang operasional aman.';
