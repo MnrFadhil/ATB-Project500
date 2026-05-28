@@ -9,10 +9,15 @@ use App\Livewire\HideFormMonitoring;
 use App\Livewire\WaterLoss;
 use App\Livewire\DataLogs;
 use App\Livewire\ScadaDashboard;
+use App\Http\Controllers\OcrFormController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Volt::route('/', 'pages.auth.login')->name('login');
+
+// OCR test — akses manual via URL, tidak ada di navigasi
+Route::get('/formocr', [OcrFormController::class, 'index']);
+Route::post('/formocr', [OcrFormController::class, 'process']);
 
 
 Route::group(['middleware' => ['auth']], function () {
