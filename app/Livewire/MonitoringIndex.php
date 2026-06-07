@@ -84,7 +84,12 @@ class MonitoringIndex extends Component
     /* -------------------------------------------------------------------------- */
     public function showConfirmDelete($shift)
     {
-        $this->shiftDetail = $shift;
+        $operators = Shift::findOrFail($shift['id'])
+            ->shiftOperators()
+            ->pluck('name')
+            ->implode(', ');
+
+        $this->shiftDetail = array_merge($shift, ['operators' => $operators]);
         $this->dispatch('show-modal-detail');
     }
 

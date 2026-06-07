@@ -105,7 +105,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="detailModalLabel">
-                        Delete
+                        Hapus Data
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -113,13 +113,20 @@
                 </div>
 
                 <div class="modal-body">
-                    Are you sure you want to delete <strong
-                        class="text-uppercase">{{ $shiftDetail ? $shiftDetail['shift'] : '' }}</strong>
+                    <p class="mb-1">Apakah Anda yakin ingin menghapus data berikut?</p>
+                    @if($shiftDetail)
+                    <ul class="mb-0 mt-2">
+                        <li><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($shiftDetail['date'])->translatedFormat('d F Y') }}</li>
+                        <li><strong>Shift:</strong> <span class="text-uppercase">{{ $shiftDetail['shift'] }}</span></li>
+                        <li><strong>Jam:</strong> {{ \Carbon\Carbon::parse($shiftDetail['start_time'])->format('H:i') }} – {{ \Carbon\Carbon::parse($shiftDetail['end_time'])->format('H:i') }}</li>
+                        <li><strong>Operator:</strong> {{ $shiftDetail['operators'] ?? '-' }}</li>
+                    </ul>
+                    @endif
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" wire:click="deleteShift()" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="button" wire:click="deleteShift()" class="btn btn-danger">Hapus</button>
                 </div>
             </div>
         </div>
