@@ -13,7 +13,7 @@
         </div>
 
         <div class="card-body">
-            <form wire:submit.prevent="submit">
+            <form wire:submit.prevent="submit" @keydown.enter.prevent>
                 
                 <!-- ============ SHIFT INFORMATION ============ -->
                 <div class="card mb-3 border-left-primary">

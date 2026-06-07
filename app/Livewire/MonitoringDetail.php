@@ -148,7 +148,7 @@ class MonitoringDetail extends Component
         $mu = [
             'sangat_rendah' => $this->leftShoulderMF($f,  0.0,  0.20),
             'rendah'        => $this->triangularMF($f,    0.15, 0.26, 0.30),
-            'optimal'       => $this->triangularMF($f,    0.28, 0.37, 0.46),
+            'optimal'       => $this->triangularMF($f,    0.31, 0.37, 0.46),
             'tinggi'        => $this->triangularMF($f,    0.43, 0.48, 0.51),
             'sangat_tinggi' => $this->rightShoulderMF($f, 0.50, 0.60),
         ];
@@ -216,7 +216,7 @@ class MonitoringDetail extends Component
             'sangat_rendah'  => $this->triangularMF($p, 3.0, 4.5, 5.2),
             'rendah'         => $this->triangularMF($p, 4.8, 5.5, 6.1),
             'sedikit_rendah' => $this->triangularMF($p, 5.8, 6.2, 6.5),
-            'normal'         => $this->triangularMF($p, 6.3, 7.0, 7.8),
+            'normal'         => $this->triangularMF($p, 6.5, 7.0, 7.8),
         ];
 
         // Rules [μ, delta dosis]
