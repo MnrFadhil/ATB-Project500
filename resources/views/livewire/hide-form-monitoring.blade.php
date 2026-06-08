@@ -187,7 +187,7 @@
                             <div class="form-row mb-4">
                                 <div class="col-12 mb-3">
                                     <label for="notes">Notes</label>
-                                    <textarea wire:model="form.shift.notes" class="form-control" id="notes" rows="10" placeholder="Optional notes..."></textarea>
+                                    <textarea wire:model="form.shift.notes" class="form-control" id="notes" rows="10" placeholder="Optional notes..." @keydown.enter.stop></textarea>
                                     @error('form.shift.notes') <span class="invalid-feedback">{{ $message }}</span> @enderror
                                 </div>
                             </div>
