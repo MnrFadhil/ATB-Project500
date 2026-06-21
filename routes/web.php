@@ -12,16 +12,15 @@ use App\Livewire\ScadaDashboard;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Volt::route('/', 'pages.auth.login')->name('login');
-
+Volt::route('/', 'pages.auth.login');
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
     Route::get('user-list', UserList::class)->name('user-list');
     Route::get('monitoring-index', MonitoringIndex::class)->name('monitoring-index');
-    Route::get('monitoring/create', FormMonitoring::class)->name('monitoring-form')->middleware(['admin']);
+    Route::get('monitoring/create', FormMonitoring::class)->name('monitoring-create')->middleware(['admin']);
     Route::get('monitoring/{id}', MonitoringDetail::class)->name('monitoring-detail');
-    Route::get('monitoring/{id}/edit', FormMonitoring::class)->name('monitoring-form')->middleware(['admin']);
+    Route::get('monitoring/{id}/edit', FormMonitoring::class)->name('monitoring-edit')->middleware(['admin']);
     Route::get('wma-evaluation', \App\Livewire\WmaEvaluation::class)->name('wma-evaluation');
     Route::get('fuzzy-evaluation', \App\Livewire\FuzzyEvaluation::class)->name('fuzzy-evaluation');
     Route::get('wma-dosis', \App\Livewire\WmaDosisPrediksi::class)->name('wma-dosis');

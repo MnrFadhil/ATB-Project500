@@ -45,44 +45,39 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered">
+                <table class="table table-bordered record-table">
                     <thead>
                         <tr>
                             <th>Jam</th>
                             <th>Shift</th>
                             <th>Note</th>
-                            <th style="width: 10%">Action
-                            </th>
+                            <th class="text-center" style="width: 1%">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($shifts as $shift)
-                            <tr>
-                                <td>
-                                    <div style="width: 100px">
-                                        {{ substr($shift->start_time, 0, 5) }} - {{ substr($shift->end_time, 0, 5) }}</td>
-                                    </div>
-                                <td>
-                                    <div style="width: 100px">
-                                        {{ strtoupper($shift->shift) }}
-                                    </div>
+                            <tr data-shift="{{ strtolower($shift->shift) }}">
+                                <td class="cell-jam">
+                                    {{ substr($shift->start_time, 0, 5) }} - {{ substr($shift->end_time, 0, 5) }}
                                 </td>
-                                <td>
-                                    <div  style="white-space: pre-line;">{{ $shift->notes ? $shift->notes : '-' }}</td></div>
-                                <td>
-                                    <div class="d-flex">
-                                        <a href="/monitoring/{{ $shift->id }}" wire:navigated type="button"
-                                            class="btn btn-info btn-sm">
-                                            <i class="fas fa-info-circle" style="color: white"></i>
+                                <td class="cell-shift">{{ strtoupper($shift->shift) }}</td>
+                                <td class="cell-note">
+                                    <div class="note-text">{{ $shift->notes ?: '-' }}</div>
+                                    <button type="button" class="note-toggle">Selengkapnya</button>
+                                </td>
+                                <td class="cell-action text-center">
+                                    <div class="action-btns">
+                                        <a href="/monitoring/{{ $shift->id }}" wire:navigate
+                                            class="btn btn-info btn-sm" title="Detail">
+                                            <i class="fas fa-info-circle text-white"></i>
                                         </a>
                                         @if (!$isAdmin)
-                                            <a href="/monitoring/{{ $shift->id }}/edit" type="button"
-                                                class="btn btn-warning ml-2 btn-sm">
-                                                <i class="fas fa-pencil" style="color: white"></i>
+                                            <a href="/monitoring/{{ $shift->id }}/edit"
+                                                class="btn btn-warning btn-sm" title="Edit">
+                                                <i class="fas fa-pencil text-white"></i>
                                             </a>
-
                                             <button wire:click="showConfirmDelete({{ $shift }})" type="button"
-                                                class="btn btn-danger ml-2 btn-sm">
+                                                class="btn btn-danger btn-sm" title="Hapus">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         @endif
@@ -91,7 +86,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center">No Data Available</td>
+                                <td colspan="4" class="text-center">No Data Available</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -190,6 +185,42 @@
 
         window.addEventListener('close-modal-detail', () => {
             $('#detailModal').modal('hide');
+        });
+
+        function initNoteToggle() {
+            var cells = document.querySelectorAll('.record-table .cell-note');
+
+            function refresh() {
+                cells = document.querySelectorAll('.record-table .cell-note');
+                cells.forEach(function(cell) {
+                    var text = cell.querySelector('.note-text');
+                    var btn  = cell.querySelector('.note-toggle');
+                    if (!text || !btn) return;
+                    if (text.classList.contains('expanded')) return;
+                    var overflowing = text.scrollHeight - text.clientHeight > 2;
+                    btn.style.display = overflowing ? 'block' : 'none';
+                });
+            }
+
+            cells.forEach(function(cell) {
+                var text = cell.querySelector('.note-text');
+                var btn  = cell.querySelector('.note-toggle');
+                if (!text || !btn) return;
+                btn.addEventListener('click', function() {
+                    var expanded = text.classList.toggle('expanded');
+                    btn.textContent = expanded ? 'Tutup' : 'Selengkapnya';
+                });
+            });
+
+            refresh();
+            var t;
+            window.addEventListener('resize', function() { clearTimeout(t); t = setTimeout(refresh, 150); });
+        }
+
+        initNoteToggle();
+
+        Livewire.hook('morph.updated', function() {
+            initNoteToggle();
         });
     </script>
 @endscript

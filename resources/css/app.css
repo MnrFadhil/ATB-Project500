@@ -1546,3 +1546,86 @@
   .stats-strip { grid-template-columns: 1fr; gap: 8px; }
   .stat-row strong { font-size: 12px; }
 }
+
+/* ============================================================
+   RECORD TABLE — tabel rapi yang muat di HP (tanpa scroll samping)
+   Desktop = tabel + hover baris · HP = daftar timeline/inbox
+   ============================================================ */
+.record-table{ margin-bottom:0; }
+.record-table thead th{
+  border-top:none; border-bottom:2px solid #e3e6f0;
+  font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.4px;
+  color:#6c757d; white-space:nowrap;
+}
+.record-table td{ vertical-align:middle; }
+.record-table .cell-jam{ white-space:nowrap; font-weight:600; color:#3a3b45; }
+.record-table .cell-shift{ white-space:nowrap; font-weight:600; letter-spacing:.3px; color:#5a5c69; }
+
+/* NOTE: tampil 1 baris; sisanya disembunyikan + tombol "Selengkapnya" di baris kedua */
+.record-table .cell-note{ color:#5a5c69; max-width:440px; }
+.record-table .cell-note .note-text{
+  white-space:pre-line; line-height:1.5;
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:1; overflow:hidden;
+}
+.record-table .cell-note .note-text.expanded{ -webkit-line-clamp:unset; display:block; }
+.record-table .cell-note .note-toggle{
+  display:none;
+  background:none; border:0; padding:3px 0 0; margin:0;
+  color:#00664A; font-size:12px; font-weight:700; cursor:pointer;
+}
+.record-table .cell-note .note-toggle:hover{ text-decoration:underline; }
+
+.record-table .cell-action{ white-space:nowrap; width:1%; }
+.record-table .action-btns{ display:inline-flex; gap:6px; }
+
+/* HOVER baris (PC): latar jelas + aksen kiri brand */
+.record-table tbody tr{ transition:background-color .12s ease, box-shadow .12s ease; }
+.record-table tbody tr:hover{ background:#e9f1ee; box-shadow:inset 4px 0 0 #00664A; }
+
+/* ---- HP (<768px): tabel jadi DAFTAR timeline/inbox ---- */
+@media (max-width: 767.98px){
+  .record-table thead{ display:none; }
+  .record-table, .record-table tbody, .record-table tr, .record-table td{ display:block; }
+
+  .record-table tr{
+    display:grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "time  shift action"
+      "note  note  action";
+    align-items:center;
+    column-gap:10px; row-gap:3px;
+    padding:13px 2px 13px 16px;
+    border:0; border-bottom:1px solid #edeef2;
+    position:relative;
+  }
+  .record-table tr:last-child{ border-bottom:0; }
+  .record-table tbody tr:hover{ background:transparent; box-shadow:none; }
+
+  /* rel warna shift di tepi kiri (timeline) */
+  .record-table tr::before{
+    content:''; position:absolute; left:0; top:11px; bottom:11px;
+    width:3px; border-radius:2px; background:#c9ccd1;
+  }
+  .record-table tr[data-shift="pagi"]::before { background:#36b9cc; }
+  .record-table tr[data-shift="sore"]::before { background:#f6c23e; }
+  .record-table tr[data-shift="malam"]::before{ background:#4b4d86; }
+
+  .record-table td{ border:0; padding:0; }
+  .record-table .cell-jam{ grid-area:time; font-size:15px; font-weight:700; color:#2e2f3a; white-space:nowrap; }
+  .record-table .cell-shift{
+    grid-area:shift; justify-self:start; align-self:center;
+    font-size:10.5px; font-weight:700; letter-spacing:.6px; color:#8a8c99;
+  }
+  .record-table tr[data-shift="pagi"]  .cell-shift{ color:#2a8a99; }
+  .record-table tr[data-shift="sore"]  .cell-shift{ color:#9c7212; }
+  .record-table tr[data-shift="malam"] .cell-shift{ color:#4b4d86; }
+  .record-table .cell-note{ grid-area:note; font-size:13px; color:#7a7c88; }
+  .record-table .cell-note .note-text{ line-height:1.4; -webkit-line-clamp:1; }
+  .record-table .cell-action{ grid-area:action; align-self:center; text-align:right; width:auto; }
+  .record-table .action-btns{ display:inline-flex; gap:6px; }
+  .record-table .action-btns .btn{
+    width:34px; height:34px; padding:0;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+}
