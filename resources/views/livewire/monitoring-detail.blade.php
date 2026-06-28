@@ -1205,7 +1205,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-5 col-md-4">Dosis</div>
-                                    <div class="col-7 col-md-8">: {{ $polyA->dosage }} ppm</div>
+                                    <div class="col-7 col-md-8">: {{ number_format($polyA->dosage, 3) }} ppm</div>
                                 </div>
                                 <div class="row">
                                     <div class="col-5 col-md-4">Level Tangki</div>
@@ -1249,7 +1249,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-5 col-md-4">Dosis</div>
-                                    <div class="col-7 col-md-8">: {{ $polyB->dosage }} ppm</div>
+                                    <div class="col-7 col-md-8">: {{ number_format($polyB->dosage, 3) }} ppm</div>
                                 </div>
                                 <div class="row">
                                     <div class="col-5 col-md-4">Level Tangki</div>
@@ -1482,10 +1482,13 @@
 
                     // Dosage
                     if (data.dosage && data.dosage != 0) {
+                        const dosageDisplay = data.type === 'polymer'
+                            ? Number(data.dosage).toFixed(3)
+                            : data.dosage;
                         if (tempData.dosage == '') {
-                            tempData.dosage = `${data.dosage} ppm (${idx})`
+                            tempData.dosage = `${dosageDisplay} ppm (${idx})`
                         } else {
-                            tempData.dosage += `; ${data.dosage} ppm (${idx})`
+                            tempData.dosage += `; ${dosageDisplay} ppm (${idx})`
                         }
                     }
 
