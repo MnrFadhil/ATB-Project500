@@ -81,7 +81,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Turbidity</div>
-                                <div class="col-7 col-md-8">: {{ number_format($waterQuality->turbidity, 2) }} NTU</div>
+                                <div class="col-7 col-md-8">: {{ $waterQuality->type == 'air baku' && $waterQuality->turbidity >= 100 ? number_format($waterQuality->turbidity, 0) : number_format($waterQuality->turbidity, 2) }} NTU</div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Warna</div>
