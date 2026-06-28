@@ -296,9 +296,9 @@
             @foreach ($shifts as $shift)
                 <tr>
                     @foreach ($shift['pump_proccess'] as $pumpProccess)
-                        <td>{{ $pumpProccess['ampere'] }}</td>
-                        <td>{{ $pumpProccess['frequency'] }}</td>
-                        <td>{{ $pumpProccess['pressure'] }}</td>
+                        <td>{{ $pumpProccess['status'] == 'running' ? $pumpProccess['ampere'] : '-' }}</td>
+                        <td>{{ $pumpProccess['status'] == 'running' ? $pumpProccess['frequency'] : '-' }}</td>
+                        <td>{{ $pumpProccess['status'] == 'running' ? $pumpProccess['pressure'] : '-' }}</td>
                         <td style="text-transform: capitalize;">{{ $pumpProccess['status'] }}</td>
                     @endforeach
                 </tr>
