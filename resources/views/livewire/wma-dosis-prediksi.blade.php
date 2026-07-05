@@ -234,31 +234,26 @@
                                             Evaluasi tidak dapat dihitung.
                                         </div>
                                     @else
-                                        <div class="row no-gutters">
-                                            <div class="col-6">
-                                                <small class="text-muted">RMSE</small>
-                                                <div class="h5 mb-0 font-weight-bold">{{ $m['rmse'] }}</div>
-                                            </div>
-                                            <div class="col-6">
-                                                <small class="text-muted">MAE</small>
-                                                <div class="h5 mb-0 font-weight-bold">{{ $m['mae'] }}</div>
-                                            </div>
-                                            <div class="col-6 mt-2">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col-7">
                                                 <small class="text-muted">MAPE</small>
-                                                <div class="h5 mb-0 font-weight-bold">{{ $m['mape'] }}%</div>
+                                                <div class="h4 mb-0 font-weight-bold">{{ $m['mape'] }}%</div>
                                             </div>
-                                            <div class="col-6 mt-2">
-                                                <small class="text-muted">Interpretasi</small>
-                                                <div class="h6 mb-0 font-weight-bold
-                                                    @if($m['mape'] < 10) text-success
-                                                    @elseif($m['mape'] < 20) text-warning
-                                                    @elseif($m['mape'] < 50) text-info
-                                                    @else text-danger @endif">
+                                            <div class="col-5 text-right">
+                                                <small class="text-muted d-block">Interpretasi</small>
+                                                <span class="badge badge-pill px-2 py-1
+                                                    @if($m['mape'] < 10) badge-success
+                                                    @elseif($m['mape'] < 20) badge-warning
+                                                    @elseif($m['mape'] < 50) badge-info
+                                                    @else badge-danger @endif" style="font-size:11px;">
                                                     {{ $m['interpretasi'] }}
-                                                </div>
+                                                </span>
                                             </div>
                                         </div>
                                         <small class="text-muted mt-1 d-block">n = {{ $m['n'] }} minggu</small>
+                                        {{-- RMSE & MAE dinonaktifkan sementara --}}
+                                        {{-- <div class="col-6"><small class="text-muted">RMSE</small><div class="h5 mb-0">{{ $m['rmse'] }}</div></div> --}}
+                                        {{-- <div class="col-6"><small class="text-muted">MAE</small><div class="h5 mb-0">{{ $m['mae'] }}</div></div> --}}
                                     @endif
                                 </div>
                             </div>
@@ -282,8 +277,8 @@
                         <div class="card-body">
                             <div class="row">
 
-                                {{-- RMSE PAC --}}
-                                <div class="col-md-6 mb-4">
+                                {{-- RMSE PAC (dinonaktifkan sementara) --}}
+                                {{-- <div class="col-md-6 mb-4">
                                     <div class="card border-left-danger h-100">
                                         <div class="card-body">
                                             <h6 class="font-weight-bold text-danger">1. RMSE (Root Mean Square Error)</h6>
@@ -317,10 +312,10 @@
                                             <small class="text-muted"><i class="fas fa-info-circle"></i> Semakin kecil RMSE, semakin akurat prediksi. Satuan: ppm.</small>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
-                                {{-- MAE PAC --}}
-                                <div class="col-md-6 mb-4">
+                                {{-- MAE PAC (dinonaktifkan sementara) --}}
+                                {{-- <div class="col-md-6 mb-4">
                                     <div class="card border-left-warning h-100">
                                         <div class="card-body">
                                             <h6 class="font-weight-bold text-warning">2. MAE (Mean Absolute Error)</h6>
@@ -352,7 +347,7 @@
                                             <small class="text-muted"><i class="fas fa-info-circle"></i> Rata-rata besar kesalahan prediksi dalam satuan ppm.</small>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 {{-- MAPE PAC --}}
                                 <div class="col-md-6 mb-4">
@@ -454,8 +449,8 @@
                         <div class="card-body">
                             <div class="row">
 
-                                {{-- RMSE Klorin --}}
-                                <div class="col-md-6 mb-4">
+                                {{-- RMSE Klorin (dinonaktifkan sementara) --}}
+                                {{-- <div class="col-md-6 mb-4">
                                     <div class="card border-left-danger h-100">
                                         <div class="card-body">
                                             <h6 class="font-weight-bold text-danger">1. RMSE (Root Mean Square Error)</h6>
@@ -491,10 +486,10 @@
                                             <small class="text-muted"><i class="fas fa-info-circle"></i> Semakin kecil RMSE, semakin akurat prediksi. Satuan: ppm.</small>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
-                                {{-- MAE Klorin --}}
-                                <div class="col-md-6 mb-4">
+                                {{-- MAE Klorin (dinonaktifkan sementara) --}}
+                                {{-- <div class="col-md-6 mb-4">
                                     <div class="card border-left-warning h-100">
                                         <div class="card-body">
                                             <h6 class="font-weight-bold text-warning">2. MAE (Mean Absolute Error)</h6>
@@ -528,7 +523,7 @@
                                             <small class="text-muted"><i class="fas fa-info-circle"></i> Rata-rata besar kesalahan prediksi dalam satuan ppm.</small>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 {{-- MAPE Klorin --}}
                                 <div class="col-md-6 mb-4">
@@ -591,8 +586,8 @@
                                             <div class="mt-3" style="font-size:13px;">
                                                 <strong>Hasil Evaluasi Klorin &mdash; {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}:</strong><br>
                                                 @if($emK && $emK['n'] > 0)
-                                                    RMSE = <strong>{{ $emK['rmse'] }}</strong> ppm &nbsp;|&nbsp;
-                                                    MAE = <strong>{{ $emK['mae'] }}</strong> ppm &nbsp;|&nbsp;
+                                                    {{-- RMSE = <strong>{{ $emK['rmse'] }}</strong> ppm &nbsp;|&nbsp; --}}
+                                                    {{-- MAE = <strong>{{ $emK['mae'] }}</strong> ppm &nbsp;|&nbsp; --}}
                                                     MAPE = <strong>{{ $emK['mape'] }}%</strong>
                                                     &rarr; <span class="font-weight-bold
                                                         @if($emK['mape'] < 10) text-success
@@ -699,8 +694,8 @@
                                         @foreach(['pac','chlorine'] as $ck)
                                             @php $em = $evaluation[$ck]['metrics'] ?? ['rmse'=>'-','mae'=>'-','mape'=>'-','interpretasi'=>'-']; @endphp
                                             <td colspan="2" class="text-left" style="font-size:11px;">
-                                                RMSE: {{ $em['rmse'] }}<br>
-                                                MAE: {{ $em['mae'] }}<br>
+                                                {{-- RMSE: {{ $em['rmse'] }}<br> --}}
+                                                {{-- MAE: {{ $em['mae'] }}<br> --}}
                                                 MAPE: {{ $em['mape'] }}%
                                             </td>
                                             <td class="font-weight-bold
@@ -718,8 +713,8 @@
                                         @else
                                             @php $em = $evaluation['soda_ash']['metrics'] ?? ['rmse'=>'-','mae'=>'-','mape'=>'-','interpretasi'=>'-']; @endphp
                                             <td colspan="2" class="text-left" style="font-size:11px;">
-                                                RMSE: {{ $em['rmse'] }}<br>
-                                                MAE: {{ $em['mae'] }}<br>
+                                                {{-- RMSE: {{ $em['rmse'] }}<br> --}}
+                                                {{-- MAE: {{ $em['mae'] }}<br> --}}
                                                 MAPE: {{ $em['mape'] }}%
                                             </td>
                                             <td class="font-weight-bold
@@ -770,35 +765,28 @@
     let chartInstances = {};
     
     $wire.on('charts-ready', (data) => {
-        console.log('🚀 Charts ready event received');
-        
         if (!data || !data.chartsData) return;
-        
-        // Delay untuk tunggu DOM render selesai
+
         setTimeout(() => {
             const chartsData = data.chartsData;
-            console.log('📊 Charts data:', chartsData);
-            
+
             Object.keys(chartsData).forEach(key => {
                 const canvasEl = document.getElementById('chart_' + key);
-                if (!canvasEl) {
-                    console.warn('⚠️ Canvas not found: chart_' + key);
-                    return;
-                }
-                
+                if (!canvasEl) return;
+
                 if (chartInstances[key]) {
                     chartInstances[key].destroy();
                 }
-                
+
                 const d = chartsData[key];
                 const labels = [...d.labels];
                 for (let i = 0; i < d.pred.length; i++) {
                     labels.push('Pred ' + (i + 1));
                 }
-                
+
                 const hist = [...d.hist, ...Array(d.pred.length).fill(null)];
                 const pred = [...Array(d.hist.length - 1).fill(null), d.hist[d.hist.length - 1], ...d.pred];
-                
+
                 try {
                     chartInstances[key] = new Chart(canvasEl, {
                         type: 'line',
@@ -835,12 +823,11 @@
                             scales: { y: { beginAtZero: false } }
                         }
                     });
-                    console.log('✅ Chart created:', key);
                 } catch(e) {
-                    console.error('❌ Error:', key, e);
+                    // chart init failed silently
                 }
             });
-        }, 500); // tunggu 500ms untuk DOM render
+        }, 500);
     });
 </script>
 @endscript

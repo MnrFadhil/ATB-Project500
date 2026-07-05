@@ -92,31 +92,26 @@
                                     @endif">
                                     {{ $metricLabels[$key] }}
                                 </div>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <small class="text-muted">RMSE</small>
-                                        <div class="h5 mb-0 font-weight-bold">{{ $metrics[$key]['rmse'] }}</div>
-                                    </div>
-                                    <div class="col-6">
-                                        <small class="text-muted">MAE</small>
-                                        <div class="h5 mb-0 font-weight-bold">{{ $metrics[$key]['mae'] }}</div>
-                                    </div>
-                                    <div class="col-6 mt-2">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-7">
                                         <small class="text-muted">MAPE</small>
-                                        <div class="h5 mb-0 font-weight-bold">{{ $metrics[$key]['mape'] }}%</div>
+                                        <div class="h4 mb-0 font-weight-bold">{{ $metrics[$key]['mape'] }}%</div>
                                     </div>
-                                    <div class="col-6 mt-2">
-                                        <small class="text-muted">Interpretasi</small>
-                                        <div class="h6 mb-0 font-weight-bold
-                                            @if($metrics[$key]['mape'] < 10) text-success
-                                            @elseif($metrics[$key]['mape'] < 20) text-warning
-                                            @elseif($metrics[$key]['mape'] < 50) text-orange
-                                            @else text-danger
-                                            @endif">
+                                    <div class="col-5 text-right">
+                                        <small class="text-muted d-block">Interpretasi</small>
+                                        <span class="badge badge-pill px-2 py-1
+                                            @if($metrics[$key]['mape'] < 10) badge-success
+                                            @elseif($metrics[$key]['mape'] < 20) badge-warning
+                                            @elseif($metrics[$key]['mape'] < 50) badge-info
+                                            @else badge-danger
+                                            @endif" style="font-size:11px;">
                                             {{ $metrics[$key]['interpretasi'] }}
-                                        </div>
+                                        </span>
                                     </div>
                                 </div>
+                                {{-- RMSE & MAE dinonaktifkan sementara --}}
+                                {{-- <div class="col-6"><small class="text-muted">RMSE</small><div class="h5 mb-0 font-weight-bold">{{ $metrics[$key]['rmse'] }}</div></div> --}}
+                                {{-- <div class="col-6"><small class="text-muted">MAE</small><div class="h5 mb-0 font-weight-bold">{{ $metrics[$key]['mae'] }}</div></div> --}}
                             </div>
                         </div>
                     </div>
@@ -174,8 +169,8 @@
                                 </div>
                             </div>
 
-                            {{-- RMSE --}}
-                            <div class="col-md-6 mb-4">
+                            {{-- RMSE (dinonaktifkan sementara) --}}
+                            {{-- <div class="col-md-6 mb-4">
                                 <div class="card border-left-danger h-100">
                                     <div class="card-body">
                                         <h6 class="font-weight-bold text-danger">2. RMSE (Root Mean Square Error)</h6>
@@ -248,10 +243,10 @@
                                         </small>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
-                            {{-- MAE --}}
-                            <div class="col-md-6 mb-4">
+                            {{-- MAE (dinonaktifkan sementara) --}}
+                            {{-- <div class="col-md-6 mb-4">
                                 <div class="card border-left-warning h-100">
                                     <div class="card-body">
                                         <h6 class="font-weight-bold text-warning">3. MAE (Mean Absolute Error)</h6>
@@ -318,7 +313,7 @@
                                         </small>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             {{-- MAPE --}}
                             <div class="col-md-6 mb-4">
