@@ -93,7 +93,7 @@
     </table>
 
     <div class="footer">
-        Dicetak: {{ date('d-m-Y H:i') }} | Metode: Fuzzy Mamdani | Interpretasi MAPE: Lewis (1982) | Error = Rekomendasi Fuzzy − Dosis Aktual Operator
+        Dicetak: {{ date('d-m-Y H:i') }} | Metode: Fuzzy Mamdani | Interpretasi MAPE: Khusmiawati et al. (2025) | Error = Rekomendasi Fuzzy − Dosis Aktual Operator
     </div>
 </body>
 </html>

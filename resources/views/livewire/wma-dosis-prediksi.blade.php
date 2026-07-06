@@ -392,7 +392,7 @@
                                 <div class="col-md-6 mb-4">
                                     <div class="card border-left-info h-100">
                                         <div class="card-body">
-                                            <h6 class="font-weight-bold text-info">4. Interpretasi Akurasi (Lewis, 1982)</h6>
+                                            <h6 class="font-weight-bold text-info">4. Interpretasi Akurasi (Khusmiawati et al., 2025)</h6>
                                             <table class="table table-sm table-bordered mt-2" style="font-size:13px;">
                                                 <thead class="thead-light">
                                                     <tr><th>MAPE</th><th>Interpretasi</th></tr>
@@ -427,7 +427,7 @@
                                                     @endforeach
                                                 </ul>
                                             </div>
-                                            <small class="text-muted mt-3 d-block"><i class="fas fa-info-circle"></i> Sumber: Lewis (1982). Perbandingan antara prediksi WMA minggu ke-1 s/d 4 dengan rata-rata dosis aktual minggu yang bersangkutan di bulan {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}.</small>
+                                            <small class="text-muted mt-3 d-block"><i class="fas fa-info-circle"></i> Sumber: Khusmiawati et al. (2025). Perbandingan antara prediksi WMA minggu ke-1 s/d 4 dengan rata-rata dosis aktual minggu yang bersangkutan di bulan {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}.</small>
                                         </div>
                                     </div>
                                 </div>
@@ -570,7 +570,7 @@
                                 <div class="col-md-6 mb-4">
                                     <div class="card border-left-info h-100">
                                         <div class="card-body">
-                                            <h6 class="font-weight-bold text-info">4. Interpretasi Akurasi — Klorin (Lewis, 1982)</h6>
+                                            <h6 class="font-weight-bold text-info">4. Interpretasi Akurasi — Klorin (Khusmiawati et al., 2025)</h6>
                                             <table class="table table-sm table-bordered mt-2" style="font-size:13px;">
                                                 <thead class="thead-light">
                                                     <tr><th>MAPE</th><th>Interpretasi</th></tr>
@@ -600,7 +600,7 @@
                                                     <span class="text-muted">Tidak ada data evaluasi Klorin.</span>
                                                 @endif
                                             </div>
-                                            <small class="text-muted mt-3 d-block"><i class="fas fa-info-circle"></i> Sumber: Lewis (1982). Perbandingan prediksi WMA Klorin minggu ke-1 s/d 4 dengan rata-rata dosis aktual di bulan {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}.</small>
+                                            <small class="text-muted mt-3 d-block"><i class="fas fa-info-circle"></i> Sumber: Khusmiawati et al. (2025). Perbandingan prediksi WMA Klorin minggu ke-1 s/d 4 dengan rata-rata dosis aktual di bulan {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}.</small>
                                         </div>
                                     </div>
                                 </div>

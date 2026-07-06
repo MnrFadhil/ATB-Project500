@@ -85,7 +85,7 @@
     <div class="footer">
         <p><strong>Keterangan:</strong></p>
         <p>RMSE = Root Mean Square Error | MAE = Mean Absolute Error | MAPE = Mean Absolute Percentage Error</p>
-        <p>Interpretasi MAPE (Lewis, 1982): &lt;10% Sangat Akurat | 10-20% Akurat | 20-50% Cukup | &gt;50% Tidak Akurat</p>
+        <p>Interpretasi MAPE (Khusmiawati et al., 2025): &lt;10% Sangat Akurat | 10-20% Akurat | 20-50% Cukup | &gt;50% Tidak Akurat</p>
     </div>
 </body>
 </html>

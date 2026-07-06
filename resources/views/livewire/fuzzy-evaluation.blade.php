@@ -390,7 +390,7 @@
                                         </table>
                                         <small class="text-muted">
                                             <i class="fas fa-info-circle"></i>
-                                            Sumber: Lewis (1982). Satuan dalam persen (%). Metrik utama untuk menilai kelayakan model.
+                                            Sumber: Khusmiawati et al. (2025). Satuan dalam persen (%). Metrik utama untuk menilai kelayakan model.
                                         </small>
                                     </div>
                                 </div>

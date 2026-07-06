@@ -155,7 +155,7 @@ class WmaEvaluationService
     }
 
     /**
-     * Interpretasi MAPE sesuai standar Lewis (1982)
+     * Interpretasi MAPE sesuai standar Khusmiawati et al. (2025)
      */
     public function interpretMape(float $mape): string
     {
