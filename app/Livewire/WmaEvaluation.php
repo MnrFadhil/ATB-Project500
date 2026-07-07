@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\WmaSetting;
 use App\Services\WmaEvaluationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -46,6 +47,11 @@ class WmaEvaluation extends Component
     public string $filteredStart = '';
     public string $filteredEnd   = '';
 
+    // Bobot WMA (form input)
+    public int $inputW1 = 1;
+    public int $inputW2 = 3;
+    public int $inputW3 = 30;
+
     public function mount()
     {
         // Default: 30 hari terakhir (tapi JANGAN langsung apply)
@@ -55,6 +61,26 @@ class WmaEvaluation extends Component
         // Kosongkan filtered date → tabel kosong sampai user klik filter
         $this->filteredStart = '';
         $this->filteredEnd   = '';
+
+        // Load bobot dari DB
+        [$this->inputW1, $this->inputW2, $this->inputW3] =
+            WmaSetting::getWeights('air_baku', [1, 3, 30]);
+    }
+
+    public function saveWeights(): void
+    {
+        if (auth()->user()->role !== 'admin') return;
+
+        $this->validate([
+            'inputW1' => 'required|integer|min:1|max:100',
+            'inputW2' => 'required|integer|min:1|max:100',
+            'inputW3' => 'required|integer|min:1|max:100',
+        ]);
+
+        WmaSetting::updateOrCreate(
+            ['key' => 'air_baku'],
+            ['w1' => $this->inputW1, 'w2' => $this->inputW2, 'w3' => $this->inputW3]
+        );
     }
 
     // Dipanggil ketika tombol "Tampilkan Data" diklik

@@ -77,6 +77,41 @@
 
         @if($filteredStart && $filteredEnd)
 
+            {{-- Konfigurasi Bobot WMA --}}
+            @php $isAdmin = auth()->user()->role === 'admin'; @endphp
+            <div class="card shadow mb-4">
+                <div class="card-body py-2">
+                    <div class="d-flex align-items-center flex-wrap" style="gap:10px;">
+                        <span class="font-weight-bold text-primary mr-2">
+                            <i class="fas fa-sliders-h"></i> Bobot WMA Air Baku
+                        </span>
+                        <small class="text-muted mr-2">W₁ (terlama) → W₃ (terbaru):</small>
+                        @if($isAdmin)
+                            <div class="d-flex align-items-center" style="gap:6px;">
+                                <input wire:model="inputW1" type="number" min="1" max="100"
+                                       class="form-control form-control-sm text-center" style="width:65px;" placeholder="W1">
+                                <input wire:model="inputW2" type="number" min="1" max="100"
+                                       class="form-control form-control-sm text-center" style="width:65px;" placeholder="W2">
+                                <input wire:model="inputW3" type="number" min="1" max="100"
+                                       class="form-control form-control-sm text-center" style="width:65px;" placeholder="W3">
+                                <button wire:click="saveWeights" wire:loading.attr="disabled"
+                                        class="btn btn-primary btn-sm">
+                                    <span wire:loading.remove wire:target="saveWeights">
+                                        <i class="fas fa-check"></i> Terapkan
+                                    </span>
+                                    <span wire:loading wire:target="saveWeights">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        @else
+                            <span class="font-weight-bold">[{{ $inputW1 }}, {{ $inputW2 }}, {{ $inputW3 }}]</span>
+                        @endif
+                        <small class="text-muted ml-2">Total: {{ $inputW1 + $inputW2 + $inputW3 }}</small>
+                    </div>
+                </div>
+            </div>
+
             {{-- Ringkasan Metrik --}}
             <div class="row">
                 @foreach (['turb', 'ph', 'tds'] as $key)

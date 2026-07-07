@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Shift;
+use App\Models\WmaSetting;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -20,152 +21,127 @@ class MonitoringDetail extends Component
     // =========================================================================
     // FUZZY MEMBERSHIP FUNCTIONS
     // =========================================================================
-    //
-    // Tiga jenis fungsi keanggotaan (MF) yang digunakan dalam Fuzzy Mamdani:
-    //
-    // 1. leftShoulderMF  — himpunan "sisi kiri" (nilai rendah / sangat rendah)
-    //    Bentuk: μ=1 dari -∞ sampai a, turun linier dari a ke b, μ=0 dari b ke ∞
-    //    Contoh: sangat_rendah turbidity → leftShoulder(x, 0.0, 2.0)
-    //      x=0.5  → μ = (2.0-0.5)/(2.0-0.0) = 0.75
-    //      x=1.0  → μ = (2.0-1.0)/(2.0-0.0) = 0.50
-    //      x=2.0  → μ = 0 (sudah di batas kanan)
-    //      x=3.0  → μ = 0
-    //
-    // 2. triangularMF — himpunan segitiga (nilai tengah)
-    //    Bentuk: naik dari a ke b (puncak μ=1), turun dari b ke c
-    //    Contoh: rendah turbidity → triangular(x, 1.0, 2.5, 3.2)
-    //      x=1.0  → μ = 0 (tepat di tepi kiri, belum naik)
-    //      x=1.75 → μ = (1.75-1.0)/(2.5-1.0) = 0.50 (naik)
-    //      x=2.5  → μ = 1.0 (puncak)
-    //      x=2.85 → μ = (3.2-2.85)/(3.2-2.5) = 0.50 (turun)
-    //      x=3.2  → μ = 0 (tepat di tepi kanan)
-    //
-    // 3. rightShoulderMF — himpunan "sisi kanan" (nilai tinggi / sangat tinggi)
-    //    Bentuk: μ=0 dari -∞ sampai a, naik linier dari a ke b, μ=1 dari b ke ∞
-    //    Contoh: sangat_tinggi turbidity → rightShoulder(x, 4.5, 6.0)
-    //      x=4.5  → μ = 0
-    //      x=5.25 → μ = (5.25-4.5)/(6.0-4.5) = 0.50
-    //      x=6.0  → μ = 1.0
-    //      x=8.0  → μ = 1.0 (tetap 1 sampai ∞)
-    // =========================================================================
 
     private function leftShoulderMF(float $x, float $a, float $b): float
+    // Fungsi keanggotaan sisi kiri: μ=1 dari -∞ sampai a, turun dari a ke b, μ=0 dari b ke ∞
+    // Dipakai untuk himpunan "sangat rendah" (nilai kecil = anggota penuh)
     {
         if ($x <= $a) return 1.0;
+        // x masih di sisi kiri batas bawah → derajat penuh
+        // contoh: leftShoulder(0.5, 0.0, 2.0) → 0.5 ≤ 0.0? tidak, lanjut bawah
         if ($x >= $b) return 0.0;
+        // x sudah melewati batas kanan → tidak termasuk himpunan ini
+        // contoh: leftShoulder(3.0, 0.0, 2.0) → 3.0 ≥ 2.0? ya → return 0.0
         return ($b - $x) / ($b - $a);
+        // interpolasi linier turun dari a ke b
+        // contoh: leftShoulder(1.47, 0.0, 2.0) = (2.0-1.47)/(2.0-0.0) = 0.53/2.0 = 0.265
     }
 
     private function triangularMF(float $x, float $a, float $b, float $c): float
+    // Fungsi keanggotaan segitiga: naik dari a ke b (puncak μ=1), turun dari b ke c
+    // Dipakai untuk himpunan "rendah", "optimal", "tinggi" (nilai tengah)
     {
         if ($x <= $a || $x >= $c) return 0.0;
+        // x di luar rentang [a, c] → tidak termasuk himpunan ini sama sekali
+        // contoh: triangular(0.5, 1.0, 2.5, 3.2) → 0.5 ≤ 1.0? ya → return 0.0
         if ($x <= $b) return ($x - $a) / ($b - $a);
+        // x berada di sisi naik (a → b) → interpolasi naik
+        // contoh: triangular(1.47, 1.0, 2.5, 3.2) → (1.47-1.0)/(2.5-1.0) = 0.47/1.5 = 0.313
         return ($c - $x) / ($c - $b);
+        // x berada di sisi turun (b → c) → interpolasi turun
+        // contoh: triangular(2.85, 1.0, 2.5, 3.2) → (3.2-2.85)/(3.2-2.5) = 0.35/0.7 = 0.500
     }
 
     private function rightShoulderMF(float $x, float $a, float $b): float
+    // Fungsi keanggotaan sisi kanan: μ=0 dari -∞ sampai a, naik dari a ke b, μ=1 dari b ke ∞
+    // Dipakai untuk himpunan "sangat tinggi" (nilai besar = anggota penuh)
     {
         if ($x <= $a) return 0.0;
+        // x belum mencapai batas kiri → belum masuk himpunan ini
+        // contoh: rightShoulder(4.0, 4.5, 6.0) → 4.0 ≤ 4.5? ya → return 0.0
         if ($x >= $b) return 1.0;
+        // x sudah melewati batas kanan → derajat keanggotaan penuh
+        // contoh: rightShoulder(8.0, 4.5, 6.0) → 8.0 ≥ 6.0? ya → return 1.0
         return ($x - $a) / ($b - $a);
+        // interpolasi linier naik dari a ke b
+        // contoh: rightShoulder(5.25, 4.5, 6.0) = (5.25-4.5)/(6.0-4.5) = 0.75/1.5 = 0.500
     }
 
     // =========================================================================
     // DEFUZZIFIKASI — Metode Centroid
     // =========================================================================
-    //
-    // Mengubah nilai fuzzy (μ) kembali menjadi angka tegas (crisp output).
-    // Metode: Centroid = Σ(μᵢ × centerᵢ) / Σ(μᵢ)
-    //
-    // Setiap rule punya 2 komponen: [μ, center]
-    //   μ      = derajat keanggotaan hasil fuzzifikasi (0.0 – 1.0)
-    //   center = titik tengah output himpunan (delta dosis dalam ppm)
-    //
-    // Contoh (Fuzzy PAC, turbidity=1.47 NTU, dosis_prev=11.4 ppm):
-    //   Rules yang aktif:
-    //     sangat_rendah: μ=0.265, center=-3.0 → kontribusi = 0.265 × (-3.0) = -0.795
-    //     rendah:        μ=0.313, center=-1.0 → kontribusi = 0.313 × (-1.0) = -0.313
-    //     optimal:       μ=0.000, center= 0.0 → kontribusi = 0
-    //     tinggi:        μ=0.000, center=+1.5 → kontribusi = 0
-    //     sangat_tinggi: μ=0.000, center=+3.5 → kontribusi = 0
-    //
-    //   Σ(μ×center) = -0.795 + (-0.313) = -1.108
-    //   Σ(μ)        =  0.265 + 0.313    =  0.578
-    //   delta        = -1.108 / 0.578   = -1.92 ppm
-    //
-    //   Rekomendasi  = clamp(11.4 + (-1.92), 5, 20) = clamp(9.48, 5, 20) = 9.48 ppm
-    // =========================================================================
 
     private function defuzzify(array $rules): float
+    // Mengubah kumpulan nilai fuzzy (μ) menjadi satu angka tegas (crisp output)
+    // Rumus Centroid: Σ(μᵢ × centerᵢ) / Σ(μᵢ)
     {
         $sumMuCenter = 0.0;
         $sumMu       = 0.0;
+        // Akumulator: sumMuCenter = Σ(μ × center), sumMu = Σ(μ)
 
         foreach ($rules as [$mu, $center]) {
             $sumMuCenter += $mu * $center;
-            $sumMu       += $mu;
+            // Kontribusi tiap rule: derajat keanggotaan × titik tengah output
+            // contoh rule sangat_rendah: μ=0.265 × center=(-3.0) = -0.795
+            $sumMu += $mu;
+            // Akumulasi total bobot fuzzy
+            // contoh setelah 2 rule: sumMu = 0.265 + 0.313 = 0.578
         }
 
         return $sumMu > 0 ? round($sumMuCenter / $sumMu, 2) : 0.0;
+        // Bagi Σ(μ×center) dengan Σ(μ) → hasil delta crisp
+        // contoh PAC turbidity=1.47: (-0.795 + -0.313) / 0.578 = -1.108/0.578 = -1.92 ppm
+        // Jika sumMu=0 (tidak ada rule aktif) → return 0, tidak ada perubahan dosis
     }
 
     // =========================================================================
     // FUZZY MAMDANI — PAC (Koagulan)
-    // =========================================================================
-    //
-    // TUJUAN: Merekomendasikan dosis PAC berdasarkan turbidity air sedimentation.
-    //
-    // SUMBER DATA:
-    //   Input  → water_qualities.turbidity WHERE type='sedimentation' (shift sekarang)
-    //   Prev   → pump_chemicals.dosage WHERE type='pac' AND status='running' (shift sekarang)
-    //   Output → rekomendasi dosis PAC untuk shift BERIKUTNYA (ppm)
-    //
-    // LOGIKA:
-    //   Turbidity tinggi  → air keruh → butuh lebih banyak PAC (delta positif)
-    //   Turbidity rendah  → air bersih → kurangi PAC (delta negatif)
-    //   Output di-clamp antara 5–20 ppm (batas aman operasional)
-    //
-    // HIMPUNAN FUZZY INPUT (turbidity NTU):
-    //   sangat_rendah  → leftShoulder(x, 0.0, 2.0)          → delta = -3.0 ppm
-    //   rendah         → triangular(x, 1.0, 2.5, 3.2)       → delta = -1.0 ppm
-    //   optimal        → triangular(x, 2.8, 3.3, 3.8)       → delta =  0.0 ppm
-    //   tinggi         → triangular(x, 3.4, 4.1, 5.0)       → delta = +1.5 ppm
-    //   sangat_tinggi  → rightShoulder(x, 4.5, 6.0)         → delta = +3.5 ppm
-    //
-    // CONTOH PERHITUNGAN (turbidity=1.47 NTU, dosis_prev=11.4 ppm):
-    //   μ(sangat_rendah) = (2.0-1.47)/(2.0-0.0) = 0.265
-    //   μ(rendah)        = (1.47-1.0)/(2.5-1.0) = 0.313
-    //   μ(optimal)       = 0 (1.47 < 2.8, di luar range)
-    //   μ(tinggi)        = 0
-    //   μ(sangat_tinggi) = 0
-    //   delta = (0.265×(-3) + 0.313×(-1)) / (0.265+0.313) = -1.108/0.578 = -1.92
-    //   output = clamp(11.4 + (-1.92), 5, 20) = 9.48 ppm
+    // Sumber: water_qualities.turbidity WHERE type='sedimentation'
+    // Prev  : pump_chemicals.dosage WHERE type='pac' AND status='running'
+    // Output: rekomendasi dosis PAC shift berikutnya, di-clamp 5–20 ppm
     // =========================================================================
 
     private function fuzzyPAC($sedimentationTurbidity, float $previousDosis = 0): array
     {
         $t = (float) $sedimentationTurbidity;
+        // Cast ke float, karena nilai dari DB bisa berupa string
 
         $mu = [
             'sangat_rendah' => $this->leftShoulderMF($t,  0.0, 2.0),
+            // turbidity < 2 NTU → air sangat jernih, PAC terlalu banyak
             'rendah'        => $this->triangularMF($t,    1.0, 2.5, 3.2),
+            // turbidity 1–3.2 NTU → air cukup jernih, dosis sedikit dikurangi
             'optimal'       => $this->triangularMF($t,    2.8, 3.3, 3.8),
+            // turbidity 2.8–3.8 NTU → kondisi ideal, dosis dipertahankan
             'tinggi'        => $this->triangularMF($t,    3.4, 4.1, 5.0),
+            // turbidity 3.4–5 NTU → air mulai keruh, tambah sedikit PAC
             'sangat_tinggi' => $this->rightShoulderMF($t, 4.5, 6.0),
+            // turbidity > 4.5 NTU → air sangat keruh, butuh PAC jauh lebih banyak
         ];
 
         $rules = [
             [$mu['sangat_rendah'], -3.0],
+            // jika sangat rendah → kurangi dosis 3 ppm (air terlalu jernih)
             [$mu['rendah'],        -1.0],
+            // jika rendah → kurangi dosis 1 ppm
             [$mu['optimal'],        0.0],
-            [$mu['tinggi'],        +1.5],
-            [$mu['sangat_tinggi'], +3.5],
+            // jika optimal → tidak ada perubahan dosis
+            [$mu['tinggi'],        +1],
+            // jika tinggi → tambah dosis 1 ppm
+            [$mu['sangat_tinggi'], +3],
+            // jika sangat tinggi → tambah dosis 3 ppm (respons agresif)
         ];
 
-        $delta          = $this->defuzzify($rules);
-        $recommendation = round(max(5.0, min(20.0, $previousDosis + $delta)), 2);
+        $delta = $this->defuzzify($rules);
+        // delta = perubahan dosis crisp hasil centroid
+        // contoh turbidity=1.47: δ = -1.92 ppm
+
+        $recommendation = round(max(8.0, min(20.0, $previousDosis + $delta)), 2);
+        // Rekomendasi = dosis sebelumnya + delta, dibatasi 5–20 ppm
+        // contoh: clamp(11.4 + (-1.92), 5, 20) = clamp(9.48, 5, 20) = 9.48 ppm
 
         $dominant  = array_search(max($mu), $mu);
+        // Cari himpunan dengan μ terbesar → menentukan status teks
         $statusMap = [
             'sangat_rendah' => ['Dosis Terlalu Tinggi',            'danger'],
             'rendah'        => ['Dosis Sedikit Tinggi',            'warning'],
@@ -180,6 +156,7 @@ class MonitoringDetail extends Component
             'success' => '1cc88a',
             default   => 'f6c23e',
         };
+        // Mapping warna badge: merah=bahaya, hijau=aman, kuning=peringatan
 
         return [
             'status'         => $status,
@@ -191,63 +168,49 @@ class MonitoringDetail extends Component
 
     // =========================================================================
     // FUZZY MAMDANI — Klorin (Desinfektan)
-    // =========================================================================
-    //
-    // TUJUAN: Merekomendasikan dosis Klorin berdasarkan free chlorine di reservoir.
-    //
-    // SUMBER DATA:
-    //   Input  → water_qualities.free_chlor WHERE type='reservoir' (shift sekarang)
-    //   Prev   → pump_chemicals.dosage WHERE type='chlorine/kaporit' AND status='running'
-    //   Output → rekomendasi dosis Klorin untuk shift BERIKUTNYA (ppm)
-    //
-    // LOGIKA:
-    //   Free chlorine rendah  → air kurang aman → tambah klorin (delta positif)
-    //   Free chlorine tinggi  → sudah cukup → kurangi klorin (delta negatif)
-    //   Output di-clamp antara 0–3 ppm
-    //   KONDISI DARURAT: jika free_chlor >= 0.60 dan μ(sangat_tinggi)=1.0
-    //                    → return 0 langsung (matikan pompa)
-    //
-    // HIMPUNAN FUZZY INPUT (free chlorine mg/L):
-    //   sangat_rendah  → leftShoulder(x, 0.00, 0.20)         → delta = +1.0 ppm
-    //   rendah         → triangular(x, 0.15, 0.26, 0.30)     → delta = +0.4 ppm
-    //   optimal        → triangular(x, 0.31, 0.37, 0.46)     → delta =  0.0 ppm
-    //   tinggi         → triangular(x, 0.43, 0.48, 0.51)     → delta = -0.7 ppm
-    //   sangat_tinggi  → rightShoulder(x, 0.50, 0.60)        → delta = -2.0 ppm
-    //
-    // CONTOH PERHITUNGAN (free_chlor=0.32 mg/L, dosis_prev=1.4 ppm):
-    //   μ(sangat_rendah) = 0 (0.32 > 0.20)
-    //   μ(rendah)        = 0 (0.32 > 0.30, di luar range)
-    //   μ(optimal)       = (0.32-0.31)/(0.37-0.31) = 0.167
-    //   μ(tinggi)        = 0 (0.32 < 0.43)
-    //   μ(sangat_tinggi) = 0 (0.32 < 0.50)
-    //   delta = (0.167×0.0) / 0.167 = 0.0 ppm
-    //   output = clamp(1.4 + 0.0, 0, 3) = 1.4 ppm (pertahankan)
+    // Sumber: water_qualities.free_chlor WHERE type='reservoir'
+    // Prev  : pump_chemicals.dosage WHERE type='chlorine/kaporit' AND status='running'
+    // Output: rekomendasi dosis Klorin shift berikutnya, di-clamp 0–3 ppm
     // =========================================================================
 
     private function fuzzyKlorin($freeChlorine, float $previousDosis = 0): array
     {
         $f = (float) $freeChlorine;
+        // Cast ke float, karena nilai dari DB bisa berupa string atau null
 
         $mu = [
             'sangat_rendah' => $this->leftShoulderMF($f,  0.0,  0.20),
+            // free_chlor < 0.2 mg/L → air tidak aman, butuh klorin banyak
             'rendah'        => $this->triangularMF($f,    0.15, 0.26, 0.30),
+            // free_chlor 0.15–0.30 mg/L → kadar kurang, tambah klorin
             'optimal'       => $this->triangularMF($f,    0.31, 0.37, 0.46),
+            // free_chlor 0.31–0.46 mg/L → kadar ideal, pertahankan dosis
             'tinggi'        => $this->triangularMF($f,    0.43, 0.48, 0.51),
+            // free_chlor 0.43–0.51 mg/L → mulai berlebih, kurangi klorin
             'sangat_tinggi' => $this->rightShoulderMF($f, 0.50, 0.60),
+            // free_chlor > 0.5 mg/L → berlebih, kurangi drastis
         ];
 
         $rules = [
             [$mu['sangat_rendah'], +1.0],
+            // sangat rendah → tambah 1.0 ppm (air tidak aman)
             [$mu['rendah'],        +0.4],
+            // rendah → tambah 0.4 ppm
             [$mu['optimal'],        0.0],
+            // optimal → tidak ada perubahan
             [$mu['tinggi'],        -0.7],
+            // tinggi → kurangi 0.7 ppm
             [$mu['sangat_tinggi'], -2.0],
+            // sangat tinggi → kurangi 2.0 ppm
         ];
 
         $delta = $this->defuzzify($rules);
+        // delta = perubahan dosis crisp hasil centroid
+        // contoh free_chlor=0.32: δ = 0.0 ppm (kondisi optimal)
 
-        // Kondisi khusus: free chlor >= 0.60 → matikan pompa
         if ($f >= 0.60 && $mu['sangat_tinggi'] >= 1.0) {
+            // KONDISI DARURAT: free_chlor ≥ 0.60 dan sudah di puncak sangat_tinggi
+            // → matikan pompa langsung, jangan tunggu defuzzifikasi
             return [
                 'status'         => 'Emergency - Matikan Pompa',
                 'recommendation' => 0,
@@ -257,8 +220,11 @@ class MonitoringDetail extends Component
         }
 
         $recommendation = round(max(0.0, min(3.0, $previousDosis + $delta)), 2);
+        // Rekomendasi = dosis sebelumnya + delta, dibatasi 0–3 ppm
+        // contoh: clamp(1.4 + 0.0, 0, 3) = 1.4 ppm (pertahankan)
 
         $dominant  = array_search(max($mu), $mu);
+        // Cari himpunan dengan μ terbesar → menentukan status teks
         $statusMap = [
             'sangat_rendah' => ['Emergency - Free Chlor Sangat Rendah', 'danger'],
             'rendah'        => ['Dosis Terlalu Rendah',                 'warning'],
@@ -284,64 +250,46 @@ class MonitoringDetail extends Component
 
     // =========================================================================
     // FUZZY MAMDANI — Soda Ash (pH Adjuster)
-    // =========================================================================
-    //
-    // TUJUAN: Merekomendasikan dosis Soda Ash berdasarkan pH reservoir.
-    //         Soda Ash HANYA untuk MENAIKKAN pH (jika pH rendah/asam).
-    //         Jika pH sudah normal (>= 6.5) → pompa standby, dosis = 0.
-    //
-    // SUMBER DATA:
-    //   Input  → water_qualities.ph WHERE type='reservoir' (shift sekarang)
-    //   Prev   → pump_chemicals.dosage WHERE type='soda ash' AND status='running'
-    //   Output → rekomendasi dosis Soda Ash untuk shift BERIKUTNYA (ppm)
-    //
-    // LOGIKA:
-    //   pH < 6.5  → air terlalu asam → tambah Soda Ash (delta positif)
-    //   pH >= 6.5 → kondisi normal   → return 0 langsung (tidak perlu dosing)
-    //   Output di-clamp antara 0–10 ppm
-    //
-    // HIMPUNAN FUZZY INPUT (pH):
-    //   sangat_rendah   → triangular(x, 3.0, 4.5, 5.2)      → delta = +3.0 ppm
-    //   rendah          → triangular(x, 4.8, 5.5, 6.1)      → delta = +2.0 ppm
-    //   sedikit_rendah  → triangular(x, 5.8, 6.2, 6.5)      → delta = +1.0 ppm
-    //   normal          → triangular(x, 6.5, 7.0, 7.8)      → delta =  0.0 ppm
-    //
-    // CONTOH PERHITUNGAN A (pH=6.0, dosis_prev=2.0 ppm):
-    //   pH < 6.5, lanjut ke fuzzifikasi:
-    //   μ(sangat_rendah)  = 0 (6.0 > 5.2)
-    //   μ(rendah)         = (6.1-6.0)/(6.1-5.5) = 0.167
-    //   μ(sedikit_rendah) = (6.0-5.8)/(6.2-5.8) = 0.500
-    //   μ(normal)         = 0 (6.0 < 6.5)
-    //   delta = (0.167×2.0 + 0.500×1.0) / (0.167+0.500)
-    //         = (0.334 + 0.500) / 0.667 = 0.834/0.667 = 1.25 ppm
-    //   output = clamp(2.0 + 1.25, 0, 10) = 3.25 ppm
-    //
-    // CONTOH PERHITUNGAN B (pH=7.45, dosis_prev=0):
-    //   pH >= 6.5 → langsung return 0, pompa standby
+    // Sumber: water_qualities.ph WHERE type='reservoir'
+    // Prev  : pump_chemicals.dosage WHERE type='soda ash' AND status='running'
+    // Output: rekomendasi dosis Soda Ash shift berikutnya, di-clamp 0–10 ppm
+    // Catatan: Soda Ash HANYA untuk menaikkan pH. pH ≥ 6.5 → pompa standby
     // =========================================================================
 
     private function fuzzySodaAsh($ph, float $previousDosis = 2.0): array
     {
         $p = (float) $ph;
+        // Cast ke float, karena nilai dari DB bisa berupa string
 
         $mu = [
             'sangat_rendah'  => $this->triangularMF($p, 3.0, 4.5, 5.2),
+            // pH 3–5.2 → sangat asam, butuh Soda Ash banyak (darurat)
             'rendah'         => $this->triangularMF($p, 4.8, 5.5, 6.1),
+            // pH 4.8–6.1 → asam, butuh Soda Ash untuk naikkan pH
             'sedikit_rendah' => $this->triangularMF($p, 5.8, 6.2, 6.5),
+            // pH 5.8–6.5 → sedikit asam, tambah Soda Ash secukupnya
             'normal'         => $this->triangularMF($p, 6.5, 7.0, 7.8),
+            // pH 6.5–7.8 → kondisi normal, tidak perlu Soda Ash
         ];
 
         $rules = [
             [$mu['sangat_rendah'],  +3.0],
+            // sangat rendah → tambah 3 ppm (respons darurat)
             [$mu['rendah'],         +2.0],
+            // rendah → tambah 2 ppm
             [$mu['sedikit_rendah'], +1.0],
+            // sedikit rendah → tambah 1 ppm
             [$mu['normal'],          0.0],
+            // normal → tidak ada perubahan
         ];
 
         $delta = $this->defuzzify($rules);
+        // delta = perubahan dosis crisp hasil centroid
+        // contoh pH=6.0: δ = 1.25 ppm
 
-        // pH >= 6.5 atau delta = 0 → tidak perlu dosing
         if ($p >= 6.5 || $delta == 0) {
+            // pH sudah normal (≥ 6.5) atau tidak ada delta → tidak perlu dosing
+            // contoh: pH=7.45 → langsung standby, tidak perlu hitung lebih lanjut
             return [
                 'status'         => 'Pompa Standby',
                 'recommendation' => 0,
@@ -351,8 +299,11 @@ class MonitoringDetail extends Component
         }
 
         $recommendation = round(max(0.0, min(10.0, $previousDosis + $delta)), 2);
+        // Rekomendasi = dosis sebelumnya + delta, dibatasi 0–10 ppm
+        // contoh pH=6.0, prev=2.0: clamp(2.0 + 1.25, 0, 10) = 3.25 ppm
 
         $dominant  = array_search(max($mu), $mu);
+        // Cari himpunan dengan μ terbesar → menentukan status teks
         $statusMap = [
             'sangat_rendah'  => ['Pompa Running - EMERGENCY',      'danger'],
             'rendah'         => ['Pompa Running - Terlalu Rendah', 'warning'],
@@ -373,93 +324,38 @@ class MonitoringDetail extends Component
 
     // =========================================================================
     // WMA — Weighted Moving Average
-    // =========================================================================
-    //
-    // TUJUAN: Memprediksi nilai parameter air/dosis shift BERIKUTNYA
-    //         berdasarkan 3 titik data historis (2 shift lalu + shift sekarang).
-    //
-    // RUMUS:
-    //   WMA = (w1×d1 + w2×d2 + w3×d3) / (w1+w2+w3)
-    //
-    // BOBOT: [1, 3, 30] → total = 34
-    //   w1=1  → data terlama  (shift -4 jam)   → pengaruh  2.9%
-    //   w2=3  → data tengah   (shift -2 jam)   → pengaruh  8.8%
-    //   w3=30 → data terbaru  (shift sekarang) → pengaruh 88.2%
-    //
-    // MENGAPA BOBOT 1:3:30?
-    //   Data air sungai berubah cepat, sehingga kondisi terbaru
-    //   jauh lebih relevan dibanding 4 jam lalu. Bobot besar di
-    //   data terbaru membuat prediksi responsif terhadap perubahan.
-    //
-    // SUMBER DATA (diambil oleh getHistoricalWaterQualities):
-    //   d1, d2 → dari 2 shift sebelumnya (tabel shifts + waterQualities + pumpChemicals)
-    //   d3     → dari shift sekarang (shift yang sedang dibuka)
-    //
-    // PARAMETER YANG DIPREDIKSI:
-    //   turbidityAB   → water_qualities.turbidity (type='air baku')
-    //   phAB          → water_qualities.ph (type='air baku')
-    //   tdsAB         → water_qualities.tds (type='air baku')
-    //   freeChlorine  → water_qualities.free_chlor (type='reservoir')
-    //   pACDosis      → pump_chemicals.dosage (type='pac')
-    //   chlorineDosis → pump_chemicals.dosage (type='chlorine/kaporit')
-    //   sodaAshDosis  → pump_chemicals.dosage (type='soda ash')
-    //
-    // CONTOH PERHITUNGAN (turbidity air baku):
-    //   d1 = 57 NTU (shift 11:00), d2 = 39 NTU (shift 13:00), d3 = 33 NTU (shift 15:00)
-    //   WMA = (1×57 + 3×39 + 30×33) / 34
-    //       = (57 + 117 + 990) / 34
-    //       = 1164 / 34
-    //       = 34.24 NTU  ← prediksi untuk shift 17:00
+    // Rumus : WMA = (1×d1 + 3×d2 + 30×d3) / 34
+    // Bobot : [1, 3, 30] → data terbaru dapat bobot 88.2% (air sungai cepat berubah)
+    // Output: prediksi nilai parameter untuk shift berikutnya
     // =========================================================================
 
     private function calculateWMA(array $dataArray): float
     {
-        $lastThree   = array_slice($dataArray, -3);
-        $weights     = [1, 3, 30];
+        $lastThree = array_slice($dataArray, -3);
+        // Ambil 3 data terakhir: [d1=terlama, d2=tengah, d3=terbaru]
+        // contoh turbidity: [57, 39, 33] dari shift 11:00, 13:00, 15:00
+
+        $weights     = WmaSetting::getWeights('air_baku', [1, 3, 30]);
         $weightedSum = 0;
         $weightTotal = 0;
 
         foreach ($lastThree as $i => $value) {
             $weightedSum += $value * $weights[$i];
+            // Kalikan tiap nilai dengan bobotnya
+            // contoh: 1×57=57, 3×39=117, 30×33=990 → total = 1164
             $weightTotal += $weights[$i];
+            // Akumulasi total bobot: 1+3+30 = 34
         }
 
         return round($weightedSum / $weightTotal, 2);
+        // WMA = 1164 / 34 = 34.24 NTU → prediksi turbidity shift 17:00
     }
 
     // =========================================================================
     // AMBIL DATA HISTORIS UNTUK WMA
-    // =========================================================================
-    //
-    // TUJUAN: Mengambil 2 shift sebelumnya agar dapat membentuk array 3 titik
-    //         data [d1, d2, d3] yang dibutuhkan oleh calculateWMA().
-    //
-    // SUMBER DATA:
-    //   Tabel: shifts, water_qualities, pump_chemicals
-    //   Relasi: shifts → waterQualities (hasMany), shifts → pumpChemicals (hasMany)
-    //
-    // LOGIKA PENCARIAN SHIFT SEBELUMNYA (berdasarkan end_time shift sekarang):
-    //
-    //   KASUS 1 — end_time = 01:00 (shift tengah malam)
-    //     → Ambil shift 23:00 dan 21:00 dari HARI KEMARIN
-    //     → Karena shift 01:00 adalah shift pertama hari ini,
-    //       shift sebelumnya ada di hari sebelumnya
-    //
-    //   KASUS 2 — end_time = 03:00 (shift dini hari)
-    //     → Ambil shift 01:00 hari INI + shift 23:00 HARI KEMARIN
-    //     → Dicari terpisah (2 query) lalu digabung dengan collect()
-    //
-    //   KASUS 3 — end_time lainnya (05:00, 07:00, ..., 23:00)
-    //     → Ambil shift 2 jam sebelumnya dan 4 jam sebelumnya, hari yang SAMA
-    //     → Contoh: shift 15:00 → ambil shift 13:00 dan 11:00
-    //
-    // OUTPUT: array berisi 7 key, masing-masing adalah array 3 elemen [d1, d2, d3]
-    //   Elemen ke-1 dan ke-2 = dari shift sebelumnya
-    //   Elemen ke-3 = dari shift sekarang (ditambahkan di bagian bawah method ini)
-    //
-    // RETURN null jika:
-    //   - Shift sebelumnya kurang dari 2 (data tidak cukup untuk WMA)
-    //   - turbidityAB kurang dari 3 titik
+    // Sumber: tabel shifts, water_qualities, pump_chemicals
+    // Output: array 7 parameter, masing-masing berisi 3 titik data [d1, d2, d3]
+    // Return null jika data historis kurang dari 2 shift sebelumnya
     // =========================================================================
 
     private function getHistoricalWaterQualities($currentShiftId): ?array
@@ -469,9 +365,11 @@ class MonitoringDetail extends Component
         $currentEndTime = $currentShift->end_time;
         $currentHour    = (int) substr($currentEndTime, 0, 2);
         $baseTime       = strtotime($currentEndTime);
+        // Parsing waktu shift sekarang untuk menentukan shift mana yang harus dicari
 
         if ($currentHour == 1) {
-            // end_time 01:00 → ambil 23:00 dan 21:00 hari kemarin
+            // KASUS 1: end_time = 01:00 → shift tengah malam
+            // Shift sebelumnya ada di hari kemarin (23:00 dan 21:00)
             $yesterdayDate = date('Y-m-d', strtotime('-1 day', strtotime($currentDate)));
             $shifts = Shift::where('id', '!=', $currentShiftId)
                 ->where('date', $yesterdayDate)
@@ -481,25 +379,32 @@ class MonitoringDetail extends Component
                 ->get();
 
         } elseif ($currentHour == 3) {
-            // end_time 03:00 → ambil 01:00 hari ini + 23:00 hari kemarin
+            // KASUS 2: end_time = 03:00 → shift dini hari
+            // d1 = shift 23:00 kemarin, d2 = shift 01:00 hari ini
+            // Dicari terpisah karena beda tanggal, lalu digabung
             $yesterdayDate = date('Y-m-d', strtotime('-1 day', strtotime($currentDate)));
 
             $shift01Today = Shift::where('id', '!=', $currentShiftId)
                 ->where('date', $currentDate)->where('end_time', '01:00')
                 ->with('waterQualities', 'pumpChemicals')->first();
+            // Shift 01:00 hari ini sebagai d2
 
             $shift23Yest = Shift::where('id', '!=', $currentShiftId)
                 ->where('date', $yesterdayDate)->where('end_time', '23:00')
                 ->with('waterQualities', 'pumpChemicals')->first();
+            // Shift 23:00 kemarin sebagai d1
 
             $shifts = collect();
             if ($shift23Yest)  $shifts->push($shift23Yest);
             if ($shift01Today) $shifts->push($shift01Today);
+            // Gabungkan secara manual dengan urutan kronologis [d1, d2]
 
         } else {
-            // end_time lain → ambil 2 jam dan 4 jam sebelumnya
+            // KASUS 3: end_time lainnya (05:00, 07:00, ..., 23:00)
+            // Ambil 2 shift sebelumnya di hari yang sama
             $time2HoursAgo = date('H:i', strtotime('-2 hours', $baseTime));
             $time4HoursAgo = date('H:i', strtotime('-4 hours', $baseTime));
+            // contoh shift 15:00 → cari 13:00 (d2) dan 11:00 (d1)
 
             $shifts = Shift::where('id', '!=', $currentShiftId)
                 ->where('date', $currentDate)
@@ -510,6 +415,8 @@ class MonitoringDetail extends Component
         }
 
         if ($shifts->count() < 2) return null;
+        // Butuh minimal 2 shift sebelumnya untuk membentuk array [d1, d2, d3]
+        // Jika kurang → WMA tidak bisa dihitung → return null
 
         $data = [
             'turbidityAB'   => [],
@@ -522,29 +429,34 @@ class MonitoringDetail extends Component
             'chlorineDosis' => [],
             'sodaAshDosis'  => [],
         ];
+        // Inisialisasi array kosong untuk 9 parameter yang akan diisi dari shift historis
 
-        // Data dari shift-shift sebelumnya
         foreach ($shifts as $shift) {
+            // Iterasi tiap shift sebelumnya (d1, d2) → ambil nilai parameter
             foreach ($shift->waterQualities as $wq) {
                 if ($wq->type == 'air baku') {
                     $data['turbidityAB'][] = $wq->turbidity;
                     $data['phAB'][]        = $wq->ph;
                     $data['tdsAB'][]       = $wq->tds;
+                    // Kualitas air baku (sebelum proses)
                 } elseif ($wq->type == 'sedimentation') {
                     $data['turbiditySeq'][] = $wq->turbidity;
+                    // Turbidity setelah sedimentasi (input Fuzzy PAC)
                 } elseif ($wq->type == 'reservoir') {
                     $data['phRes'][]        = $wq->ph;
                     $data['freeChlorine'][] = $wq->free_chlor ?? 0;
+                    // Kualitas air di reservoir (input Fuzzy Klorin & Soda Ash)
                 }
             }
 
             $data['pACDosis'][]      = $shift->pumpChemicals()->where('type', 'pac')->first()?->dosage ?? 0;
             $data['chlorineDosis'][] = $shift->pumpChemicals()->where('type', 'chlorine/kaporit')->first()?->dosage ?? 0;
             $data['sodaAshDosis'][]  = $shift->pumpChemicals()->where('type', 'soda ash')->first()?->dosage ?? 0;
+            // Dosis aktual pompa kimia dari shift sebelumnya (sebagai d1, d2)
         }
 
-        // Data dari shift sekarang (titik ke-3)
         foreach ($currentShift->waterQualities as $wq) {
+            // Tambahkan data shift sekarang sebagai titik ke-3 (d3 = data terbaru)
             if ($wq->type == 'air baku') {
                 $data['turbidityAB'][] = $wq->turbidity;
                 $data['phAB'][]        = $wq->ph;
@@ -560,8 +472,11 @@ class MonitoringDetail extends Component
         $data['pACDosis'][]      = $currentShift->pumpChemicals()->where('type', 'pac')->first()?->dosage ?? 0;
         $data['chlorineDosis'][] = $currentShift->pumpChemicals()->where('type', 'chlorine/kaporit')->first()?->dosage ?? 0;
         $data['sodaAshDosis'][]  = $currentShift->pumpChemicals()->where('type', 'soda ash')->first()?->dosage ?? 0;
+        // Setelah loop ini, setiap array punya 3 elemen [d1, d2, d3] siap dihitung WMA
 
         if (count($data['turbidityAB']) < 3) return null;
+        // Validasi akhir: pastikan turbidityAB punya 3 titik data
+        // Jika tidak → kemungkinan ada shift yang tidak punya data water quality
 
         return $data;
     }
@@ -586,11 +501,12 @@ class MonitoringDetail extends Component
         ])->find($this->id);
 
         $historicalData = $this->getHistoricalWaterQualities($this->id);
+        // Ambil data 2 shift sebelumnya → null jika tidak cukup
 
-        // Pisahkan water quality berdasarkan tipe
         $currentAB  = null;
         $currentSed = null;
         $currentRes = null;
+        // Pisahkan water quality berdasarkan tipe untuk dipakai Fuzzy
 
         foreach ($shift->waterQualities as $wq) {
             if ($wq->type == 'air baku')          $currentAB  = $wq;
@@ -599,8 +515,8 @@ class MonitoringDetail extends Component
         }
 
         $dataIncomplete = $historicalData === null;
+        // Flag: true jika data historis tidak cukup untuk WMA
 
-        // Default jika data historis belum tersedia
         $wmaData = [
             'turbidityAB'   => null,
             'phAB'          => null,
@@ -610,6 +526,8 @@ class MonitoringDetail extends Component
             'chlorineDosis' => null,
             'sodaAshDosis'  => null,
         ];
+        // Default null → tampil "-" di view jika WMA belum bisa dihitung
+
         $chartData  = [
             'historicalTurbidity' => [],
             'historicalPH'        => [],
@@ -618,8 +536,8 @@ class MonitoringDetail extends Component
         ];
         $timeLabels = [];
 
-        // Hitung WMA jika data historis tersedia
         if (!$dataIncomplete) {
+            // Data historis cukup → hitung WMA untuk semua parameter
             $wmaData = [
                 'turbidityAB'   => $this->calculateWMA($historicalData['turbidityAB']),
                 'phAB'          => $this->calculateWMA($historicalData['phAB']),
@@ -636,28 +554,31 @@ class MonitoringDetail extends Component
                 'historicalTDS'       => $historicalData['tdsAB'],
                 'wmaPredictions'      => $wmaData,
             ];
+            // Data untuk chart: 3 titik historis + 1 titik prediksi WMA
 
             $baseTime     = strtotime($shift->end_time);
             $timeLabels[] = date('H:i', strtotime('-4 hours', $baseTime));
             $timeLabels[] = date('H:i', strtotime('-2 hours', $baseTime));
             $timeLabels[] = date('H:i', $baseTime);
             $timeLabels[] = 'Prediksi';
+            // Label sumbu X chart: [11:00, 13:00, 15:00, Prediksi]
         }
 
-        // Hitung Fuzzy Mamdani — selalu berjalan, independen dari WMA
-        // Prioritaskan pompa yang statusnya 'running', fallback ke first()
         $pacChemical      = $shift->pumpChemicals()->where('type', 'pac')->where('status', 'running')->first()
                          ?? $shift->pumpChemicals()->where('type', 'pac')->first();
         $chlorineChemical = $shift->pumpChemicals()->where('type', 'chlorine/kaporit')->where('status', 'running')->first()
                          ?? $shift->pumpChemicals()->where('type', 'chlorine/kaporit')->first();
         $sodaAshChemical  = $shift->pumpChemicals()->where('type', 'soda ash')->where('status', 'running')->first()
                          ?? $shift->pumpChemicals()->where('type', 'soda ash')->first();
+        // Prioritaskan pompa yang statusnya 'running', fallback ke pompa pertama jika tidak ada
 
         $sdsRecommendations = [
             'pac'     => $currentSed ? $this->fuzzyPAC($currentSed->turbidity, $pacChemical?->dosage ?? 10.0)              : null,
             'klorin'  => $currentRes ? $this->fuzzyKlorin($currentRes->free_chlor ?? 0, $chlorineChemical?->dosage ?? 1.5) : null,
             'sodaAsh' => $currentRes ? $this->fuzzySodaAsh($currentRes->ph, $sodaAshChemical?->dosage ?? 2.0)              : null,
         ];
+        // Fuzzy berjalan independen dari WMA — tetap dihitung meski data historis kurang
+        // null jika data water quality shift sekarang belum diisi operator
 
         return view('livewire.monitoring-detail', [
             'shifts'             => $shift,

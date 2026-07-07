@@ -3,15 +3,17 @@
 namespace App\Services;
 
 use App\Models\Shift;
+use App\Models\WmaSetting;
 use Carbon\Carbon;
 
 class WmaEvaluationService
 {
-    /**
-     * Bobot WMA: [data terlama, tengah, terbaru]
-     * W1=8 (terbaru), W2=2, W3=1 (terlama)
-     */
-    protected array $weights = [1, 3, 30];
+    protected array $weights;
+
+    public function __construct()
+    {
+        $this->weights = WmaSetting::getWeights('air_baku', [1, 3, 30]);
+    }
 
     /**
      * Hitung WMA dari array data (3 elemen, urut lama ke baru)

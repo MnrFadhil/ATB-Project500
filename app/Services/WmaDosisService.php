@@ -3,11 +3,17 @@
 namespace App\Services;
 
 use App\Models\Shift;
+use App\Models\WmaSetting;
 use Carbon\Carbon;
 
 class WmaDosisService
 {
-    protected array $weights = [1, 1, 10]; // [terlama, tengah, terbaru]
+    protected array $weights;
+
+    public function __construct()
+    {
+        $this->weights = WmaSetting::getWeights('dosis_kimia', [1, 1, 10]);
+    }
 
     private const CHEM_TYPES = [
         'pac'      => 'pac',
