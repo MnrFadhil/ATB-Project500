@@ -95,6 +95,8 @@ class MonitoringIndex extends Component
 
     public function deleteShift()
     {
+        if (auth()->user()->role !== 'admin') return;
+
         $isSuccess = Shift::findOrFail($this->shiftDetail['id'])->forceDelete();
         if ($isSuccess) Session::flash('success', 'Success Delete Shift');
         else Session::flash('eror', 'Eror Delete Shift');
@@ -104,7 +106,9 @@ class MonitoringIndex extends Component
 
     public function downloadReport()
     {
-        $shifts =  Shift::with([
+        $nextDate = Carbon::parse($this->downloadDate)->addDay()->format('Y-m-d');
+
+        $shifts = Shift::with([
             'shiftOperators',
             'waterQualities',
             'flowMeters',
@@ -115,10 +119,26 @@ class MonitoringIndex extends Component
             'unitOperation',
             'wtps',
             'pressureStaticMixer'
-        ])->where('date', $this->downloadDate)->orderBy('shift', 'asc')->orderBy('date', 'asc')->orderBy('start_time', 'asc')->get()->toArray();
+        ])->where(function ($q) use ($nextDate) {
+            // Siklus laporan: end_time 09:00 tgl X sampai end_time 07:00 tgl X+1
+            $q->where(function ($q1) {
+                $q1->where('date', $this->downloadDate)
+                   ->where('end_time', '>=', '09:00:00');
+            })->orWhere(function ($q2) use ($nextDate) {
+                $q2->where('date', $nextDate)
+                   ->where('end_time', '<=', '07:00:00');
+            });
+        })->orderBy('shift', 'asc')->orderBy('date', 'asc')->orderBy('end_time', 'asc')->get()
+          ->map(function ($shift) {
+              // Catatan dini hari dari tgl berikutnya ditampilkan sebagai tanggal laporan
+              if ($shift->date !== $this->downloadDate) {
+                  $shift->date = $this->downloadDate;
+              }
+              return $shift;
+          })->toArray();
 
         if ($this->downloadType == 'pdf') {
-            $pdf = PDF::loadView('download.monitoring', ['shifts' => $shifts])->setPaper('legal', 'landscape');
+            $pdf = PDF::loadView('download.monitoring', ['shifts' => $shifts])->setPaper('a4', 'portrait');
             return response()->streamDownload(function () use ($pdf) {
                 echo $pdf->stream();
             }, "Report $this->downloadDate.pdf");

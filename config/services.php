@@ -31,4 +31,6 @@ return [
         ],
     ],
 
+    'sensor_api_key' => env('SENSOR_API_KEY'),
+
 ];

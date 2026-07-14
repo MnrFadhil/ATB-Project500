@@ -349,7 +349,7 @@
             <div class="scm-value" id="scm-value" style="color:{{ $scmColor }}">
                 {{ $scmVal >= 0 ? '+' : '' }}{{ number_format($scmVal, 2) }}
             </div>
-            <div class="scm-desc" id="scm-desc">{!! $scmTxt !!}</div>
+            <div class="scm-desc" id="scm-desc">{{ $scmTxt }}</div>
         </div>
         <div class="scm-range">
             <div class="scm-track" id="scm-track">

@@ -12,7 +12,7 @@ class ValidateSensorApiKey
     {
         $key = $request->header('X-API-KEY');
 
-        if (!$key || $key !== env('SENSOR_API_KEY')) {
+        if (!$key || $key !== config('services.sensor_api_key')) {
             return response()->json(['status' => 'unauthorized'], 401);
         }
 
