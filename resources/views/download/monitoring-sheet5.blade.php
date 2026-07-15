@@ -1,10 +1,13 @@
 @php
+    \Carbon\Carbon::setLocale('id');
     $thBase   = "background-color: rgb(193,193,193); border: 1.5px solid #333; text-align: center; font-weight: bold; padding: 4px 6px;";
     $thNarrow = $thBase . " width: 60px;";
     $thMedium = $thBase . " width: 80px;";
     $thWide   = $thBase . " width: 100px;";
     $tdStyle  = "border: 1px solid #555; text-align: center; padding: 3px 5px;";
+    $hariTanggal = \Carbon\Carbon::parse($shifts[0]['date'] ?? '')->translatedFormat('l, d F Y');
 @endphp
+
 <table style="border-collapse: collapse; width: 100%;">
     <thead>
         <tr>
@@ -45,6 +48,10 @@
                     <td style="{{ $tdStyle }}">{{ $pump['stirring'] ?? '-' }}</td>
                     <td style="{{ $tdStyle }}">{{ $pump['tank_level'] ?? '-' }}</td>
                 @endforeach
+            </tr>
+            {{-- Baris kosong jam genap (16 kolom) --}}
+            <tr>
+                @for ($i = 0; $i < 16; $i++)<td style="{{ $tdStyle }}"></td>@endfor
             </tr>
         @endforeach
     </tbody>
