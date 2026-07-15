@@ -61,11 +61,11 @@ class FuzzyEvaluationService
             [$mu['sangat_rendah'], -3.0],
             [$mu['rendah'],        -1.0],
             [$mu['optimal'],        0.0],
-            [$mu['tinggi'],        +1.5],
-            [$mu['sangat_tinggi'], +3.5],
+            [$mu['tinggi'],        +1],
+            [$mu['sangat_tinggi'], +3],
         ];
         $delta = $this->defuzzify($rules);
-        return round(max(5.0, min(20.0, $previousDosis + $delta)), 2);
+        return round(max(8.0, min(20.0, $previousDosis + $delta)), 2);
     }
 
     // -------------------------------------------------------------------------
@@ -84,8 +84,6 @@ class FuzzyEvaluationService
             'sangat_tinggi' => $this->rightShoulderMF($f, 0.50, 0.60),
         ];
 
-        // Kondisi darurat: matikan pompa
-        if ($f >= 0.60 && $mu['sangat_tinggi'] >= 1.0) return 0.0;
         $rules = [
             [$mu['sangat_rendah'], +1.0],
             [$mu['rendah'],        +0.4],
@@ -94,6 +92,8 @@ class FuzzyEvaluationService
             [$mu['sangat_tinggi'], -2.0],
         ];
         $delta = $this->defuzzify($rules);
+
+        if ($f >= 0.60 && $mu['sangat_tinggi'] >= 1.0) return 0.0;
         return round(max(0.0, min(3.0, $previousDosis + $delta)), 2);
     }
 
@@ -104,8 +104,6 @@ class FuzzyEvaluationService
     private function fuzzySodaAsh(float $ph, float $previousDosis = 2.0): float
     {
         $p = $ph;
-
-        if ($p >= 6.5) return 0.0;
 
         $mu = [
             'sangat_rendah'  => $this->triangularMF($p, 3.0, 4.5, 5.2),
@@ -120,7 +118,8 @@ class FuzzyEvaluationService
             [$mu['normal'],          0.0],
         ];
         $delta = $this->defuzzify($rules);
-        if ($delta == 0) return 0.0;
+
+        if ($p >= 6.5 || $delta == 0) return 0.0;
         return round(max(0.0, min(10.0, $previousDosis + $delta)), 2);
     }
 

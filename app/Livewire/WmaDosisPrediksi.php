@@ -46,20 +46,25 @@ class WmaDosisPrediksi extends Component
         $this->filteredMonth = $month ?: $this->selectedMonth;
         $this->selectedMonth = $this->filteredMonth;
          // Build data
-    [$weekly, $predictions, $weightInfo, $chemLabels, $evaluation] = $this->buildData();
-    
+    [$monthly, $predictions, $weightInfo, $chemLabels, $evaluation] = $this->buildData();
+
     // Prepare chart data
     $jsChartsData = [];
     foreach (['pac', 'chlorine', 'soda_ash'] as $chemKey) {
-        if (isset($weekly[$chemKey]) && count($weekly[$chemKey]) > 0) {
+        if (isset($monthly[$chemKey]) && count($monthly[$chemKey]) > 0) {
+            $labels = array_map(fn($m) => $m['label'], $monthly[$chemKey]);
+            $hist   = array_column($monthly[$chemKey], 'avg_dosage');
+            if (isset($predictions[$chemKey])) {
+                $labels[] = $predictions[$chemKey]['label'];
+            }
             $jsChartsData[$chemKey] = [
-                'labels' => array_map(function($w) { return 'Mg ' . $w['week_num']; }, $weekly[$chemKey]),
-                'hist' => array_column($weekly[$chemKey], 'avg_dosage'),
-                'pred' => array_column($predictions[$chemKey] ?? [], 'avg_dosage'),
+                'labels' => $labels,
+                'hist'   => $hist,
+                'pred'   => isset($predictions[$chemKey]) ? [$predictions[$chemKey]['avg_dosage']] : [],
             ];
         }
     }
-    
+
     // Dispatch event jika ada data
     if (!empty($jsChartsData)) {
         $this->dispatch('charts-ready', chartsData: $jsChartsData);
@@ -77,13 +82,13 @@ class WmaDosisPrediksi extends Component
         $start = $target->copy()->subMonths(3)->startOfMonth()->format('Y-m-d');
         $end = $target->copy()->subDay()->format('Y-m-d'); // akhir bulan sebelumnya
 
-        $weekly      = $service->getWeeklyAverages($start, $end);
-        $predictions = $service->predictNextMonth($weekly);
+        $monthly     = $service->getMonthlyAverages($start, $end);
+        $predictions = $service->predictNextMonth($monthly, $this->filteredMonth);
         $weightInfo  = $service->getWeights();
         $chemLabels  = $service->getChemLabels();
         $evaluation  = $service->evaluatePredictions($predictions, $this->filteredMonth);
 
-        return [$weekly, $predictions, $weightInfo, $chemLabels, $evaluation];
+        return [$monthly, $predictions, $weightInfo, $chemLabels, $evaluation];
     }
 
 public function getMonthOptions(): array
@@ -102,7 +107,7 @@ public function getMonthOptions(): array
 
 public function render()
 {
-    [$weekly, $predictions, $weightInfo, $chemLabels, $evaluation] = $this->buildData();
+    [$monthly, $predictions, $weightInfo, $chemLabels, $evaluation] = $this->buildData();
 
     // Hitung periode historis untuk display
     $historisLabel = '';
@@ -113,22 +118,8 @@ public function render()
         $historisLabel = $s->format('d M Y') . ' - ' . $e->format('d M Y') . ' (3 bulan)';
     }
 
-    // Prepare data untuk chart
-    if ($this->filteredMonth && $chemLabels) {
-        $jsChartsData = [];
-        foreach (['pac', 'chlorine', 'soda_ash'] as $chemKey) {
-            $jsChartsData[$chemKey] = [
-                'labels' => array_map(function($w) { return 'Mg ' . $w['week_num']; }, $weekly[$chemKey] ?? []),
-                'hist' => array_column($weekly[$chemKey] ?? [], 'avg_dosage'),
-                'pred' => array_column($predictions[$chemKey] ?? [], 'avg_dosage'),
-            ];
-        }
-        
-
-    }
-
     return view('livewire.wma-dosis-prediksi', compact(
-        'weekly', 'predictions', 'weightInfo', 'chemLabels', 'historisLabel', 'evaluation'
+        'monthly', 'predictions', 'weightInfo', 'chemLabels', 'historisLabel', 'evaluation'
     ))->layout('layouts.app');
 }
 }

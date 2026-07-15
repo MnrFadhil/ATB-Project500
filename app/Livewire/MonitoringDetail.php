@@ -137,7 +137,7 @@ class MonitoringDetail extends Component
         // contoh turbidity=1.47: δ = -1.92 ppm
 
         $recommendation = round(max(8.0, min(20.0, $previousDosis + $delta)), 2);
-        // Rekomendasi = dosis sebelumnya + delta, dibatasi 5–20 ppm
+        // Rekomendasi = dosis sebelumnya + delta, dibatasi 8–20 ppm
         // contoh: clamp(11.4 + (-1.92), 5, 20) = clamp(9.48, 5, 20) = 9.48 ppm
 
         $dominant  = array_search(max($mu), $mu);

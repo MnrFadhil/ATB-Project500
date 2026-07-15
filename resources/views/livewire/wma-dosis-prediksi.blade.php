@@ -55,7 +55,7 @@
         @if($filteredMonth && $weightInfo)
             <small class="text-muted mt-2 d-block">
                 Bobot WMA: W₁={{ $weightInfo['w1'] }} (terbaru), W₂={{ $weightInfo['w2'] }}, W₃={{ $weightInfo['w3'] }} (terlama) | Total={{ $weightInfo['total'] }}
-                | Sistem mengambil <strong>3 bulan sebelumnya</strong> → rata-rata per minggu → prediksi <strong>{{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}</strong>
+                | Sistem mengambil <strong>3 bulan sebelumnya</strong> → rata-rata per bulan kalender → 1x hitung WMA → prediksi <strong>{{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}</strong>
             </small>
         @endif
     </div>
@@ -106,25 +106,12 @@
                     </div>
                 </div>
             </div>
+
             @foreach ($chemLabels as $chemKey => $chemLabel)
-                @if(count($weekly[$chemKey] ?? []) > 0)
+                @php $hist = $monthly[$chemKey] ?? []; @endphp
+                @if(count($hist) > 0)
                 @php
-                    $hist = $weekly[$chemKey];
-                    $preds = $predictions[$chemKey] ?? [];
-                    $labels = []; $hVals = []; $pVals = [];
-                    foreach ($hist as $w) {
-                        $labels[] = 'Mg ' . $w['week_num'];
-                        $hVals[] = $w['avg_dosage'];
-                        $pVals[] = 'null';
-                    }
-                    // Bridge
-                    $lastH = end($hist);
-                    $pVals[count($hist)-1] = $lastH['avg_dosage'];
-                    foreach ($preds as $i => $p) {
-                        $labels[] = 'Pred ' . ($i+1);
-                        $hVals[] = 'null';
-                        $pVals[] = $p['avg_dosage'];
-                    }
+                    $pred = $predictions[$chemKey] ?? null;
                 @endphp
 
                 <div class="card shadow mb-4">
@@ -139,26 +126,26 @@
                             </div>
                             {{-- Table --}}
                             <div class="col-md-4">
-                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                <div class="table-responsive">
                                     <table class="table table-sm table-bordered" style="font-size: 11px;">
                                         <thead class="thead-light text-center">
-                                            <tr><th>Minggu</th><th>Dosis (ppm)</th><th>Data</th></tr>
+                                            <tr><th>Bulan</th><th>Dosis (ppm)</th><th>Data</th></tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($hist as $w)
+                                            @foreach ($hist as $m)
                                                 <tr class="text-center">
-                                                    <td>Mg {{ $w['week_num'] }}</td>
-                                                    <td><strong>{{ $w['avg_dosage'] }}</strong></td>
-                                                    <td>{{ $w['count'] }}</td>
+                                                    <td>{{ $m['label'] }}</td>
+                                                    <td><strong>{{ $m['avg_dosage'] }}</strong></td>
+                                                    <td>{{ $m['count'] }}</td>
                                                 </tr>
                                             @endforeach
-                                            @foreach ($preds as $i => $p)
+                                            @if($pred)
                                                 <tr class="text-center table-warning">
-                                                    <td><strong>Pred {{ $i+1 }}</strong></td>
-                                                    <td><strong class="text-danger">{{ $p['avg_dosage'] }}</strong></td>
+                                                    <td><strong>{{ $pred['label'] }} (Prediksi)</strong></td>
+                                                    <td><strong class="text-danger">{{ $pred['avg_dosage'] }}</strong></td>
                                                     <td><small>WMA</small></td>
                                                 </tr>
-                                            @endforeach
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
@@ -166,46 +153,40 @@
                         </div>
 
                         {{-- Detail Perhitungan --}}
-                        @if(count($preds) > 0)
+                        @if($pred)
                         <button class="btn btn-sm btn-outline-primary mt-3" type="button" data-toggle="collapse" data-target="#calc_{{ $chemKey }}">
                             Detail Perhitungan WMA
                         </button>
                         <div class="collapse mt-2" id="calc_{{ $chemKey }}">
                             <div class="bg-light p-3 rounded" style="font-size: 13px; line-height: 2.2; font-family: 'Courier New', monospace;">
-                                @foreach ($preds as $i => $p)
-                                    <strong>Prediksi Minggu {{ $i+1 }}:</strong><br>
-                                    <div style="margin-left: 16px; font-size: 14px; font-weight: 600; margin-bottom: 12px;">
-                                        WMA = (<span style="color:#28a745">{{ $p['prior_data'][0] }}</span> &times; <span style="color:#007bff">{{ $weightInfo['w3'] }}</span> + <span style="color:#28a745">{{ $p['prior_data'][1] }}</span> &times; <span style="color:#007bff">{{ $weightInfo['w2'] }}</span> + <span style="color:#28a745">{{ $p['prior_data'][2] }}</span> &times; <span style="color:#007bff">{{ $weightInfo['w1'] }}</span>) / {{ $weightInfo['total'] }}<br>
-                                        WMA = (<span style="color:#28a745">{{ round($p['prior_data'][0] * $weightInfo['w3'], 2) }}</span> + <span style="color:#28a745">{{ round($p['prior_data'][1] * $weightInfo['w2'], 2) }}</span> + <span style="color:#28a745">{{ round($p['prior_data'][2] * $weightInfo['w1'], 2) }}</span>) / {{ $weightInfo['total'] }}<br>
-                                        <span style="color:#0c5460; background:#d1ecf1; padding:4px 10px; border-radius:4px;">WMA = {{ $p['avg_dosage'] }} ppm</span>
-                                    </div>
-                                @endforeach
+                                <strong>Prediksi {{ $pred['label'] }} (dari 3 bulan sebelumnya):</strong><br>
+                                <div style="margin-left: 16px; font-size: 14px; font-weight: 600; margin-bottom: 12px;">
+                                    WMA = (<span style="color:#28a745">{{ $pred['prior_data'][0] }}</span> &times; <span style="color:#007bff">{{ $weightInfo['w3'] }}</span> + <span style="color:#28a745">{{ $pred['prior_data'][1] }}</span> &times; <span style="color:#007bff">{{ $weightInfo['w2'] }}</span> + <span style="color:#28a745">{{ $pred['prior_data'][2] }}</span> &times; <span style="color:#007bff">{{ $weightInfo['w1'] }}</span>) / {{ $weightInfo['total'] }}<br>
+                                    WMA = (<span style="color:#28a745">{{ round($pred['prior_data'][0] * $weightInfo['w3'], 2) }}</span> + <span style="color:#28a745">{{ round($pred['prior_data'][1] * $weightInfo['w2'], 2) }}</span> + <span style="color:#28a745">{{ round($pred['prior_data'][2] * $weightInfo['w1'], 2) }}</span>) / {{ $weightInfo['total'] }}<br>
+                                    <span style="color:#0c5460; background:#d1ecf1; padding:4px 10px; border-radius:4px;">WMA = {{ $pred['avg_dosage'] }} ppm</span>
+                                </div>
+                                <small class="text-muted">Dihitung 1x langsung dari 3 rata-rata bulanan asli (non-rekursif) &mdash; tidak menggunakan hasil prediksi lain sebagai input.</small>
                             </div>
                         </div>
                         @endif
 
-                        {{-- Ringkasan Total Bulanan --}}
-                        @if(count($preds) > 0)
+                        {{-- Ringkasan --}}
+                        @if($pred)
                         <div class="alert alert-warning mt-3 mb-0 d-flex align-items-center justify-content-between flex-wrap" style="border-left: 5px solid #f6c23e;">
                             <div>
                                 <i class="fas fa-calculator text-warning mr-2"></i>
-                                <strong>Estimasi Dosis Sebulan &mdash; {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}</strong>
+                                <strong>Estimasi Dosis &mdash; {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}</strong>
                                 <br>
                                 <small class="text-muted">
-                                    Rata-rata dari {{ count($preds) }} minggu prediksi:
-                                    @foreach ($preds as $i => $p)
-                                        <strong>{{ $p['avg_dosage'] }}</strong>{{ !$loop->last ? ' + ' : '' }}
-                                    @endforeach
-                                    = <strong>{{ round(array_sum(array_column($preds, 'avg_dosage')) / count($preds), 2) }}</strong> ppm (rata-rata/minggu)
+                                    WMA dari 3 bulan sebelumnya ({{ $pred['prior_data'][0] }}, {{ $pred['prior_data'][1] }}, {{ $pred['prior_data'][2] }} ppm)
                                 </small>
                             </div>
                             <div class="text-right mt-2 mt-md-0">
-                                <div class="text-muted" style="font-size: 12px;">Total estimasi sebulan</div>
+                                <div class="text-muted" style="font-size: 12px;">Estimasi rata-rata dosis sebulan</div>
                                 <div style="font-size: 28px; font-weight: 700; color: #e74a3b; line-height: 1;">
-                                    {{ round(array_sum(array_column($preds, 'avg_dosage')) / count($preds), 2) }}
+                                    {{ $pred['avg_dosage'] }}
                                     <span style="font-size: 14px; font-weight: 400;">ppm</span>
                                 </div>
-                                <small class="text-muted">(rata-rata mingguan &times; 1 bulan)</small>
                             </div>
                         </div>
                         @endif
@@ -285,7 +266,6 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        <small class="text-muted mt-1 d-block">n = {{ $m['n'] }} minggu</small>
                                         {{-- RMSE & MAE dinonaktifkan sementara --}}
                                         {{-- <div class="col-6"><small class="text-muted">RMSE</small><div class="h5 mb-0">{{ $m['rmse'] }}</div></div> --}}
                                         {{-- <div class="col-6"><small class="text-muted">MAE</small><div class="h5 mb-0">{{ $m['mae'] }}</div></div> --}}
@@ -312,78 +292,6 @@
                         <div class="card-body">
                             <div class="row">
 
-                                {{-- RMSE PAC (dinonaktifkan sementara) --}}
-                                {{-- <div class="col-md-6 mb-4">
-                                    <div class="card border-left-danger h-100">
-                                        <div class="card-body">
-                                            <h6 class="font-weight-bold text-danger">1. RMSE (Root Mean Square Error)</h6>
-                                            <div class="bg-light p-3 rounded text-center mb-3">
-                                                <code style="font-size:14px;">RMSE = &radic;( &Sigma;(Prediksi &minus; Aktual)&sup2; / n )</code>
-                                            </div>
-                                            @if(count($evalRows) > 0)
-                                                @php
-                                                    $rmseTot = 0; $rmseDetails = [];
-                                                    foreach($evalRows as $r) {
-                                                        $err = $r['prediksi'] - $r['aktual']; $sq = $err * $err; $rmseTot += $sq;
-                                                        $rmseDetails[] = ['pred'=>$r['prediksi'],'aktual'=>$r['aktual'],'err'=>$err,'sq'=>$sq,'wk'=>$r['week_num']];
-                                                    }
-                                                    $rmseVal = sqrt($rmseTot / count($evalRows));
-                                                @endphp
-                                                <div class="alert alert-info p-2 mb-3"><small><strong>Perhitungan dari {{ count($evalRows) }} data evaluasi PAC:</strong></small></div>
-                                                <div class="bg-light p-3 rounded mb-3" style="font-size:13px;line-height:2;">
-                                                    <strong>Error setiap minggu (Prediksi &minus; Aktual)&sup2;:</strong><br>
-                                                    @foreach($rmseDetails as $d)
-                                                        Mg {{ $d['wk'] }}: ({{ $d['pred'] }} &minus; {{ $d['aktual'] }}) = <span style="color:#e74c3c;font-weight:bold;">{{ round($d['err'],2) }}</span><br>
-                                                        {{ round($d['err'],2) }} &times; {{ round($d['err'],2) }} = <span style="color:#3498db;font-weight:bold;">{{ round($d['sq'],4) }}</span><br><br>
-                                                    @endforeach
-                                                    <strong>Total &Sigma;(Error&sup2;) = {{ round($rmseTot,4) }}</strong><br><br>
-                                                    <div style="font-size:16px;font-weight:bold;color:#333;line-height:2.2;font-family:'Courier New',monospace;background:#f8f9fa;padding:12px;border-radius:4px;">
-                                                        RMSE = &radic;( {{ round($rmseTot,4) }} / {{ count($evalRows) }} )<br>
-                                                        RMSE = &radic;{{ round($rmseTot/count($evalRows),4) }}<br>
-                                                        <span style="color:#721c24;background:#f5c6cb;padding:8px 12px;border-radius:4px;display:inline-block;">RMSE = {{ round($rmseVal,4) }} ppm</span>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                            <small class="text-muted"><i class="fas fa-info-circle"></i> Semakin kecil RMSE, semakin akurat prediksi. Satuan: ppm.</small>
-                                        </div>
-                                    </div>
-                                </div> --}}
-
-                                {{-- MAE PAC (dinonaktifkan sementara) --}}
-                                {{-- <div class="col-md-6 mb-4">
-                                    <div class="card border-left-warning h-100">
-                                        <div class="card-body">
-                                            <h6 class="font-weight-bold text-warning">2. MAE (Mean Absolute Error)</h6>
-                                            <div class="bg-light p-3 rounded text-center mb-3">
-                                                <code style="font-size:14px;">MAE = &Sigma;|Prediksi &minus; Aktual| / n</code>
-                                            </div>
-                                            @if(count($evalRows) > 0)
-                                                @php
-                                                    $maeTot = 0; $maeDetails = [];
-                                                    foreach($evalRows as $r) {
-                                                        $abs = abs($r['prediksi'] - $r['aktual']); $maeTot += $abs;
-                                                        $maeDetails[] = ['pred'=>$r['prediksi'],'aktual'=>$r['aktual'],'abs'=>$abs,'wk'=>$r['week_num']];
-                                                    }
-                                                    $maeVal = $maeTot / count($evalRows);
-                                                @endphp
-                                                <div class="alert alert-info p-2 mb-3"><small><strong>Perhitungan dari {{ count($evalRows) }} data evaluasi PAC:</strong></small></div>
-                                                <div class="bg-light p-3 rounded mb-3" style="font-size:13px;line-height:2;">
-                                                    <strong>Error absolut setiap minggu |Prediksi &minus; Aktual|:</strong><br>
-                                                    @foreach($maeDetails as $d)
-                                                        Mg {{ $d['wk'] }}: |{{ $d['pred'] }} &minus; {{ $d['aktual'] }}| = <span style="color:#28a745;font-weight:bold;">{{ round($d['abs'],4) }}</span><br>
-                                                    @endforeach
-                                                    <br>
-                                                    <div style="font-size:16px;font-weight:bold;color:#333;line-height:2.2;font-family:'Courier New',monospace;background:#f8f9fa;padding:12px;border-radius:4px;">
-                                                        MAE = {{ round($maeTot,4) }} / {{ count($evalRows) }}<br>
-                                                        <span style="color:#856404;background:#fff3cd;padding:8px 12px;border-radius:4px;display:inline-block;">MAE = {{ round($maeVal,4) }} ppm</span>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                            <small class="text-muted"><i class="fas fa-info-circle"></i> Rata-rata besar kesalahan prediksi dalam satuan ppm.</small>
-                                        </div>
-                                    </div>
-                                </div> --}}
-
                                 {{-- MAPE PAC --}}
                                 <div class="col-md-6 mb-4">
                                     <div class="card border-left-success h-100">
@@ -399,16 +307,16 @@
                                                         if($r['aktual'] != 0) {
                                                             $abs = abs($r['prediksi'] - $r['aktual']); $pct = $abs / $r['aktual'];
                                                             $mapePctTot += $pct; $mapeCount++;
-                                                            $mapeDetails[] = ['pred'=>$r['prediksi'],'aktual'=>$r['aktual'],'abs'=>$abs,'pct'=>$pct,'wk'=>$r['week_num']];
+                                                            $mapeDetails[] = ['pred'=>$r['prediksi'],'aktual'=>$r['aktual'],'abs'=>$abs,'pct'=>$pct,'wk'=>$r['label'] ?? ($r['week_num'] ?? '')];
                                                         }
                                                     }
                                                     $mapeVal = $mapeCount > 0 ? ($mapePctTot / $mapeCount) * 100 : 0;
                                                 @endphp
                                                 <div class="alert alert-info p-2 mb-3"><small><strong>Perhitungan dari {{ $mapeCount }} data PAC (aktual &ne; 0):</strong></small></div>
                                                 <div class="bg-light p-3 rounded mb-3" style="font-size:13px;line-height:2;">
-                                                    <strong>Persentase error setiap minggu:</strong><br>
+                                                    <strong>Persentase error:</strong><br>
                                                     @foreach($mapeDetails as $d)
-                                                        Mg {{ $d['wk'] }}: |{{ $d['pred'] }} &minus; {{ $d['aktual'] }}| / {{ $d['aktual'] }}<br>
+                                                        {{ $d['wk'] }}: |{{ $d['pred'] }} &minus; {{ $d['aktual'] }}| / {{ $d['aktual'] }}<br>
                                                         = <span style="color:#28a745;font-weight:bold;">{{ round($d['abs'],4) }}</span> / <span style="color:#007bff;font-weight:bold;">{{ $d['aktual'] }}</span>
                                                         = <span style="color:#856404;font-weight:bold;">{{ round($d['pct'],4) }}</span> (<span style="color:#dc3545;font-weight:bold;">{{ round($d['pct']*100,2) }}%</span>)<br><br>
                                                     @endforeach
@@ -462,7 +370,7 @@
                                                     @endforeach
                                                 </ul>
                                             </div>
-                                            <small class="text-muted mt-3 d-block"><i class="fas fa-info-circle"></i> Sumber: Khusmiawati et al. (2025). Perbandingan antara prediksi WMA minggu ke-1 s/d 4 dengan rata-rata dosis aktual minggu yang bersangkutan di bulan {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}.</small>
+                                            <small class="text-muted mt-3 d-block"><i class="fas fa-info-circle"></i> Sumber: Khusmiawati et al. (2025). Perbandingan antara prediksi WMA dengan rata-rata dosis aktual bulan {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}.</small>
                                         </div>
                                     </div>
                                 </div>
@@ -484,82 +392,6 @@
                         <div class="card-body">
                             <div class="row">
 
-                                {{-- RMSE Klorin (dinonaktifkan sementara) --}}
-                                {{-- <div class="col-md-6 mb-4">
-                                    <div class="card border-left-danger h-100">
-                                        <div class="card-body">
-                                            <h6 class="font-weight-bold text-danger">1. RMSE (Root Mean Square Error)</h6>
-                                            <div class="bg-light p-3 rounded text-center mb-3">
-                                                <code style="font-size:14px;">RMSE = &radic;( &Sigma;(Prediksi &minus; Aktual)&sup2; / n )</code>
-                                            </div>
-                                            @if(count($evalRowsKlorin) > 0)
-                                                @php
-                                                    $rmseKTot = 0; $rmseKDetails = [];
-                                                    foreach($evalRowsKlorin as $r) {
-                                                        $err = $r['prediksi'] - $r['aktual']; $sq = $err * $err; $rmseKTot += $sq;
-                                                        $rmseKDetails[] = ['pred'=>$r['prediksi'],'aktual'=>$r['aktual'],'err'=>$err,'sq'=>$sq,'wk'=>$r['week_num']];
-                                                    }
-                                                    $rmseKVal = sqrt($rmseKTot / count($evalRowsKlorin));
-                                                @endphp
-                                                <div class="alert alert-info p-2 mb-3"><small><strong>Perhitungan dari {{ count($evalRowsKlorin) }} data evaluasi Klorin:</strong></small></div>
-                                                <div class="bg-light p-3 rounded mb-3" style="font-size:13px;line-height:2;">
-                                                    <strong>Error setiap minggu (Prediksi &minus; Aktual)&sup2;:</strong><br>
-                                                    @foreach($rmseKDetails as $d)
-                                                        Mg {{ $d['wk'] }}: ({{ $d['pred'] }} &minus; {{ $d['aktual'] }}) = <span style="color:#e74c3c;font-weight:bold;">{{ round($d['err'],2) }}</span><br>
-                                                        {{ round($d['err'],2) }} &times; {{ round($d['err'],2) }} = <span style="color:#3498db;font-weight:bold;">{{ round($d['sq'],4) }}</span><br><br>
-                                                    @endforeach
-                                                    <strong>Total &Sigma;(Error&sup2;) = {{ round($rmseKTot,4) }}</strong><br><br>
-                                                    <div style="font-size:16px;font-weight:bold;color:#333;line-height:2.2;font-family:'Courier New',monospace;background:#f8f9fa;padding:12px;border-radius:4px;">
-                                                        RMSE = &radic;( {{ round($rmseKTot,4) }} / {{ count($evalRowsKlorin) }} )<br>
-                                                        RMSE = &radic;{{ round($rmseKTot/count($evalRowsKlorin),4) }}<br>
-                                                        <span style="color:#721c24;background:#f5c6cb;padding:8px 12px;border-radius:4px;display:inline-block;">RMSE = {{ round($rmseKVal,4) }} ppm</span>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <div class="alert alert-warning mb-0"><i class="fas fa-exclamation-triangle mr-1"></i> Tidak ada data evaluasi Klorin.</div>
-                                            @endif
-                                            <small class="text-muted"><i class="fas fa-info-circle"></i> Semakin kecil RMSE, semakin akurat prediksi. Satuan: ppm.</small>
-                                        </div>
-                                    </div>
-                                </div> --}}
-
-                                {{-- MAE Klorin (dinonaktifkan sementara) --}}
-                                {{-- <div class="col-md-6 mb-4">
-                                    <div class="card border-left-warning h-100">
-                                        <div class="card-body">
-                                            <h6 class="font-weight-bold text-warning">2. MAE (Mean Absolute Error)</h6>
-                                            <div class="bg-light p-3 rounded text-center mb-3">
-                                                <code style="font-size:14px;">MAE = &Sigma;|Prediksi &minus; Aktual| / n</code>
-                                            </div>
-                                            @if(count($evalRowsKlorin) > 0)
-                                                @php
-                                                    $maeKTot = 0; $maeKDetails = [];
-                                                    foreach($evalRowsKlorin as $r) {
-                                                        $abs = abs($r['prediksi'] - $r['aktual']); $maeKTot += $abs;
-                                                        $maeKDetails[] = ['pred'=>$r['prediksi'],'aktual'=>$r['aktual'],'abs'=>$abs,'wk'=>$r['week_num']];
-                                                    }
-                                                    $maeKVal = $maeKTot / count($evalRowsKlorin);
-                                                @endphp
-                                                <div class="alert alert-info p-2 mb-3"><small><strong>Perhitungan dari {{ count($evalRowsKlorin) }} data evaluasi Klorin:</strong></small></div>
-                                                <div class="bg-light p-3 rounded mb-3" style="font-size:13px;line-height:2;">
-                                                    <strong>Error absolut setiap minggu |Prediksi &minus; Aktual|:</strong><br>
-                                                    @foreach($maeKDetails as $d)
-                                                        Mg {{ $d['wk'] }}: |{{ $d['pred'] }} &minus; {{ $d['aktual'] }}| = <span style="color:#28a745;font-weight:bold;">{{ round($d['abs'],4) }}</span><br>
-                                                    @endforeach
-                                                    <br>
-                                                    <div style="font-size:16px;font-weight:bold;color:#333;line-height:2.2;font-family:'Courier New',monospace;background:#f8f9fa;padding:12px;border-radius:4px;">
-                                                        MAE = {{ round($maeKTot,4) }} / {{ count($evalRowsKlorin) }}<br>
-                                                        <span style="color:#856404;background:#fff3cd;padding:8px 12px;border-radius:4px;display:inline-block;">MAE = {{ round($maeKVal,4) }} ppm</span>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <div class="alert alert-warning mb-0"><i class="fas fa-exclamation-triangle mr-1"></i> Tidak ada data evaluasi Klorin.</div>
-                                            @endif
-                                            <small class="text-muted"><i class="fas fa-info-circle"></i> Rata-rata besar kesalahan prediksi dalam satuan ppm.</small>
-                                        </div>
-                                    </div>
-                                </div> --}}
-
                                 {{-- MAPE Klorin --}}
                                 <div class="col-md-6 mb-4">
                                     <div class="card border-left-success h-100">
@@ -575,16 +407,16 @@
                                                         if($r['aktual'] != 0) {
                                                             $abs = abs($r['prediksi'] - $r['aktual']); $pct = $abs / $r['aktual'];
                                                             $mapeKPctTot += $pct; $mapeKCount++;
-                                                            $mapeKDetails[] = ['pred'=>$r['prediksi'],'aktual'=>$r['aktual'],'abs'=>$abs,'pct'=>$pct,'wk'=>$r['week_num']];
+                                                            $mapeKDetails[] = ['pred'=>$r['prediksi'],'aktual'=>$r['aktual'],'abs'=>$abs,'pct'=>$pct,'wk'=>$r['label'] ?? ($r['week_num'] ?? '')];
                                                         }
                                                     }
                                                     $mapeKVal = $mapeKCount > 0 ? ($mapeKPctTot / $mapeKCount) * 100 : 0;
                                                 @endphp
                                                 <div class="alert alert-info p-2 mb-3"><small><strong>Perhitungan dari {{ $mapeKCount }} data Klorin (aktual &ne; 0):</strong></small></div>
                                                 <div class="bg-light p-3 rounded mb-3" style="font-size:13px;line-height:2;">
-                                                    <strong>Persentase error setiap minggu:</strong><br>
+                                                    <strong>Persentase error:</strong><br>
                                                     @foreach($mapeKDetails as $d)
-                                                        Mg {{ $d['wk'] }}: |{{ $d['pred'] }} &minus; {{ $d['aktual'] }}| / {{ $d['aktual'] }}<br>
+                                                        {{ $d['wk'] }}: |{{ $d['pred'] }} &minus; {{ $d['aktual'] }}| / {{ $d['aktual'] }}<br>
                                                         = <span style="color:#28a745;font-weight:bold;">{{ round($d['abs'],4) }}</span> / <span style="color:#007bff;font-weight:bold;">{{ $d['aktual'] }}</span>
                                                         = <span style="color:#856404;font-weight:bold;">{{ round($d['pct'],4) }}</span> (<span style="color:#dc3545;font-weight:bold;">{{ round($d['pct']*100,2) }}%</span>)<br><br>
                                                     @endforeach
@@ -621,8 +453,6 @@
                                             <div class="mt-3" style="font-size:13px;">
                                                 <strong>Hasil Evaluasi Klorin &mdash; {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}:</strong><br>
                                                 @if($emK && $emK['n'] > 0)
-                                                    {{-- RMSE = <strong>{{ $emK['rmse'] }}</strong> ppm &nbsp;|&nbsp; --}}
-                                                    {{-- MAE = <strong>{{ $emK['mae'] }}</strong> ppm &nbsp;|&nbsp; --}}
                                                     MAPE = <strong>{{ $emK['mape'] }}%</strong>
                                                     &rarr; <span class="font-weight-bold
                                                         @if($emK['mape'] < 10) text-success
@@ -635,7 +465,7 @@
                                                     <span class="text-muted">Tidak ada data evaluasi Klorin.</span>
                                                 @endif
                                             </div>
-                                            <small class="text-muted mt-3 d-block"><i class="fas fa-info-circle"></i> Sumber: Khusmiawati et al. (2025). Perbandingan prediksi WMA Klorin minggu ke-1 s/d 4 dengan rata-rata dosis aktual di bulan {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}.</small>
+                                            <small class="text-muted mt-3 d-block"><i class="fas fa-info-circle"></i> Sumber: Khusmiawati et al. (2025). Perbandingan prediksi WMA Klorin dengan rata-rata dosis aktual di bulan {{ \Carbon\Carbon::parse($filteredMonth.'-01')->translatedFormat('F Y') }}.</small>
                                         </div>
                                     </div>
                                 </div>
@@ -661,7 +491,7 @@
                                 <thead class="thead-light text-center">
                                     <tr>
                                         <th rowspan="2">No</th>
-                                        <th rowspan="2">Minggu</th>
+                                        <th rowspan="2">Periode</th>
                                         <th colspan="3">PAC (ppm)</th>
                                         <th colspan="3">Klorin (ppm)</th>
                                         <th colspan="3">Soda Ash (ppm)</th>
@@ -677,7 +507,7 @@
                                         @for($wi = 0; $wi < $maxWeeks; $wi++)
                                             <tr class="text-center">
                                                 <td>{{ $wi + 1 }}</td>
-                                                <td>Minggu {{ $wi + 1 }}</td>
+                                                <td>{{ $evaluation['pac']['rows'][$wi]['label'] ?? ($evaluation['chlorine']['rows'][$wi]['label'] ?? ('Periode ' . ($wi + 1))) }}</td>
                                                 @foreach(['pac','chlorine'] as $ck)
                                                     @php $erow = $evaluation[$ck]['rows'][$wi] ?? null; @endphp
                                                     @if($erow)
@@ -729,8 +559,6 @@
                                         @foreach(['pac','chlorine'] as $ck)
                                             @php $em = $evaluation[$ck]['metrics'] ?? ['rmse'=>'-','mae'=>'-','mape'=>'-','interpretasi'=>'-']; @endphp
                                             <td colspan="2" class="text-left" style="font-size:11px;">
-                                                {{-- RMSE: {{ $em['rmse'] }}<br> --}}
-                                                {{-- MAE: {{ $em['mae'] }}<br> --}}
                                                 MAPE: {{ $em['mape'] }}%
                                             </td>
                                             <td class="font-weight-bold
@@ -748,8 +576,6 @@
                                         @else
                                             @php $em = $evaluation['soda_ash']['metrics'] ?? ['rmse'=>'-','mae'=>'-','mape'=>'-','interpretasi'=>'-']; @endphp
                                             <td colspan="2" class="text-left" style="font-size:11px;">
-                                                {{-- RMSE: {{ $em['rmse'] }}<br> --}}
-                                                {{-- MAE: {{ $em['mae'] }}<br> --}}
                                                 MAPE: {{ $em['mape'] }}%
                                             </td>
                                             <td class="font-weight-bold
@@ -798,7 +624,7 @@
 @script
 <script>
     let chartInstances = {};
-    
+
     $wire.on('charts-ready', (data) => {
         if (!data || !data.chartsData) return;
 
@@ -814,12 +640,11 @@
                 }
 
                 const d = chartsData[key];
-                const labels = [...d.labels];
-                for (let i = 0; i < d.pred.length; i++) {
-                    labels.push('Pred ' + (i + 1));
-                }
+                const labels = d.labels;
 
+                // hist = titik historis + null di posisi prediksi
                 const hist = [...d.hist, ...Array(d.pred.length).fill(null)];
+                // pred = null di semua titik historis kecuali titik terakhir (jembatan), lalu nilai prediksi
                 const pred = [...Array(d.hist.length - 1).fill(null), d.hist[d.hist.length - 1], ...d.pred];
 
                 try {

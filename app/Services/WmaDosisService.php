@@ -47,11 +47,15 @@ class WmaDosisService
     }
 
     /**
-     * Ambil rata-rata dosis per minggu ISO, grouped per chem type
+     * Ambil rata-rata dosis per BULAN kalender, grouped per chem type.
+     * Menggantikan pendekatan lama yang mengelompokkan per minggu ISO —
+     * dengan basis bulan kalender, prediksi jadi apple-to-apple dengan
+     * "1 bulan" tanpa sisa hari yang kepotong minggu ISO.
+     *
      * @param string $start Y-m-d
-     * @param string $end Y-m-d
+     * @param string $end   Y-m-d
      */
-    public function getWeeklyAverages(string $start, string $end): array
+    public function getMonthlyAverages(string $start, string $end): array
     {
         $shifts = Shift::with(['pumpChemicals' => fn($q) => $q->whereNull('deleted_at')])
             ->whereBetween('date', [$start, $end])
@@ -60,27 +64,35 @@ class WmaDosisService
 
         $result = [];
         foreach (self::CHEM_TYPES as $key => $dbType) {
-            $weeks = [];
+            $months = [];
             foreach ($shifts as $s) {
                 foreach ($s->pumpChemicals->where('type', $dbType) as $c) {
                     if ($c->dosage <= 0) continue;
-                    $w = Carbon::parse($s->date)->isoWeek();
-                    $wKey = Carbon::parse($s->date)->format('o-\WW');
-                    if (!isset($weeks[$wKey])) {
-                        $weeks[$wKey] = ['week' => $wKey, 'week_num' => $w, 'total' => 0, 'count' => 0,
-                            'start' => $s->date, 'end' => $s->date];
+
+                    $mKey = Carbon::parse($s->date)->format('Y-m');
+                    if (!isset($months[$mKey])) {
+                        $months[$mKey] = [
+                            'month' => $mKey,
+                            'total' => 0,
+                            'count' => 0,
+                            'start' => $s->date,
+                            'end'   => $s->date,
+                        ];
                     }
-                    $weeks[$wKey]['total'] += $c->dosage;
-                    $weeks[$wKey]['count']++;
-                    if ($s->date > $weeks[$wKey]['end']) $weeks[$wKey]['end'] = $s->date;
-                    if ($s->date < $weeks[$wKey]['start']) $weeks[$wKey]['start'] = $s->date;
+                    $months[$mKey]['total'] += $c->dosage;
+                    $months[$mKey]['count']++;
+                    if ($s->date > $months[$mKey]['end'])   $months[$mKey]['end']   = $s->date;
+                    if ($s->date < $months[$mKey]['start']) $months[$mKey]['start'] = $s->date;
                 }
             }
-            $result[$key] = collect($weeks)->sortKeys()->map(fn($w) => [
-                'week' => $w['week'], 'week_num' => $w['week_num'],
-                'start' => $w['start'], 'end' => $w['end'],
-                'avg_dosage' => round($w['total'] / $w['count'], 2),
-                'count' => $w['count'],
+
+            $result[$key] = collect($months)->sortKeys()->map(fn($m) => [
+                'month'      => $m['month'],
+                'label'      => Carbon::parse($m['month'] . '-01')->translatedFormat('M Y'),
+                'start'      => $m['start'],
+                'end'        => $m['end'],
+                'avg_dosage' => round($m['total'] / $m['count'], 2),
+                'count'      => $m['count'],
             ])->values()->toArray();
         }
         return $result;
@@ -120,56 +132,47 @@ class WmaDosisService
             'mae'         => round($sumAbs / $n, 4),
             'mape'        => $mape,
             'n'           => $n,
-            'interpretasi'=> $this->interpretMape($mape),
+            'interpretasi'=> $countPct > 0 ? $this->interpretMape($mape) : '-',
         ];
     }
 
     /**
-     * Evaluasi prediksi terhadap data aktual bulan target
+     * Evaluasi prediksi 1-bulan terhadap data aktual bulan target.
+     * Hanya dievaluasi jika bulan target sudah selesai penuh (bukan bulan berjalan),
+     * supaya rata-rata aktual tidak dihitung dari data yang belum lengkap sebulan.
      */
     public function evaluatePredictions(array $predictions, string $targetMonth): array
     {
-        $target = Carbon::parse($targetMonth . '-01');
-        $start  = $target->copy()->startOfMonth()->format('Y-m-d');
-        $end    = $target->copy()->endOfMonth()->format('Y-m-d');
+        $target     = Carbon::parse($targetMonth . '-01');
+        $start      = $target->copy()->startOfMonth()->format('Y-m-d');
+        $end        = $target->copy()->endOfMonth()->format('Y-m-d');
+        $isComplete = Carbon::today()->greaterThan($target->copy()->endOfMonth());
 
-        $actualWeekly = $this->getWeeklyAverages($start, $end);
-
-        // Keluarkan minggu yang sedang berjalan (belum selesai)
-        $todayIsoWeek = Carbon::today()->isoWeek();
-        $todayIsoYear = Carbon::today()->isoWeekYear();
-        foreach ($actualWeekly as $key => $weeks) {
-            $actualWeekly[$key] = array_values(array_filter($weeks, function ($w) use ($todayIsoWeek, $todayIsoYear) {
-                $wDate = Carbon::parse($w['start']);
-                return !($wDate->isoWeek() === $todayIsoWeek && $wDate->isoWeekYear() === $todayIsoYear);
-            }));
-        }
+        $actualMonthly = $isComplete ? $this->getMonthlyAverages($start, $end) : [];
 
         $evaluation = [];
-        foreach ($predictions as $chemKey => $preds) {
-            $actuals = array_values($actualWeekly[$chemKey] ?? []);
-            $rows    = [];
+        foreach ($predictions as $chemKey => $pred) {
+            $actualEntry = $actualMonthly[$chemKey][0] ?? null;
+            $rows = [];
 
-            foreach ($preds as $i => $pred) {
-                if (!isset($actuals[$i])) continue;
-
-                $aktual  = $actuals[$i]['avg_dosage'];
+            if ($pred !== null && $actualEntry !== null) {
+                $aktual  = $actualEntry['avg_dosage'];
                 $predVal = $pred['avg_dosage'];
-                $error   = round($predVal - $aktual, 2);
 
                 $rows[] = [
-                    'week_num'    => $i + 1,
-                    'aktual'      => $aktual,
-                    'prediksi'    => $predVal,
-                    'error'       => $error,
-                    'aktual_count'=> $actuals[$i]['count'],
-                    'prior_data'  => $pred['prior_data'] ?? [],
+                    'label'        => $pred['label'],
+                    'aktual'       => $aktual,
+                    'prediksi'     => $predVal,
+                    'error'        => round($predVal - $aktual, 2),
+                    'aktual_count' => $actualEntry['count'],
+                    'prior_data'   => $pred['prior_data'] ?? [],
                 ];
             }
 
             $evaluation[$chemKey] = [
-                'rows'    => $rows,
-                'metrics' => $this->calculateDosisMetrics($rows),
+                'rows'        => $rows,
+                'is_complete' => $isComplete,
+                'metrics'     => $this->calculateDosisMetrics($rows),
             ];
         }
 
@@ -177,37 +180,38 @@ class WmaDosisService
     }
 
     /**
-     * Prediksi 4 minggu kedepan dari data mingguan
+     * Prediksi 1 BULAN ke depan (bulan target) dari rata-rata 3 bulan sebelumnya.
+     * Non-rekursif: hanya 1x hitung WMA dari 3 titik data bulanan ASLI
+     * (tidak pernah pakai hasil prediksi sistem sendiri sebagai input).
      */
-    public function predictNextMonth(array $weeklyData): array
+    public function predictNextMonth(array $monthlyData, string $targetMonth): array
     {
+        $targetLabel = Carbon::parse($targetMonth . '-01')->translatedFormat('F Y');
         $predictions = [];
-        foreach ($weeklyData as $chemKey => $weeks) {
-            $all = $weeks;
-            $preds = [];
-            for ($i = 1; $i <= 4; $i++) {
-                $n = count($all);
-                if ($n >= 3) {
-                    $three = array_column(array_slice($all, -3), 'avg_dosage');
-                } elseif ($n == 2) {
-                    $three = [$all[0]['avg_dosage'], $all[0]['avg_dosage'], $all[1]['avg_dosage']];
-                } elseif ($n == 1) {
-                    $three = [$all[0]['avg_dosage'], $all[0]['avg_dosage'], $all[0]['avg_dosage']];
-                } else continue;
 
-                $pred = $this->wma($three);
-                $last = end($all);
-                $entry = [
-                    'week' => "Prediksi $i", 'week_num' => ($last['week_num'] ?? 0) + $i,
-                    'avg_dosage' => $pred, 'count' => 0, 'is_prediction' => true,
-                    'prior_data' => $three,
-                    'start' => '', 'end' => '',
-                ];
-                $preds[] = $entry;
-                $all[] = $entry;
+        foreach ($monthlyData as $chemKey => $months) {
+            $n = count($months);
+
+            if ($n >= 3) {
+                $three = array_column(array_slice($months, -3), 'avg_dosage');
+            } elseif ($n === 2) {
+                $three = [$months[0]['avg_dosage'], $months[0]['avg_dosage'], $months[1]['avg_dosage']];
+            } elseif ($n === 1) {
+                $three = [$months[0]['avg_dosage'], $months[0]['avg_dosage'], $months[0]['avg_dosage']];
+            } else {
+                $predictions[$chemKey] = null;
+                continue;
             }
-            $predictions[$chemKey] = $preds;
+
+            $predictions[$chemKey] = [
+                'month'         => $targetMonth,
+                'label'         => $targetLabel,
+                'avg_dosage'    => $this->wma($three),
+                'is_prediction' => true,
+                'prior_data'    => $three,
+            ];
         }
+
         return $predictions;
     }
 }
