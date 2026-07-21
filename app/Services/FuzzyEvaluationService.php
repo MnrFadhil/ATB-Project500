@@ -124,6 +124,48 @@ class FuzzyEvaluationService
     }
 
     // -------------------------------------------------------------------------
+    // Membership Function Definitions (untuk ditampilkan di UI)
+    // -------------------------------------------------------------------------
+
+    public function getMembershipDefinitions(): array
+    {
+        return [
+            'pac' => [
+                'label' => 'PAC',
+                'unit'  => 'NTU',
+                'sets'  => [
+                    ['kategori' => 'Sangat Rendah', 'type' => 'left',     'params' => [0.0, 2.0],            'range' => '≤ 2.0',        'delta' => -3.0],
+                    ['kategori' => 'Rendah',        'type' => 'triangle', 'params' => [1.0, 2.5, 3.2],       'range' => '1.0 – 3.2',    'delta' => -1.0],
+                    ['kategori' => 'Optimal',        'type' => 'triangle', 'params' => [2.8, 3.3, 3.8],       'range' => '2.8 – 3.8',    'delta' =>  0.0],
+                    ['kategori' => 'Tinggi',         'type' => 'triangle', 'params' => [3.4, 4.1, 5.0],       'range' => '3.4 – 5.0',    'delta' => +1.0],
+                    ['kategori' => 'Sangat Tinggi',  'type' => 'right',    'params' => [4.5, 6.0],            'range' => '≥ 4.5',        'delta' => +3.0],
+                ],
+            ],
+            'chlorine' => [
+                'label' => 'Klorin',
+                'unit'  => 'mg/L',
+                'sets'  => [
+                    ['kategori' => 'Sangat Rendah', 'type' => 'left',     'params' => [0.0, 0.20],            'range' => '≤ 0.20',       'delta' => +1.0],
+                    ['kategori' => 'Rendah',         'type' => 'triangle', 'params' => [0.15, 0.26, 0.30],    'range' => '0.15 – 0.30',  'delta' => +0.4],
+                    ['kategori' => 'Optimal',        'type' => 'triangle', 'params' => [0.31, 0.37, 0.46],    'range' => '0.31 – 0.46',  'delta' =>  0.0],
+                    ['kategori' => 'Tinggi',         'type' => 'triangle', 'params' => [0.43, 0.48, 0.51],    'range' => '0.43 – 0.51',  'delta' => -0.7],
+                    ['kategori' => 'Sangat Tinggi',  'type' => 'right',    'params' => [0.50, 0.60],           'range' => '≥ 0.50',       'delta' => -2.0],
+                ],
+            ],
+            'soda_ash' => [
+                'label' => 'Soda Ash',
+                'unit'  => 'pH',
+                'sets'  => [
+                    ['kategori' => 'Sangat Rendah',  'type' => 'triangle', 'params' => [3.0, 4.5, 5.2],       'range' => '3.0 – 5.2',    'delta' => +3.0],
+                    ['kategori' => 'Rendah',          'type' => 'triangle', 'params' => [4.8, 5.5, 6.1],       'range' => '4.8 – 6.1',    'delta' => +2.0],
+                    ['kategori' => 'Sedikit Rendah',  'type' => 'triangle', 'params' => [5.8, 6.2, 6.5],       'range' => '5.8 – 6.5',    'delta' => +1.0],
+                    ['kategori' => 'Normal (≥ 6.5)',  'type' => 'triangle', 'params' => [6.5, 7.0, 7.8],       'range' => '≥ 6.5',        'delta' =>  0.0],
+                ],
+            ],
+        ];
+    }
+
+    // -------------------------------------------------------------------------
     // Format tanggal ke Bahasa Indonesia
     // -------------------------------------------------------------------------
 

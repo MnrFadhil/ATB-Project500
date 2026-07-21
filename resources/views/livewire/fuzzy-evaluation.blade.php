@@ -406,20 +406,33 @@
                                                 <tr><th>Kimia</th><th>Kategori</th><th>Range Input</th><th>Delta Dosis</th></tr>
                                             </thead>
                                             <tbody>
-                                                <tr><td rowspan="5"><strong>PAC</strong><br><small>(NTU)</small></td><td>Sangat Rendah</td><td>≤ 2.0</td><td>−3.0</td></tr>
-                                                <tr><td>Rendah</td><td>1.0 – 3.2</td><td>−1.0</td></tr>
-                                                <tr><td>Optimal</td><td>2.8 – 3.8</td><td>0.0</td></tr>
-                                                <tr><td>Tinggi</td><td>3.4 – 5.0</td><td>+1.5</td></tr>
-                                                <tr><td>Sangat Tinggi</td><td>≥ 4.5</td><td>+3.5</td></tr>
-                                                <tr><td rowspan="5"><strong>Klorin</strong><br><small>(mg/L)</small></td><td>Sangat Rendah</td><td>≤ 0.20</td><td>+1.0</td></tr>
-                                                <tr><td>Rendah</td><td>0.15 – 0.30</td><td>+0.4</td></tr>
-                                                <tr><td>Optimal</td><td>0.28 – 0.46</td><td>0.0</td></tr>
-                                                <tr><td>Tinggi</td><td>0.43 – 0.52</td><td>−0.7</td></tr>
-                                                <tr><td>Sangat Tinggi</td><td>≥ 0.50</td><td>−2.0</td></tr>
-                                                <tr><td rowspan="4"><strong>Soda Ash</strong><br><small>(pH)</small></td><td>Sangat Rendah</td><td>3.0 – 5.2</td><td>+3.0</td></tr>
-                                                <tr><td>Rendah</td><td>4.8 – 6.1</td><td>+2.0</td></tr>
-                                                <tr><td>Sedikit Rendah</td><td>5.8 – 6.5</td><td>+1.0</td></tr>
-                                                <tr><td>Normal (≥6.5)</td><td>≥ 6.3</td><td>Standby</td></tr>
+                                                @foreach($membershipDefinitions as $chem)
+                                                    @foreach($chem['sets'] as $i => $set)
+                                                        <tr>
+                                                            @if($i === 0)
+                                                                <td rowspan="{{ count($chem['sets']) }}">
+                                                                    <strong>{{ $chem['label'] }}</strong><br>
+                                                                    <small>({{ $chem['unit'] }})</small>
+                                                                </td>
+                                                            @endif
+                                                            <td>{{ $set['kategori'] }}</td>
+                                                            <td>{{ $set['range'] }}</td>
+                                                            <td>
+                                                                @if($set['delta'] == 0)
+                                                                    @if($set['kategori'] === 'Normal (≥ 6.5)')
+                                                                        Standby
+                                                                    @else
+                                                                        0.0
+                                                                    @endif
+                                                                @elseif($set['delta'] > 0)
+                                                                    +{{ $set['delta'] }}
+                                                                @else
+                                                                    {{ $set['delta'] }}
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>

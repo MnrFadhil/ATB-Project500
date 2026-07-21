@@ -292,6 +292,76 @@
                         <div class="card-body">
                             <div class="row">
 
+                                {{-- Step 1: Data Historis PAC --}}
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-left-warning h-100">
+                                        <div class="card-body">
+                                            <h6 class="font-weight-bold text-warning">1. Data Historis PAC (3 Bulan Sebelumnya)</h6>
+                                            <p class="small text-muted mb-2">Sistem mengambil rata-rata dosis aktual per bulan selama 3 bulan sebelum bulan prediksi sebagai input WMA.</p>
+                                            @if(isset($predictions['pac']['prior_data']) && count($predictions['pac']['prior_data']) > 0)
+                                                @php
+                                                    $pacPrior = $predictions['pac']['prior_data'];
+                                                    $pacMonths = array_slice($monthly['pac'] ?? [], -3);
+                                                @endphp
+                                                <table class="table table-sm table-bordered" style="font-size:13px;">
+                                                    <thead class="thead-light">
+                                                        <tr><th>Urutan</th><th>Bulan</th><th>Rata-rata Dosis Aktual</th><th>Bobot</th></tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($pacPrior as $i => $val)
+                                                            @php
+                                                                $bulan = isset($pacMonths[$i]['label']) ? $pacMonths[$i]['label'] : 'Bulan ke-' . ($i+1);
+                                                                $bobot = $i === 0 ? $weightInfo['w3'] : ($i === 1 ? $weightInfo['w2'] : $weightInfo['w1']);
+                                                                $bobotLabel = $i === 0 ? 'W₁ (terlama)' : ($i === 1 ? 'W₂' : 'W₃ (terbaru)');
+                                                            @endphp
+                                                            <tr>
+                                                                <td>{{ $i+1 }}</td>
+                                                                <td>{{ $bulan }}</td>
+                                                                <td><strong>{{ $val }} ppm</strong></td>
+                                                                <td>{{ $bobot }} ({{ $bobotLabel }})</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            @else
+                                                <div class="alert alert-warning"><small>Tidak ada data historis PAC tersedia.</small></div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Step 2: Perhitungan WMA Prediksi PAC --}}
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-left-primary h-100">
+                                        <div class="card-body">
+                                            <h6 class="font-weight-bold text-primary">2. Perhitungan WMA Prediksi PAC</h6>
+                                            <div class="bg-light p-3 rounded text-center mb-3">
+                                                <code style="font-size:13px;">WMA = (D₁×W₁ + D₂×W₂ + D₃×W₃) / (W₁+W₂+W₃)</code>
+                                            </div>
+                                            @if(isset($predictions['pac']['prior_data']) && count($predictions['pac']['prior_data']) > 0)
+                                                @php
+                                                    $d = $predictions['pac']['prior_data'];
+                                                    $w1 = $weightInfo['w3']; $w2 = $weightInfo['w2']; $w3 = $weightInfo['w1'];
+                                                    $wTotal = $weightInfo['total'];
+                                                @endphp
+                                                <div style="font-size:13px;line-height:2.2;font-family:'Courier New',monospace;background:#f8f9fa;padding:12px;border-radius:4px;">
+                                                    WMA = (<span style="color:#28a745">{{ $d[0] }}</span>×<span style="color:#007bff">{{ $w1 }}</span> + <span style="color:#28a745">{{ $d[1] }}</span>×<span style="color:#007bff">{{ $w2 }}</span> + <span style="color:#28a745">{{ $d[2] }}</span>×<span style="color:#007bff">{{ $w3 }}</span>) / {{ $wTotal }}<br>
+                                                    WMA = (<span style="color:#28a745">{{ round($d[0]*$w1,2) }}</span> + <span style="color:#28a745">{{ round($d[1]*$w2,2) }}</span> + <span style="color:#28a745">{{ round($d[2]*$w3,2) }}</span>) / {{ $wTotal }}<br>
+                                                    WMA = <span style="color:#856404">{{ round($d[0]*$w1 + $d[1]*$w2 + $d[2]*$w3, 2) }}</span> / {{ $wTotal }}<br>
+                                                    <span style="color:#155724;background:#d4edda;padding:8px 12px;border-radius:4px;display:inline-block;margin-top:4px;">
+                                                        WMA = {{ $predictions['pac']['avg_dosage'] ?? '-' }} ppm
+                                                    </span>
+                                                </div>
+                                                <p class="small text-muted mt-2 mb-0">
+                                                    D₁={{ $d[0] }} (terlama, W={{ $w1 }}), D₂={{ $d[1] }} (W={{ $w2 }}), D₃={{ $d[2] }} (terbaru, W={{ $w3 }})
+                                                </p>
+                                            @else
+                                                <div class="alert alert-warning"><small>Data prediksi PAC tidak tersedia.</small></div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {{-- MAPE PAC --}}
                                 <div class="col-md-6 mb-4">
                                     <div class="card border-left-success h-100">
@@ -391,6 +461,76 @@
                     <div class="collapse" id="rumusDosisKlorinCollapse">
                         <div class="card-body">
                             <div class="row">
+
+                                {{-- Step 1: Data Historis Klorin --}}
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-left-warning h-100">
+                                        <div class="card-body">
+                                            <h6 class="font-weight-bold text-warning">1. Data Historis Klorin (3 Bulan Sebelumnya)</h6>
+                                            <p class="small text-muted mb-2">Sistem mengambil rata-rata dosis aktual per bulan selama 3 bulan sebelum bulan prediksi sebagai input WMA.</p>
+                                            @if(isset($predictions['chlorine']['prior_data']) && count($predictions['chlorine']['prior_data']) > 0)
+                                                @php
+                                                    $klPrior = $predictions['chlorine']['prior_data'];
+                                                    $klMonths = array_slice($monthly['chlorine'] ?? [], -3);
+                                                @endphp
+                                                <table class="table table-sm table-bordered" style="font-size:13px;">
+                                                    <thead class="thead-light">
+                                                        <tr><th>Urutan</th><th>Bulan</th><th>Rata-rata Dosis Aktual</th><th>Bobot</th></tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($klPrior as $i => $val)
+                                                            @php
+                                                                $bulanKl = isset($klMonths[$i]['label']) ? $klMonths[$i]['label'] : 'Bulan ke-' . ($i+1);
+                                                                $bobotKl = $i === 0 ? $weightInfo['w3'] : ($i === 1 ? $weightInfo['w2'] : $weightInfo['w1']);
+                                                                $bobotKlLabel = $i === 0 ? 'W₁ (terlama)' : ($i === 1 ? 'W₂' : 'W₃ (terbaru)');
+                                                            @endphp
+                                                            <tr>
+                                                                <td>{{ $i+1 }}</td>
+                                                                <td>{{ $bulanKl }}</td>
+                                                                <td><strong>{{ $val }} ppm</strong></td>
+                                                                <td>{{ $bobotKl }} ({{ $bobotKlLabel }})</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            @else
+                                                <div class="alert alert-warning"><small>Tidak ada data historis Klorin tersedia.</small></div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Step 2: Perhitungan WMA Prediksi Klorin --}}
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-left-primary h-100">
+                                        <div class="card-body">
+                                            <h6 class="font-weight-bold text-primary">2. Perhitungan WMA Prediksi Klorin</h6>
+                                            <div class="bg-light p-3 rounded text-center mb-3">
+                                                <code style="font-size:13px;">WMA = (D₁×W₁ + D₂×W₂ + D₃×W₃) / (W₁+W₂+W₃)</code>
+                                            </div>
+                                            @if(isset($predictions['chlorine']['prior_data']) && count($predictions['chlorine']['prior_data']) > 0)
+                                                @php
+                                                    $dk = $predictions['chlorine']['prior_data'];
+                                                    $wk1 = $weightInfo['w3']; $wk2 = $weightInfo['w2']; $wk3 = $weightInfo['w1'];
+                                                    $wkTotal = $weightInfo['total'];
+                                                @endphp
+                                                <div style="font-size:13px;line-height:2.2;font-family:'Courier New',monospace;background:#f8f9fa;padding:12px;border-radius:4px;">
+                                                    WMA = (<span style="color:#28a745">{{ $dk[0] }}</span>×<span style="color:#007bff">{{ $wk1 }}</span> + <span style="color:#28a745">{{ $dk[1] }}</span>×<span style="color:#007bff">{{ $wk2 }}</span> + <span style="color:#28a745">{{ $dk[2] }}</span>×<span style="color:#007bff">{{ $wk3 }}</span>) / {{ $wkTotal }}<br>
+                                                    WMA = (<span style="color:#28a745">{{ round($dk[0]*$wk1,2) }}</span> + <span style="color:#28a745">{{ round($dk[1]*$wk2,2) }}</span> + <span style="color:#28a745">{{ round($dk[2]*$wk3,2) }}</span>) / {{ $wkTotal }}<br>
+                                                    WMA = <span style="color:#856404">{{ round($dk[0]*$wk1 + $dk[1]*$wk2 + $dk[2]*$wk3, 2) }}</span> / {{ $wkTotal }}<br>
+                                                    <span style="color:#155724;background:#d4edda;padding:8px 12px;border-radius:4px;display:inline-block;margin-top:4px;">
+                                                        WMA = {{ $predictions['chlorine']['avg_dosage'] ?? '-' }} ppm
+                                                    </span>
+                                                </div>
+                                                <p class="small text-muted mt-2 mb-0">
+                                                    D₁={{ $dk[0] }} (terlama, W={{ $wk1 }}), D₂={{ $dk[1] }} (W={{ $wk2 }}), D₃={{ $dk[2] }} (terbaru, W={{ $wk3 }})
+                                                </p>
+                                            @else
+                                                <div class="alert alert-warning"><small>Data prediksi Klorin tidak tersedia.</small></div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
 
                                 {{-- MAPE Klorin --}}
                                 <div class="col-md-6 mb-4">

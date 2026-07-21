@@ -121,10 +121,13 @@ class FuzzyEvaluation extends Component
     {
         [$rows, $metrics, $metricLabels] = $this->buildData();
 
+        $service = new FuzzyEvaluationService();
+
         return view('livewire.fuzzy-evaluation', [
-            'rows'         => $rows,
-            'metrics'      => $metrics,
-            'metricLabels' => $metricLabels,
+            'rows'                 => $rows,
+            'metrics'              => $metrics,
+            'metricLabels'         => $metricLabels,
+            'membershipDefinitions' => $service->getMembershipDefinitions(),
         ])->layout('layouts.app');
     }
 }
