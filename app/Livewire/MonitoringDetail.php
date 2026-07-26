@@ -163,6 +163,23 @@ class MonitoringDetail extends Component
             'recommendation' => $recommendation,
             'message'        => "Turbidity sedimentasi <strong style='font-size:13px;color:#{$hexColor};'>{$t} NTU</strong>, Delta dosis: <strong>{$delta} ppm</strong> → Rekomendasi: <strong style='font-size:13px;color:#{$hexColor};'>{$recommendation} ppm</strong>",
             'color'          => $color,
+            'input_value'    => $t,
+            'input_label'    => 'Turbidity Sedimentasi',
+            'unit'           => 'NTU',
+            'mu'             => $mu,
+            'delta'          => $delta,
+            'previous_dosis' => $previousDosis,
+            'clamp_min'      => 8.0,
+            'clamp_max'      => 20.0,
+            'categories'     => ['sangat_rendah' => 'Sangat Rendah', 'rendah' => 'Rendah', 'optimal' => 'Optimal', 'tinggi' => 'Tinggi', 'sangat_tinggi' => 'Sangat Tinggi'],
+            'rule_centers'   => ['sangat_rendah' => -3.0, 'rendah' => -1.0, 'optimal' => 0.0, 'tinggi' => 1.0, 'sangat_tinggi' => 3.0],
+            'mf_params'      => [
+                'sangat_rendah' => ['type' => 'left',     'a' => 0.0, 'b' => 2.0],
+                'rendah'        => ['type' => 'triangle', 'a' => 1.0, 'b' => 2.5, 'c' => 3.2],
+                'optimal'       => ['type' => 'triangle', 'a' => 2.8, 'b' => 3.3, 'c' => 3.8],
+                'tinggi'        => ['type' => 'triangle', 'a' => 3.4, 'b' => 4.1, 'c' => 5.0],
+                'sangat_tinggi' => ['type' => 'right',    'a' => 4.5, 'b' => 6.0],
+            ],
         ];
     }
 
@@ -216,6 +233,23 @@ class MonitoringDetail extends Component
                 'recommendation' => 0,
                 'message'        => "Free Chlor Reservoir <strong style='font-size:13px;color:#e74a3b;'>{$f} mg/L</strong> (Sangat Tinggi). <strong style='font-size:13px;color:#e74a3b;'>Matikan Pompa Dosing Chlorine!!!</strong><br><small class='font-weight-bold' style='color:#000;font-size:13px;'>Silahkan Cek Free Chlorine Air Reservoir Secara Berkala!!!</small>",
                 'color'          => 'danger',
+                'input_value'    => $f,
+                'input_label'    => 'Free Chlorine Reservoir',
+                'unit'           => 'mg/L',
+                'mu'             => $mu,
+                'delta'          => $delta,
+                'previous_dosis' => $previousDosis,
+                'clamp_min'      => 0.0,
+                'clamp_max'      => 3.0,
+                'categories'     => ['sangat_rendah' => 'Sangat Rendah', 'rendah' => 'Rendah', 'optimal' => 'Optimal', 'tinggi' => 'Tinggi', 'sangat_tinggi' => 'Sangat Tinggi'],
+                'rule_centers'   => ['sangat_rendah' => 1.0, 'rendah' => 0.4, 'optimal' => 0.0, 'tinggi' => -0.7, 'sangat_tinggi' => -2.0],
+                'mf_params'      => [
+                    'sangat_rendah' => ['type' => 'left',     'a' => 0.0,  'b' => 0.20],
+                    'rendah'        => ['type' => 'triangle', 'a' => 0.15, 'b' => 0.26, 'c' => 0.30],
+                    'optimal'       => ['type' => 'triangle', 'a' => 0.31, 'b' => 0.37, 'c' => 0.46],
+                    'tinggi'        => ['type' => 'triangle', 'a' => 0.43, 'b' => 0.48, 'c' => 0.51],
+                    'sangat_tinggi' => ['type' => 'right',    'a' => 0.50, 'b' => 0.60],
+                ],
             ];
         }
 
@@ -245,6 +279,23 @@ class MonitoringDetail extends Component
             'recommendation' => $recommendation,
             'message'        => "Free Chlor Reservoir <strong style='font-size:13px;color:#{$hexColor};'>{$f} mg/L</strong>, Delta dosis: <strong>{$delta} ppm</strong> → Rekomendasi: <strong style='font-size:13px;color:#{$hexColor};'>{$recommendation} ppm</strong>",
             'color'          => $color,
+            'input_value'    => $f,
+            'input_label'    => 'Free Chlorine Reservoir',
+            'unit'           => 'mg/L',
+            'mu'             => $mu,
+            'delta'          => $delta,
+            'previous_dosis' => $previousDosis,
+            'clamp_min'      => 0.0,
+            'clamp_max'      => 3.0,
+            'categories'     => ['sangat_rendah' => 'Sangat Rendah', 'rendah' => 'Rendah', 'optimal' => 'Optimal', 'tinggi' => 'Tinggi', 'sangat_tinggi' => 'Sangat Tinggi'],
+            'rule_centers'   => ['sangat_rendah' => 1.0, 'rendah' => 0.4, 'optimal' => 0.0, 'tinggi' => -0.7, 'sangat_tinggi' => -2.0],
+            'mf_params'      => [
+                'sangat_rendah' => ['type' => 'left',     'a' => 0.0,  'b' => 0.20],
+                'rendah'        => ['type' => 'triangle', 'a' => 0.15, 'b' => 0.26, 'c' => 0.30],
+                'optimal'       => ['type' => 'triangle', 'a' => 0.31, 'b' => 0.37, 'c' => 0.46],
+                'tinggi'        => ['type' => 'triangle', 'a' => 0.43, 'b' => 0.48, 'c' => 0.51],
+                'sangat_tinggi' => ['type' => 'right',    'a' => 0.50, 'b' => 0.60],
+            ],
         ];
     }
 
@@ -295,6 +346,22 @@ class MonitoringDetail extends Component
                 'recommendation' => 0,
                 'message'        => "pH normal <strong>({$p})</strong>, Pompa Soda Ash Bisa Standby",
                 'color'          => 'secondary',
+                'input_value'    => $p,
+                'input_label'    => 'pH Reservoir',
+                'unit'           => '',
+                'mu'             => $mu,
+                'delta'          => $delta,
+                'previous_dosis' => $previousDosis,
+                'clamp_min'      => 0.0,
+                'clamp_max'      => 10.0,
+                'categories'     => ['sangat_rendah' => 'Sangat Rendah', 'rendah' => 'Rendah', 'sedikit_rendah' => 'Sedikit Rendah', 'normal' => 'Normal'],
+                'rule_centers'   => ['sangat_rendah' => 3.0, 'rendah' => 2.0, 'sedikit_rendah' => 1.0, 'normal' => 0.0],
+                'mf_params'      => [
+                    'sangat_rendah'  => ['type' => 'triangle', 'a' => 3.0, 'b' => 4.5, 'c' => 5.2],
+                    'rendah'         => ['type' => 'triangle', 'a' => 4.8, 'b' => 5.5, 'c' => 6.1],
+                    'sedikit_rendah' => ['type' => 'triangle', 'a' => 5.8, 'b' => 6.2, 'c' => 6.5],
+                    'normal'         => ['type' => 'triangle', 'a' => 6.5, 'b' => 7.0, 'c' => 7.8],
+                ],
             ];
         }
 
@@ -319,6 +386,22 @@ class MonitoringDetail extends Component
             'recommendation' => $recommendation,
             'message'        => "pH Reservoir <strong style='font-size:13px;color:#{$hexColor};'>{$p}</strong>, Delta dosis: <strong>{$delta} ppm</strong> → Rekomendasi: <strong style='font-size:13px;'>{$recommendation} ppm</strong>",
             'color'          => $color,
+            'input_value'    => $p,
+            'input_label'    => 'pH Reservoir',
+            'unit'           => '',
+            'mu'             => $mu,
+            'delta'          => $delta,
+            'previous_dosis' => $previousDosis,
+            'clamp_min'      => 0.0,
+            'clamp_max'      => 10.0,
+            'categories'     => ['sangat_rendah' => 'Sangat Rendah', 'rendah' => 'Rendah', 'sedikit_rendah' => 'Sedikit Rendah', 'normal' => 'Normal'],
+            'rule_centers'   => ['sangat_rendah' => 3.0, 'rendah' => 2.0, 'sedikit_rendah' => 1.0, 'normal' => 0.0],
+            'mf_params'      => [
+                'sangat_rendah'  => ['type' => 'triangle', 'a' => 3.0, 'b' => 4.5, 'c' => 5.2],
+                'rendah'         => ['type' => 'triangle', 'a' => 4.8, 'b' => 5.5, 'c' => 6.1],
+                'sedikit_rendah' => ['type' => 'triangle', 'a' => 5.8, 'b' => 6.2, 'c' => 6.5],
+                'normal'         => ['type' => 'triangle', 'a' => 6.5, 'b' => 7.0, 'c' => 7.8],
+            ],
         ];
     }
 
@@ -580,6 +663,8 @@ class MonitoringDetail extends Component
         // Fuzzy berjalan independen dari WMA — tetap dihitung meski data historis kurang
         // null jika data water quality shift sekarang belum diisi operator
 
+        $wmaWeights = WmaSetting::getWeights('air_baku', [1, 3, 30]);
+
         return view('livewire.monitoring-detail', [
             'shifts'             => $shift,
             'wmaData'            => $wmaData,
@@ -590,6 +675,7 @@ class MonitoringDetail extends Component
             'currentRes'         => $currentRes,
             'dataIncomplete'     => $dataIncomplete,
             'timeLabels'         => $timeLabels,
+            'wmaWeights'         => $wmaWeights,
         ])->layout('layouts.app');
     }
 }

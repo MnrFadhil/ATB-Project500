@@ -195,6 +195,95 @@
                     </div>
                 </div>
 
+                {{-- ===== DETAIL PERHITUNGAN WMA ===== --}}
+                <div class="row mb-2">
+                    <div class="col-12 text-center">
+                        <button class="btn btn-sm btn-outline-success" type="button"
+                                data-toggle="collapse" data-target="#wmaDetailSection" aria-expanded="false">
+                            📐 Detail Perhitungan WMA
+                        </button>
+                    </div>
+                </div>
+                <div class="collapse mb-3" id="wmaDetailSection">
+                    <div class="card border-success">
+                        <div class="card-header py-2" style="background:#00664A; color:#fff;">
+                            <strong>📐 Langkah Perhitungan Weighted Moving Average (WMA)</strong>
+                        </div>
+                        <div class="card-body">
+                            @php
+                                $wmaParams = [
+                                    ['label' => 'NTU Air Baku', 'unit' => 'NTU', 'key' => 'historicalTurbidity', 'color' => '#10b981'],
+                                    ['label' => 'pH Air Baku',  'unit' => '',    'key' => 'historicalPH',        'color' => '#3b82f6'],
+                                    ['label' => 'TDS Air Baku', 'unit' => 'ppm', 'key' => 'historicalTDS',       'color' => '#f59e0b'],
+                                ];
+                                $wTotal = array_sum($wmaWeights);
+                            @endphp
+                            @foreach($wmaParams as $param)
+                            @php
+                                $vals = $chartData[$param['key']] ?? [];
+                                $d1 = $vals[0] ?? 0;
+                                $d2 = $vals[1] ?? 0;
+                                $d3 = $vals[2] ?? 0;
+                                $w1 = $wmaWeights[0];
+                                $w2 = $wmaWeights[1];
+                                $w3 = $wmaWeights[2];
+                                $numResult = round(($w1*$d1 + $w2*$d2 + $w3*$d3) / $wTotal, 2);
+                            @endphp
+                            <h6 style="color:{{ $param['color'] }}; font-weight:bold;">{{ $param['label'] }}</h6>
+
+                            <p class="mb-1"><small><strong>Step 1 — Data Historis</strong></small></p>
+                            <div class="table-responsive mb-2">
+                                <table class="table table-bordered table-sm text-center" style="font-size:12px;">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Urutan</th><th>Jam</th><th>Nilai</th><th>Bobot (wᵢ)</th><th>Nilai × Bobot</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>d₁ (Terlama)</td>
+                                            <td>{{ $timeLabels[0] ?? '-' }}</td>
+                                            <td>{{ $d1 }} {{ $param['unit'] }}</td>
+                                            <td>{{ $w1 }}</td>
+                                            <td>{{ $w1 * $d1 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>d₂ (Tengah)</td>
+                                            <td>{{ $timeLabels[1] ?? '-' }}</td>
+                                            <td>{{ $d2 }} {{ $param['unit'] }}</td>
+                                            <td>{{ $w2 }}</td>
+                                            <td>{{ $w2 * $d2 }}</td>
+                                        </tr>
+                                        <tr style="background:#f0fdf4;">
+                                            <td>d₃ (Terbaru)</td>
+                                            <td>{{ $timeLabels[2] ?? '-' }}</td>
+                                            <td>{{ $d3 }} {{ $param['unit'] }}</td>
+                                            <td>{{ $w3 }}</td>
+                                            <td>{{ $w3 * $d3 }}</td>
+                                        </tr>
+                                        <tr class="font-weight-bold" style="background:#e9f1ee;">
+                                            <td colspan="3">Total</td>
+                                            <td>{{ $wTotal }}</td>
+                                            <td>{{ $w1*$d1 + $w2*$d2 + $w3*$d3 }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <p class="mb-1"><small><strong>Step 2 — Rumus WMA</strong></small></p>
+                            <div class="p-2 rounded mb-1" style="background:#f8f9fa; font-size:12px; font-family:monospace; line-height:1.8;">
+                                WMA = (w₁×d₁ + w₂×d₂ + w₃×d₃) / (w₁+w₂+w₃)<br>
+                                WMA = ({{ $w1 }}×{{ $d1 }} + {{ $w2 }}×{{ $d2 }} + {{ $w3 }}×{{ $d3 }}) / {{ $wTotal }}<br>
+                                WMA = ({{ $w1*$d1 }} + {{ $w2*$d2 }} + {{ $w3*$d3 }}) / {{ $wTotal }}<br>
+                                WMA = {{ $w1*$d1 + $w2*$d2 + $w3*$d3 }} / {{ $wTotal }}<br>
+                                <strong>WMA = <span style="color:{{ $param['color'] }};">{{ $numResult }} {{ $param['unit'] }}</span></strong>
+                            </div>
+                            @if(!$loop->last)<hr class="my-3">@endif
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
                 <hr>
 
                 {{-- ========== CHART.JS SCRIPTS ========== --}}
@@ -353,6 +442,19 @@
                                     <small>{!! $sdsRecommendations['pac']['message'] ?? '-' !!}</small>
                                 </div>
                             </div>
+
+                            @if(!empty($sdsRecommendations['pac']['mu']))
+                            <div class="mt-2 text-center">
+                                <button class="btn btn-xs btn-outline-secondary" type="button"
+                                        data-toggle="collapse" data-target="#fuzzyDetailPac" aria-expanded="false"
+                                        style="font-size:11px;">
+                                    📊 Detail Perhitungan Fuzzy
+                                </button>
+                            </div>
+                            <div class="collapse mt-2" id="fuzzyDetailPac">
+                                @include('livewire.partials.fuzzy-detail', ['rec' => $sdsRecommendations['pac']])
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -375,6 +477,19 @@
                                     <small>{!! $sdsRecommendations['klorin']['message'] ?? '-' !!}</small>
                                 </div>
                             </div>
+
+                            @if(!empty($sdsRecommendations['klorin']['mu']))
+                            <div class="mt-2 text-center">
+                                <button class="btn btn-xs btn-outline-secondary" type="button"
+                                        data-toggle="collapse" data-target="#fuzzyDetailKlorin" aria-expanded="false"
+                                        style="font-size:11px;">
+                                    📊 Detail Perhitungan Fuzzy
+                                </button>
+                            </div>
+                            <div class="collapse mt-2" id="fuzzyDetailKlorin">
+                                @include('livewire.partials.fuzzy-detail', ['rec' => $sdsRecommendations['klorin']])
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -397,6 +512,19 @@
                                     <small>{!! $sdsRecommendations['sodaAsh']['message'] ?? '-' !!}</small>
                                 </div>
                             </div>
+
+                            @if(!empty($sdsRecommendations['sodaAsh']['mu']))
+                            <div class="mt-2 text-center">
+                                <button class="btn btn-xs btn-outline-secondary" type="button"
+                                        data-toggle="collapse" data-target="#fuzzyDetailSodaAsh" aria-expanded="false"
+                                        style="font-size:11px;">
+                                    📊 Detail Perhitungan Fuzzy
+                                </button>
+                            </div>
+                            <div class="collapse mt-2" id="fuzzyDetailSodaAsh">
+                                @include('livewire.partials.fuzzy-detail', ['rec' => $sdsRecommendations['sodaAsh']])
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
