@@ -81,6 +81,11 @@ class WmaDosisService
                     }
                     $months[$mKey]['total'] += $c->dosage;
                     $months[$mKey]['count']++;
+                    $months[$mKey]['records'][] = [
+                        'date'   => $s->date,
+                        'shift'  => $s->shift,
+                        'dosage' => $c->dosage,
+                    ];
                     if ($s->date > $months[$mKey]['end'])   $months[$mKey]['end']   = $s->date;
                     if ($s->date < $months[$mKey]['start']) $months[$mKey]['start'] = $s->date;
                 }
@@ -93,6 +98,7 @@ class WmaDosisService
                 'end'        => $m['end'],
                 'avg_dosage' => round($m['total'] / $m['count'], 2),
                 'count'      => $m['count'],
+                'records'    => $m['records'] ?? [],
             ])->values()->toArray();
         }
         return $result;

@@ -1,3 +1,22 @@
+@php
+    $wmaChartData = null;
+    if (count($rows) > 0) {
+        $wmaChartData = [
+            'labels'   => array_values(array_map(function($r) {
+                $parts  = explode('/', $r['date']);
+                $dmPart = isset($parts[1]) ? substr($parts[1], 0, 5) : '';
+                return $dmPart . ' ' . ucfirst($r['shift']) . ' ' . $r['end_time'];
+            }, $rows)),
+            'aktTurb'  => array_values(array_column($rows, 'aktual_turb')),
+            'predTurb' => array_values(array_column($rows, 'prediksi_turb')),
+            'aktPh'    => array_values(array_column($rows, 'aktual_ph')),
+            'predPh'   => array_values(array_column($rows, 'prediksi_ph')),
+            'aktTds'   => array_values(array_column($rows, 'aktual_tds')),
+            'predTds'  => array_values(array_column($rows, 'prediksi_tds')),
+        ];
+    }
+@endphp
+
 <div class="container-fluid" style="position:relative;min-height:300px;">
 
     {{-- Header --}}
@@ -145,6 +164,39 @@
                     </div>
                 @endforeach
             </div>
+
+            {{-- ===== GRAFIK PERBANDINGAN ===== --}}
+            @if($wmaChartData)
+            <div class="card shadow mb-4"
+                 wire:key="wma-chart-card-{{ $filteredStart }}-{{ $filteredEnd }}"
+                 x-data
+                 x-init="$nextTick(() => _wmaInitCharts({{ json_encode($wmaChartData) }}))">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">📈 Grafik Perbandingan Aktual vs Prediksi WMA</h6>
+                    <button class="btn btn-sm btn-outline-primary" type="button" data-toggle="collapse" data-target="#wmaChartCollapse">
+                        <i class="fas fa-chevron-down"></i> Tampilkan/Sembunyikan
+                    </button>
+                </div>
+                <div class="collapse" id="wmaChartCollapse">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold" style="color:#10b981;">Turbidity Air Baku (NTU)</h6>
+                        <canvas id="wmaChartNTU" height="100"></canvas>
+                    </div>
+                    <hr>
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold" style="color:#3b82f6;">pH Air Baku</h6>
+                        <canvas id="wmaChartPH" height="100"></canvas>
+                    </div>
+                    <hr>
+                    <div class="mb-2">
+                        <h6 class="font-weight-bold" style="color:#f59e0b;">TDS Air Baku (mg/L)</h6>
+                        <canvas id="wmaChartTDS" height="100"></canvas>
+                    </div>
+                </div>
+                </div>{{-- end collapse --}}
+            </div>
+            @endif
 
             {{-- Rumus Evaluasi --}}
             <div class="card shadow mb-4">
@@ -633,3 +685,49 @@
     </div>{{-- end wire:loading.remove --}}
 
 </div>
+
+@script
+<script>
+window._wmaInitCharts = function(cd) {
+    if (!cd || typeof Chart === 'undefined') return;
+    var big = cd.labels.length > 60;
+
+    function makeChart(id, labelA, dataA, labelP, dataP, colorA, colorP) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var ex = Chart.getChart(id);
+        if (ex) ex.destroy();
+        new Chart(el.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: cd.labels,
+                datasets: [
+                    { label: labelA, data: dataA, borderColor: colorA, backgroundColor: colorA+'22', borderWidth: 2.5, pointRadius: big?2:4, pointHoverRadius: 6, fill: false, tension: 0.3 },
+                    { label: labelP, data: dataP, borderColor: colorP, backgroundColor: colorP+'22', borderWidth: 2, borderDash: [6,4], pointRadius: big?2:4, pointHoverRadius: 6, pointStyle: 'triangle', fill: false, tension: 0.3 }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, font: { size: 12 } } },
+                    tooltip: { callbacks: { label: function(ctx) {
+                        var diff = dataA[ctx.dataIndex] - dataP[ctx.dataIndex];
+                        var extra = ctx.datasetIndex === 1 ? '  (Error: '+(diff>=0?'+':'')+diff.toFixed(2)+')' : '';
+                        return ctx.dataset.label + ': ' + ctx.parsed.y + extra;
+                    }}}
+                },
+                scales: {
+                    x: { ticks: { font: { size: 10 }, maxRotation: 60, minRotation: 30 } },
+                    y: { beginAtZero: false, ticks: { font: { size: 11 } } }
+                }
+            }
+        });
+    }
+
+    makeChart('wmaChartNTU', 'Aktual NTU', cd.aktTurb,  'Prediksi NTU', cd.predTurb,  '#10b981', '#ef4444');
+    makeChart('wmaChartPH',  'Aktual pH',  cd.aktPh,    'Prediksi pH',  cd.predPh,    '#3b82f6', '#f59e0b');
+    makeChart('wmaChartTDS', 'Aktual TDS', cd.aktTds,   'Prediksi TDS', cd.predTds,   '#f59e0b', '#8b5cf6');
+};
+</script>
+@endscript

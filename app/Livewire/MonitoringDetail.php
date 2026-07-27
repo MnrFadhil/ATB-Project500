@@ -98,7 +98,7 @@ class MonitoringDetail extends Component
     // FUZZY MAMDANI — PAC (Koagulan)
     // Sumber: water_qualities.turbidity WHERE type='sedimentation'
     // Prev  : pump_chemicals.dosage WHERE type='pac' AND status='running'
-    // Output: rekomendasi dosis PAC shift berikutnya, di-clamp 5–20 ppm
+    // Output: rekomendasi dosis PAC shift berikutnya, di-clamp 8–20 ppm
     // =========================================================================
 
     private function fuzzyPAC($sedimentationTurbidity, float $previousDosis = 0): array

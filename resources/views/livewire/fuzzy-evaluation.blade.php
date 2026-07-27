@@ -79,6 +79,25 @@
 
         @if($filteredStart && $filteredEnd)
 
+            @php
+            $fuzzyChartData = null;
+            if (count($rows) > 0) {
+                $fuzzyChartData = [
+                    'labels'    => array_values(array_map(function($r) {
+                        $parts  = explode('/', $r['date']);
+                        $dmPart = isset($parts[1]) ? substr($parts[1], 0, 5) : '';
+                        return $dmPart . ' ' . ucfirst($r['shift']) . ' ' . $r['end_time'];
+                    }, $rows)),
+                    'rekPac'    => array_values(array_column($rows, 'rekomen_pac')),
+                    'aktPac'    => array_values(array_column($rows, 'aktual_pac')),
+                    'rekKlorin' => array_values(array_column($rows, 'rekomen_klorin')),
+                    'aktKlorin' => array_values(array_column($rows, 'aktual_klorin')),
+                    'rekSoda'   => array_values(array_column($rows, 'rekomen_sodaash')),
+                    'aktSoda'   => array_values(array_column($rows, 'aktual_sodaash')),
+                ];
+            }
+            @endphp
+
             {{-- Ringkasan Metrik --}}
             <div class="row">
                 @foreach (['pac' => 'border-left-warning', 'klorin' => 'border-left-info', 'sodaash' => 'border-left-success'] as $key => $border)
@@ -117,6 +136,39 @@
                     </div>
                 @endforeach
             </div>
+
+            {{-- Grafik Perbandingan --}}
+            @if($fuzzyChartData)
+            <div class="card shadow mb-4"
+                 wire:key="fuzzy-chart-{{ $filteredStart }}-{{ $filteredEnd }}"
+                 x-data
+                 x-init="$nextTick(() => _fuzzyInitCharts({{ json_encode($fuzzyChartData) }}))">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">&#128200; Grafik Perbandingan Rekomendasi Fuzzy vs Dosis Aktual</h6>
+                    <button class="btn btn-sm btn-outline-primary" type="button" data-toggle="collapse" data-target="#fuzzyChartCollapse">
+                        <i class="fas fa-chevron-down"></i> Tampilkan/Sembunyikan
+                    </button>
+                </div>
+                <div class="collapse" id="fuzzyChartCollapse">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold" style="color:#f6c23e;">PAC (ppm)</h6>
+                        <canvas id="fuzzyChartPAC" height="100"></canvas>
+                    </div>
+                    <hr>
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold" style="color:#36b9cc;">Klorin (ppm)</h6>
+                        <canvas id="fuzzyChartKlorin" height="100"></canvas>
+                    </div>
+                    <hr>
+                    <div class="mb-2">
+                        <h6 class="font-weight-bold" style="color:#1cc88a;">Soda Ash (ppm)</h6>
+                        <canvas id="fuzzyChartSoda" height="100"></canvas>
+                    </div>
+                </div>
+                </div>{{-- end collapse --}}
+            </div>
+            @endif
 
             {{-- Penjelasan Metode Evaluasi --}}
             <div class="card shadow mb-4">
@@ -551,3 +603,58 @@
     </div>{{-- end wire:loading.remove --}}
 
 </div>
+
+@script
+<script>
+window._fuzzyInitCharts = function(cd) {
+    if (!cd || typeof Chart === 'undefined') return;
+    var big = cd.labels.length > 60;
+    function makeChart(id, labelRek, dataRek, labelAkt, dataAkt, colorRek, colorAkt) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (el._chartInst) { try { el._chartInst.destroy(); } catch(e){} }
+        el._chartInst = new Chart(el, {
+            type: 'line',
+            data: {
+                labels: cd.labels,
+                datasets: [
+                    {
+                        label: labelRek,
+                        data: dataRek,
+                        borderColor: colorRek,
+                        backgroundColor: colorRek + '22',
+                        borderDash: [5,4],
+                        fill: false,
+                        tension: 0.3,
+                        pointRadius: big ? 0 : 3,
+                        borderWidth: 2
+                    },
+                    {
+                        label: labelAkt,
+                        data: dataAkt,
+                        borderColor: colorAkt,
+                        backgroundColor: colorAkt + '22',
+                        fill: false,
+                        tension: 0.3,
+                        pointRadius: big ? 0 : 3,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: true, position: 'top' } },
+                scales: {
+                    x: { ticks: { maxTicksLimit: 10, maxRotation: 45 } },
+                    y: { beginAtZero: false }
+                }
+            }
+        });
+    }
+    makeChart('fuzzyChartPAC',    'Rekomen PAC',    cd.rekPac,    'Aktual PAC',    cd.aktPac,    '#e74a3b', '#f6c23e');
+    makeChart('fuzzyChartKlorin', 'Rekomen Klorin', cd.rekKlorin, 'Aktual Klorin', cd.aktKlorin, '#4e73df', '#36b9cc');
+    makeChart('fuzzyChartSoda',   'Rekomen Soda',   cd.rekSoda,   'Aktual Soda',   cd.aktSoda,   '#1cc88a', '#858796');
+};
+</script>
+@endscript

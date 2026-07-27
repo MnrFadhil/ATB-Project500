@@ -158,14 +158,75 @@
                             Detail Perhitungan WMA
                         </button>
                         <div class="collapse mt-2" id="calc_{{ $chemKey }}">
-                            <div class="bg-light p-3 rounded" style="font-size: 13px; line-height: 2.2; font-family: 'Courier New', monospace;">
-                                <strong>Prediksi {{ $pred['label'] }} (dari 3 bulan sebelumnya):</strong><br>
-                                <div style="margin-left: 16px; font-size: 14px; font-weight: 600; margin-bottom: 12px;">
+                            <div class="bg-light p-3 rounded" style="font-size: 12px;">
+
+                                {{-- Step 1: Detail data per bulan --}}
+                                <p class="font-weight-bold mb-2" style="font-size:13px;">Step 1 — Data per Bulan (3 Bulan Sebelumnya)</p>
+                                @php $threeMonths = array_slice($hist, -3); @endphp
+                                @foreach($threeMonths as $mi => $mData)
+                                @php
+                                    $bobotIdx  = count($threeMonths) - 1 - $mi; // 2,1,0
+                                    $bobotVal  = $bobotIdx === 2 ? $weightInfo['w3'] : ($bobotIdx === 1 ? $weightInfo['w2'] : $weightInfo['w1']);
+                                    $bobotLabel = $bobotIdx === 2 ? 'W₃ (terbaru)' : ($bobotIdx === 1 ? 'W₂' : 'W₁ (terlama)');
+                                @endphp
+                                <div class="card mb-2" style="border-left:3px solid #4e73df;">
+                                    <div class="card-body py-2 px-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <strong style="font-size:12px;">{{ $mData['label'] }}</strong>
+                                            <span class="badge badge-primary">Bobot {{ $bobotVal }} ({{ $bobotLabel }})</span>
+                                        </div>
+                                        @if(!empty($mData['records']))
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-1" style="font-size:11px;">
+                                                <thead class="thead-light">
+                                                    <tr class="text-center">
+                                                        <th>No</th>
+                                                        <th>Tanggal</th>
+                                                        <th>Shift</th>
+                                                        <th>Dosis (ppm)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach(array_slice($mData['records'], 0, 5) as $ri => $rec)
+                                                    <tr class="text-center">
+                                                        <td>{{ $ri + 1 }}</td>
+                                                        <td>{{ $rec['date'] }}</td>
+                                                        <td class="text-uppercase">{{ $rec['shift'] }}</td>
+                                                        <td><strong>{{ $rec['dosage'] }}</strong></td>
+                                                    </tr>
+                                                    @endforeach
+                                                </tbody>
+                                                <tfoot class="thead-light">
+                                                    @if($mData['count'] > 5)
+                                                    <tr>
+                                                        <td colspan="4" class="text-center text-muted" style="font-size:10px;">
+                                                            ... dan {{ $mData['count'] - 5 }} data lainnya (total {{ $mData['count'] }} shift)
+                                                        </td>
+                                                    </tr>
+                                                    @endif
+                                                    <tr class="text-center font-weight-bold">
+                                                        <td colspan="3">Jumlah data: {{ $mData['count'] }} shift &rarr; Rata-rata</td>
+                                                        <td style="color:#28a745;">{{ $mData['avg_dosage'] }} ppm</td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                        @else
+                                        <small class="text-muted">Tidak ada data individual tersedia.</small>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endforeach
+
+                                {{-- Step 2: Formula WMA --}}
+                                <p class="font-weight-bold mb-1 mt-3" style="font-size:13px;">Step 2 — Rumus WMA</p>
+                                <div style="font-family: 'Courier New', monospace; font-size: 13px; line-height: 2.2; background:#fff; border-radius:4px; padding:10px 14px; border:1px solid #dee2e6;">
+                                    <strong>Prediksi {{ $pred['label'] }}:</strong><br>
                                     WMA = (<span style="color:#28a745">{{ $pred['prior_data'][0] }}</span> &times; <span style="color:#007bff">{{ $weightInfo['w3'] }}</span> + <span style="color:#28a745">{{ $pred['prior_data'][1] }}</span> &times; <span style="color:#007bff">{{ $weightInfo['w2'] }}</span> + <span style="color:#28a745">{{ $pred['prior_data'][2] }}</span> &times; <span style="color:#007bff">{{ $weightInfo['w1'] }}</span>) / {{ $weightInfo['total'] }}<br>
                                     WMA = (<span style="color:#28a745">{{ round($pred['prior_data'][0] * $weightInfo['w3'], 2) }}</span> + <span style="color:#28a745">{{ round($pred['prior_data'][1] * $weightInfo['w2'], 2) }}</span> + <span style="color:#28a745">{{ round($pred['prior_data'][2] * $weightInfo['w1'], 2) }}</span>) / {{ $weightInfo['total'] }}<br>
                                     <span style="color:#0c5460; background:#d1ecf1; padding:4px 10px; border-radius:4px;">WMA = {{ $pred['avg_dosage'] }} ppm</span>
                                 </div>
-                                <small class="text-muted">Dihitung 1x langsung dari 3 rata-rata bulanan asli (non-rekursif) &mdash; tidak menggunakan hasil prediksi lain sebagai input.</small>
+                                <small class="text-muted d-block mt-2">Dihitung 1x langsung dari 3 rata-rata bulanan asli (non-rekursif) &mdash; tidak menggunakan hasil prediksi lain sebagai input.</small>
                             </div>
                         </div>
                         @endif
@@ -742,6 +803,7 @@
                     </div>
                 </div>
 
+
             @else
                 <div class="alert alert-info mt-2">
                     <i class="fas fa-info-circle"></i>
@@ -764,6 +826,7 @@
 @script
 <script>
     let chartInstances = {};
+
 
     $wire.on('charts-ready', (data) => {
         if (!data || !data.chartsData) return;
