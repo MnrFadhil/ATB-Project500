@@ -7,6 +7,17 @@ use Carbon\Carbon;
 
 class FuzzyEvaluationService
 {
+    // =========================================================================
+    // PAC EVALUATION MODE — toggle mudah, ubah nilai konstanta di bawah ini
+    //
+    //   'rekomen' → Aktual (T+1)  vs  Rekomendasi Fuzzy          ← MODE AKTIF
+    //   'prev'    → Aktual (T+1)  vs  Dosis aktual 2 jam sebelumnya (shift T)
+    //
+    // Cara toggle: ganti nilai PAC_EVAL_MODE, atau swap comment dua baris ini:
+    // =========================================================================
+    const PAC_EVAL_MODE = 'rekomen';
+    // const PAC_EVAL_MODE = 'prev';
+
     // -------------------------------------------------------------------------
     // Membership Functions
     // -------------------------------------------------------------------------
@@ -303,6 +314,7 @@ class FuzzyEvaluationService
                 'prev_pac'        => (float) $current['prev_pac'],
                 'rekomen_pac'     => $rekomPac,
                 'aktual_pac'      => $aktualPac,
+                'baseline_pac'    => (float) $current['aktual_pac'], // dosis aktual 2 jam sebelumnya (shift T)
                 'error_pac'       => round($rekomPac - $aktualPac, 2),
                 // Klorin
                 'prev_klorin'     => (float) $current['prev_klorin'],
@@ -326,7 +338,10 @@ class FuzzyEvaluationService
 
     public function calculateMetrics(array $rows, string $param): array
     {
-        $rekomKey  = "rekomen_$param";
+        // PAC: gunakan mode yang dikonfigurasi via PAC_EVAL_MODE
+        $rekomKey  = ($param === 'pac' && static::PAC_EVAL_MODE === 'prev')
+            ? 'baseline_pac'       // Aktual (T+1) vs Dosis 2 jam sebelumnya (shift T)
+            : "rekomen_$param";    // Aktual (T+1) vs Rekomendasi Fuzzy
         $aktualKey = "aktual_$param";
 
         $n = count($rows);
