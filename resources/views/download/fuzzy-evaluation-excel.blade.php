@@ -52,8 +52,6 @@
         <tr><th colspan="17">RINGKASAN METRIK EVALUASI</th></tr>
         <tr>
             <th>Parameter</th>
-            <th colspan="2">RMSE (ppm)</th>
-            <th colspan="2">MAE (ppm)</th>
             <th colspan="3">MAPE (%)</th>
             <th colspan="5">Interpretasi</th>
             <th colspan="4">Jumlah Data</th>
@@ -61,8 +59,6 @@
         @foreach (['pac' => 'PAC', 'klorin' => 'Klorin/Kaporit', 'sodaash' => 'Soda Ash'] as $k => $label)
             <tr>
                 <td>{{ $label }}</td>
-                <td colspan="2">{{ $metrics[$k]['rmse'] }}</td>
-                <td colspan="2">{{ $metrics[$k]['mae'] }}</td>
                 <td colspan="3">{{ $metrics[$k]['mape'] }}%</td>
                 <td colspan="5">{{ $metrics[$k]['interpretasi'] }}</td>
                 <td colspan="4">{{ $metrics[$k]['n'] }}</td>

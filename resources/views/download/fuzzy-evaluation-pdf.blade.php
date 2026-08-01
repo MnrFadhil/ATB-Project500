@@ -71,8 +71,6 @@
         <thead>
             <tr>
                 <th>Parameter</th>
-                <th>RMSE (ppm)</th>
-                <th>MAE (ppm)</th>
                 <th>MAPE (%)</th>
                 <th>Interpretasi</th>
                 <th>Jumlah Data</th>
@@ -82,8 +80,6 @@
             @foreach (['pac' => 'PAC', 'klorin' => 'Klorin/Kaporit', 'sodaash' => 'Soda Ash'] as $k => $label)
                 <tr>
                     <td>{{ $label }}</td>
-                    <td>{{ $metrics[$k]['rmse'] }}</td>
-                    <td>{{ $metrics[$k]['mae'] }}</td>
                     <td>{{ $metrics[$k]['mape'] }}%</td>
                     <td>{{ $metrics[$k]['interpretasi'] }}</td>
                     <td>{{ $metrics[$k]['n'] }}</td>

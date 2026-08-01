@@ -55,7 +55,7 @@ class FuzzyEvaluationService
     }
 
     // -------------------------------------------------------------------------
-    // Fuzzy Mamdani — PAC (output: dosis ppm, batas 5–20)
+    // Fuzzy Mamdani — PAC (output: dosis ppm, batas 8–20)
     // -------------------------------------------------------------------------
 
     private function fuzzyPAC(float $turbidity, float $previousDosis = 10.0): float
@@ -333,7 +333,7 @@ class FuzzyEvaluationService
     }
 
     // -------------------------------------------------------------------------
-    // Hitung metrik: RMSE, MAE, MAPE
+    // Hitung metrik: MAPE
     // -------------------------------------------------------------------------
 
     public function calculateMetrics(array $rows, string $param): array
@@ -345,17 +345,13 @@ class FuzzyEvaluationService
         $aktualKey = "aktual_$param";
 
         $n = count($rows);
-        if ($n === 0) return ['rmse' => 0, 'mae' => 0, 'mape' => 0, 'n' => 0];
+        if ($n === 0) return ['mape' => 0, 'n' => 0];
 
-        $sumSquare = 0;
-        $sumAbs    = 0;
         $sumPct    = 0;
         $countPct  = 0;
 
         foreach ($rows as $r) {
-            $err        = $r[$rekomKey] - $r[$aktualKey];
-            $sumSquare += $err * $err;
-            $sumAbs    += abs($err);
+            $err = $r[$rekomKey] - $r[$aktualKey];
 
             if ($r[$aktualKey] != 0) {
                 $sumPct += abs($err / $r[$aktualKey]);
@@ -364,8 +360,6 @@ class FuzzyEvaluationService
         }
 
         return [
-            'rmse' => round(sqrt($sumSquare / $n), 4),
-            'mae'  => round($sumAbs / $n, 4),
             'mape' => $countPct > 0 ? round(($sumPct / $countPct) * 100, 2) : 0,
             'n'    => $n,
         ];

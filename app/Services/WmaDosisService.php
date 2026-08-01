@@ -115,17 +115,13 @@ class WmaDosisService
     private function calculateDosisMetrics(array $rows): array
     {
         $n = count($rows);
-        if ($n === 0) return ['rmse' => 0, 'mae' => 0, 'mape' => 0, 'n' => 0, 'interpretasi' => '-'];
+        if ($n === 0) return ['mape' => 0, 'n' => 0, 'interpretasi' => '-'];
 
-        $sumSquare = 0;
-        $sumAbs    = 0;
         $sumPct    = 0;
         $countPct  = 0;
 
         foreach ($rows as $r) {
-            $err        = $r['prediksi'] - $r['aktual'];
-            $sumSquare += $err * $err;
-            $sumAbs    += abs($err);
+            $err = $r['prediksi'] - $r['aktual'];
             if ($r['aktual'] != 0) {
                 $sumPct += abs($err / $r['aktual']);
                 $countPct++;
@@ -134,8 +130,6 @@ class WmaDosisService
 
         $mape = $countPct > 0 ? round(($sumPct / $countPct) * 100, 2) : 0;
         return [
-            'rmse'        => round(sqrt($sumSquare / $n), 4),
-            'mae'         => round($sumAbs / $n, 4),
             'mape'        => $mape,
             'n'           => $n,
             'interpretasi'=> $countPct > 0 ? $this->interpretMape($mape) : '-',

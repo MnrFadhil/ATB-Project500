@@ -120,7 +120,7 @@ class WmaEvaluationService
         return $rows;
     }
     /**
-     * Hitung metrik akurasi: RMSE, MAE, MAPE
+     * Hitung metrik akurasi: MAPE
      */
     public function calculateMetrics(array $rows, string $param): array
     {
@@ -129,18 +129,14 @@ class WmaEvaluationService
 
         $n = count($rows);
         if ($n === 0) {
-            return ['rmse' => 0, 'mae' => 0, 'mape' => 0, 'n' => 0];
+            return ['mape' => 0, 'n' => 0];
         }
 
-        $sumSquare = 0;
-        $sumAbs    = 0;
         $sumPct    = 0;
         $countPct  = 0;
 
         foreach ($rows as $r) {
             $err = $r[$aktualKey] - $r[$prediksiKey];
-            $sumSquare += $err * $err;
-            $sumAbs    += abs($err);
 
             if ($r[$aktualKey] != 0) {
                 $sumPct += abs($err / $r[$aktualKey]);
@@ -149,8 +145,6 @@ class WmaEvaluationService
         }
 
         return [
-            'rmse' => round(sqrt($sumSquare / $n), 4),
-            'mae'  => round($sumAbs / $n, 4),
             'mape' => $countPct > 0 ? round(($sumPct / $countPct) * 100, 2) : 0,
             'n'    => $n,
         ];

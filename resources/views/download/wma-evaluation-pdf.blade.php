@@ -61,8 +61,6 @@
         <thead>
             <tr>
                 <th>Parameter</th>
-                <th>RMSE</th>
-                <th>MAE</th>
                 <th>MAPE (%)</th>
                 <th>Interpretasi MAPE</th>
                 <th>Jumlah Data (n)</th>
@@ -72,8 +70,6 @@
             @foreach (['turb' => 'Turbidity AB', 'ph' => 'pH AB', 'tds' => 'TDS AB'] as $k => $label)
                 <tr>
                     <td>{{ $label }}</td>
-                    <td>{{ $metrics[$k]['rmse'] }}</td>
-                    <td>{{ $metrics[$k]['mae'] }}</td>
                     <td>{{ $metrics[$k]['mape'] }}</td>
                     <td>{{ $metrics[$k]['interpretasi'] }}</td>
                     <td>{{ $metrics[$k]['n'] }}</td>
@@ -84,7 +80,7 @@
 
     <div class="footer">
         <p><strong>Keterangan:</strong></p>
-        <p>RMSE = Root Mean Square Error | MAE = Mean Absolute Error | MAPE = Mean Absolute Percentage Error</p>
+        <p>MAPE = Mean Absolute Percentage Error</p>
         <p>Interpretasi MAPE (Khusmiawati et al., 2025): &lt;10% Sangat Akurat | 10-20% Akurat | 20-50% Cukup | &gt;50% Tidak Akurat</p>
     </div>
 </body>
