@@ -101,44 +101,48 @@ class MonitoringDetail extends Component
     // Output: rekomendasi dosis PAC shift berikutnya, di-clamp 8–20 ppm
     // =========================================================================
 
-    private function fuzzyPAC($sedimentationTurbidity, float $previousDosis = 0): array
+    /**
+     * Fungsi murni hitung-hitungan PAC: μ → rules → delta → rekomendasi.
+     * Tidak ada logika tampilan (status/warna/pesan) di sini sama sekali.
+     */
+    private function calculatePAC(float $turbidity, float $previousDosis = 10.0): array
     {
-        $t = (float) $sedimentationTurbidity;
-        // Cast ke float, karena nilai dari DB bisa berupa string
-
         $mu = [
-            'sangat_rendah' => $this->leftShoulderMF($t,  0.0, 2.0),
-            // turbidity < 2 NTU → air sangat jernih, PAC terlalu banyak
-            'rendah'        => $this->triangularMF($t,    1.0, 2.5, 3.2),
-            // turbidity 1–3.2 NTU → air cukup jernih, dosis sedikit dikurangi
-            'optimal'       => $this->triangularMF($t,    2.8, 3.3, 3.8),
-            // turbidity 2.8–3.8 NTU → kondisi ideal, dosis dipertahankan
-            'tinggi'        => $this->triangularMF($t,    3.4, 4.1, 5.0),
-            // turbidity 3.4–5 NTU → air mulai keruh, tambah sedikit PAC
-            'sangat_tinggi' => $this->rightShoulderMF($t, 4.5, 6.0),
-            // turbidity > 4.5 NTU → air sangat keruh, butuh PAC jauh lebih banyak
+            'sangat_rendah' => $this->leftShoulderMF($turbidity,  0.0, 2.0),
+            'rendah'        => $this->triangularMF($turbidity,    1.0, 2.5, 3.2),
+            'optimal'       => $this->triangularMF($turbidity,    2.8, 3.3, 3.8),
+            'tinggi'        => $this->triangularMF($turbidity,    3.4, 4.1, 5.0),
+            'sangat_tinggi' => $this->rightShoulderMF($turbidity, 4.5, 6.0),
         ];
 
         $rules = [
             [$mu['sangat_rendah'], -3.0],
-            // jika sangat rendah → kurangi dosis 3 ppm (air terlalu jernih)
             [$mu['rendah'],        -1.0],
-            // jika rendah → kurangi dosis 1 ppm
             [$mu['optimal'],        0.0],
-            // jika optimal → tidak ada perubahan dosis
             [$mu['tinggi'],        +1],
-            // jika tinggi → tambah dosis 1 ppm
             [$mu['sangat_tinggi'], +3],
-            // jika sangat tinggi → tambah dosis 3 ppm (respons agresif)
         ];
 
-        $delta = $this->defuzzify($rules);
-        // delta = perubahan dosis crisp hasil centroid
-        // contoh turbidity=1.47: δ = -1.92 ppm
-
+        $delta          = $this->defuzzify($rules);
         $recommendation = round(max(8.0, min(20.0, $previousDosis + $delta)), 2);
-        // Rekomendasi = dosis sebelumnya + delta, dibatasi 8–20 ppm
-        // contoh: clamp(11.4 + (-1.92), 5, 20) = clamp(9.48, 5, 20) = 9.48 ppm
+
+        return [
+            'mu'             => $mu,
+            'delta'          => $delta,
+            'recommendation' => $recommendation,
+            'previous_dosis' => $previousDosis,
+        ];
+    }
+
+    /**
+     * Bungkus hasil calculatePAC() jadi data siap tampil ke Blade
+     * (status, warna, pesan, dan parameter kurva untuk detail perhitungan).
+     */
+    private function fuzzyPAC($sedimentationTurbidity, float $previousDosis = 0): array
+    {
+        $t    = (float) $sedimentationTurbidity;
+        $calc = $this->calculatePAC($t, $previousDosis);
+        $mu   = $calc['mu'];
 
         $dominant  = array_search(max($mu), $mu);
         // Cari himpunan dengan μ terbesar → menentukan status teks
@@ -160,14 +164,14 @@ class MonitoringDetail extends Component
 
         return [
             'status'         => $status,
-            'recommendation' => $recommendation,
-            'message'        => "Turbidity sedimentasi <strong style='font-size:13px;color:#{$hexColor};'>{$t} NTU</strong>, Delta dosis: <strong>{$delta} ppm</strong> → Rekomendasi: <strong style='font-size:13px;color:#{$hexColor};'>{$recommendation} ppm</strong>",
+            'recommendation' => $calc['recommendation'],
+            'message'        => "Turbidity sedimentasi <strong style='font-size:13px;color:#{$hexColor};'>{$t} NTU</strong>, Delta dosis: <strong>{$calc['delta']} ppm</strong> → Rekomendasi: <strong style='font-size:13px;color:#{$hexColor};'>{$calc['recommendation']} ppm</strong>",
             'color'          => $color,
             'input_value'    => $t,
             'input_label'    => 'Turbidity Sedimentasi',
             'unit'           => 'NTU',
             'mu'             => $mu,
-            'delta'          => $delta,
+            'delta'          => $calc['delta'],
             'previous_dosis' => $previousDosis,
             'clamp_min'      => 8.0,
             'clamp_max'      => 20.0,
@@ -190,72 +194,87 @@ class MonitoringDetail extends Component
     // Output: rekomendasi dosis Klorin shift berikutnya, di-clamp 0–3 ppm
     // =========================================================================
 
-    private function fuzzyKlorin($freeChlorine, float $previousDosis = 0): array
+    /**
+     * Fungsi murni hitung-hitungan Klorin: μ → rules → delta → rekomendasi.
+     * Termasuk deteksi kondisi darurat (free_chlor ≥ 0.60 & sudah puncak sangat_tinggi).
+     * Tidak ada logika tampilan (status/warna/pesan) di sini sama sekali.
+     */
+    private function calculateKlorin(float $freeChlorine, float $previousDosis = 0): array
     {
-        $f = (float) $freeChlorine;
-        // Cast ke float, karena nilai dari DB bisa berupa string atau null
-
         $mu = [
-            'sangat_rendah' => $this->leftShoulderMF($f,  0.0,  0.20),
-            // free_chlor < 0.2 mg/L → air tidak aman, butuh klorin banyak
-            'rendah'        => $this->triangularMF($f,    0.15, 0.26, 0.30),
-            // free_chlor 0.15–0.30 mg/L → kadar kurang, tambah klorin
-            'optimal'       => $this->triangularMF($f,    0.31, 0.37, 0.46),
-            // free_chlor 0.31–0.46 mg/L → kadar ideal, pertahankan dosis
-            'tinggi'        => $this->triangularMF($f,    0.43, 0.48, 0.51),
-            // free_chlor 0.43–0.51 mg/L → mulai berlebih, kurangi klorin
-            'sangat_tinggi' => $this->rightShoulderMF($f, 0.50, 0.60),
-            // free_chlor > 0.5 mg/L → berlebih, kurangi drastis
+            'sangat_rendah' => $this->leftShoulderMF($freeChlorine,  0.0,  0.20),
+            'rendah'        => $this->triangularMF($freeChlorine,    0.15, 0.26, 0.30),
+            'optimal'       => $this->triangularMF($freeChlorine,    0.31, 0.37, 0.46),
+            'tinggi'        => $this->triangularMF($freeChlorine,    0.43, 0.48, 0.51),
+            'sangat_tinggi' => $this->rightShoulderMF($freeChlorine, 0.50, 0.60),
         ];
 
         $rules = [
             [$mu['sangat_rendah'], +1.0],
-            // sangat rendah → tambah 1.0 ppm (air tidak aman)
             [$mu['rendah'],        +0.4],
-            // rendah → tambah 0.4 ppm
             [$mu['optimal'],        0.0],
-            // optimal → tidak ada perubahan
             [$mu['tinggi'],        -0.7],
-            // tinggi → kurangi 0.7 ppm
             [$mu['sangat_tinggi'], -2.0],
-            // sangat tinggi → kurangi 2.0 ppm
         ];
 
         $delta = $this->defuzzify($rules);
-        // delta = perubahan dosis crisp hasil centroid
-        // contoh free_chlor=0.32: δ = 0.0 ppm (kondisi optimal)
 
-        if ($f >= 0.60 && $mu['sangat_tinggi'] >= 1.0) {
-            // KONDISI DARURAT: free_chlor ≥ 0.60 dan sudah di puncak sangat_tinggi
-            // → matikan pompa langsung, jangan tunggu defuzzifikasi
+        // KONDISI DARURAT: free_chlor ≥ 0.60 dan sudah di puncak sangat_tinggi
+        // → matikan pompa langsung, jangan tunggu defuzzifikasi
+        $isEmergency = ($freeChlorine >= 0.60 && $mu['sangat_tinggi'] >= 1.0);
+
+        $recommendation = $isEmergency
+            ? 0.0
+            : round(max(0.0, min(3.0, $previousDosis + $delta)), 2);
+
+        return [
+            'mu'             => $mu,
+            'delta'          => $delta,
+            'recommendation' => $recommendation,
+            'previous_dosis' => $previousDosis,
+            'is_emergency'   => $isEmergency,
+        ];
+    }
+
+    /**
+     * Bungkus hasil calculateKlorin() jadi data siap tampil ke Blade
+     * (status, warna, pesan, dan parameter kurva untuk detail perhitungan).
+     */
+    private function fuzzyKlorin($freeChlorine, float $previousDosis = 0): array
+    {
+        $f    = (float) $freeChlorine;
+        $calc = $this->calculateKlorin($f, $previousDosis);
+        $mu   = $calc['mu'];
+
+        $categories   = ['sangat_rendah' => 'Sangat Rendah', 'rendah' => 'Rendah', 'optimal' => 'Optimal', 'tinggi' => 'Tinggi', 'sangat_tinggi' => 'Sangat Tinggi'];
+        $ruleCenters  = ['sangat_rendah' => 1.0, 'rendah' => 0.4, 'optimal' => 0.0, 'tinggi' => -0.7, 'sangat_tinggi' => -2.0];
+        $mfParams     = [
+            'sangat_rendah' => ['type' => 'left',     'a' => 0.0,  'b' => 0.20],
+            'rendah'        => ['type' => 'triangle', 'a' => 0.15, 'b' => 0.26, 'c' => 0.30],
+            'optimal'       => ['type' => 'triangle', 'a' => 0.31, 'b' => 0.37, 'c' => 0.46],
+            'tinggi'        => ['type' => 'triangle', 'a' => 0.43, 'b' => 0.48, 'c' => 0.51],
+            'sangat_tinggi' => ['type' => 'right',    'a' => 0.50, 'b' => 0.60],
+        ];
+
+        if ($calc['is_emergency']) {
             return [
                 'status'         => 'Emergency - Matikan Pompa',
-                'recommendation' => 0,
+                'recommendation' => $calc['recommendation'],
                 'message'        => "Free Chlor Reservoir <strong style='font-size:13px;color:#e74a3b;'>{$f} mg/L</strong> (Sangat Tinggi). <strong style='font-size:13px;color:#e74a3b;'>Matikan Pompa Dosing Chlorine!!!</strong><br><small class='font-weight-bold' style='color:#000;font-size:13px;'>Silahkan Cek Free Chlorine Air Reservoir Secara Berkala!!!</small>",
                 'color'          => 'danger',
                 'input_value'    => $f,
                 'input_label'    => 'Free Chlorine Reservoir',
                 'unit'           => 'mg/L',
                 'mu'             => $mu,
-                'delta'          => $delta,
+                'delta'          => $calc['delta'],
                 'previous_dosis' => $previousDosis,
                 'clamp_min'      => 0.0,
                 'clamp_max'      => 3.0,
-                'categories'     => ['sangat_rendah' => 'Sangat Rendah', 'rendah' => 'Rendah', 'optimal' => 'Optimal', 'tinggi' => 'Tinggi', 'sangat_tinggi' => 'Sangat Tinggi'],
-                'rule_centers'   => ['sangat_rendah' => 1.0, 'rendah' => 0.4, 'optimal' => 0.0, 'tinggi' => -0.7, 'sangat_tinggi' => -2.0],
-                'mf_params'      => [
-                    'sangat_rendah' => ['type' => 'left',     'a' => 0.0,  'b' => 0.20],
-                    'rendah'        => ['type' => 'triangle', 'a' => 0.15, 'b' => 0.26, 'c' => 0.30],
-                    'optimal'       => ['type' => 'triangle', 'a' => 0.31, 'b' => 0.37, 'c' => 0.46],
-                    'tinggi'        => ['type' => 'triangle', 'a' => 0.43, 'b' => 0.48, 'c' => 0.51],
-                    'sangat_tinggi' => ['type' => 'right',    'a' => 0.50, 'b' => 0.60],
-                ],
+                'categories'     => $categories,
+                'rule_centers'   => $ruleCenters,
+                'mf_params'      => $mfParams,
             ];
         }
-
-        $recommendation = round(max(0.0, min(3.0, $previousDosis + $delta)), 2);
-        // Rekomendasi = dosis sebelumnya + delta, dibatasi 0–3 ppm
-        // contoh: clamp(1.4 + 0.0, 0, 3) = 1.4 ppm (pertahankan)
 
         $dominant  = array_search(max($mu), $mu);
         // Cari himpunan dengan μ terbesar → menentukan status teks
@@ -276,26 +295,20 @@ class MonitoringDetail extends Component
 
         return [
             'status'         => $status,
-            'recommendation' => $recommendation,
-            'message'        => "Free Chlor Reservoir <strong style='font-size:13px;color:#{$hexColor};'>{$f} mg/L</strong>, Delta dosis: <strong>{$delta} ppm</strong> → Rekomendasi: <strong style='font-size:13px;color:#{$hexColor};'>{$recommendation} ppm</strong>",
+            'recommendation' => $calc['recommendation'],
+            'message'        => "Free Chlor Reservoir <strong style='font-size:13px;color:#{$hexColor};'>{$f} mg/L</strong>, Delta dosis: <strong>{$calc['delta']} ppm</strong> → Rekomendasi: <strong style='font-size:13px;color:#{$hexColor};'>{$calc['recommendation']} ppm</strong>",
             'color'          => $color,
             'input_value'    => $f,
             'input_label'    => 'Free Chlorine Reservoir',
             'unit'           => 'mg/L',
             'mu'             => $mu,
-            'delta'          => $delta,
+            'delta'          => $calc['delta'],
             'previous_dosis' => $previousDosis,
             'clamp_min'      => 0.0,
             'clamp_max'      => 3.0,
-            'categories'     => ['sangat_rendah' => 'Sangat Rendah', 'rendah' => 'Rendah', 'optimal' => 'Optimal', 'tinggi' => 'Tinggi', 'sangat_tinggi' => 'Sangat Tinggi'],
-            'rule_centers'   => ['sangat_rendah' => 1.0, 'rendah' => 0.4, 'optimal' => 0.0, 'tinggi' => -0.7, 'sangat_tinggi' => -2.0],
-            'mf_params'      => [
-                'sangat_rendah' => ['type' => 'left',     'a' => 0.0,  'b' => 0.20],
-                'rendah'        => ['type' => 'triangle', 'a' => 0.15, 'b' => 0.26, 'c' => 0.30],
-                'optimal'       => ['type' => 'triangle', 'a' => 0.31, 'b' => 0.37, 'c' => 0.46],
-                'tinggi'        => ['type' => 'triangle', 'a' => 0.43, 'b' => 0.48, 'c' => 0.51],
-                'sangat_tinggi' => ['type' => 'right',    'a' => 0.50, 'b' => 0.60],
-            ],
+            'categories'     => $categories,
+            'rule_centers'   => $ruleCenters,
+            'mf_params'      => $mfParams,
         ];
     }
 
@@ -307,67 +320,83 @@ class MonitoringDetail extends Component
     // Catatan: Soda Ash HANYA untuk menaikkan pH. pH ≥ 6.5 → pompa standby
     // =========================================================================
 
-    private function fuzzySodaAsh($ph, float $previousDosis = 2.0): array
+    /**
+     * Fungsi murni hitung-hitungan Soda Ash: μ → rules → delta → rekomendasi.
+     * Termasuk deteksi kondisi standby (pH ≥ 6.5 atau delta = 0).
+     * Tidak ada logika tampilan (status/warna/pesan) di sini sama sekali.
+     */
+    private function calculateSodaAsh(float $ph, float $previousDosis = 2.0): array
     {
-        $p = (float) $ph;
-        // Cast ke float, karena nilai dari DB bisa berupa string
-
         $mu = [
-            'sangat_rendah'  => $this->triangularMF($p, 3.0, 4.5, 5.2),
-            // pH 3–5.2 → sangat asam, butuh Soda Ash banyak (darurat)
-            'rendah'         => $this->triangularMF($p, 4.8, 5.5, 6.1),
-            // pH 4.8–6.1 → asam, butuh Soda Ash untuk naikkan pH
-            'sedikit_rendah' => $this->triangularMF($p, 5.8, 6.2, 6.5),
-            // pH 5.8–6.5 → sedikit asam, tambah Soda Ash secukupnya
-            'normal'         => $this->triangularMF($p, 6.5, 7.0, 7.8),
-            // pH 6.5–7.8 → kondisi normal, tidak perlu Soda Ash
+            'sangat_rendah'  => $this->triangularMF($ph, 3.0, 4.5, 5.2),
+            'rendah'         => $this->triangularMF($ph, 4.8, 5.5, 6.1),
+            'sedikit_rendah' => $this->triangularMF($ph, 5.8, 6.2, 6.5),
+            'normal'         => $this->triangularMF($ph, 6.5, 7.0, 7.8),
         ];
 
         $rules = [
             [$mu['sangat_rendah'],  +3.0],
-            // sangat rendah → tambah 3 ppm (respons darurat)
             [$mu['rendah'],         +2.0],
-            // rendah → tambah 2 ppm
             [$mu['sedikit_rendah'], +1.0],
-            // sedikit rendah → tambah 1 ppm
             [$mu['normal'],          0.0],
-            // normal → tidak ada perubahan
         ];
 
         $delta = $this->defuzzify($rules);
-        // delta = perubahan dosis crisp hasil centroid
-        // contoh pH=6.0: δ = 1.25 ppm
 
-        if ($p >= 6.5 || $delta == 0) {
-            // pH sudah normal (≥ 6.5) atau tidak ada delta → tidak perlu dosing
-            // contoh: pH=7.45 → langsung standby, tidak perlu hitung lebih lanjut
+        // pH sudah normal (≥ 6.5) atau tidak ada delta → tidak perlu dosing
+        $isStandby = ($ph >= 6.5 || $delta == 0);
+
+        $recommendation = $isStandby
+            ? 0.0
+            : round(max(0.0, min(10.0, $previousDosis + $delta)), 2);
+
+        return [
+            'mu'             => $mu,
+            'delta'          => $delta,
+            'recommendation' => $recommendation,
+            'previous_dosis' => $previousDosis,
+            'is_standby'     => $isStandby,
+        ];
+    }
+
+    /**
+     * Bungkus hasil calculateSodaAsh() jadi data siap tampil ke Blade
+     * (status, warna, pesan, dan parameter kurva untuk detail perhitungan).
+     */
+    private function fuzzySodaAsh($ph, float $previousDosis = 2.0): array
+    {
+        $p    = (float) $ph;
+        $calc = $this->calculateSodaAsh($p, $previousDosis);
+        $mu   = $calc['mu'];
+
+        $categories  = ['sangat_rendah' => 'Sangat Rendah', 'rendah' => 'Rendah', 'sedikit_rendah' => 'Sedikit Rendah', 'normal' => 'Normal'];
+        $ruleCenters = ['sangat_rendah' => 3.0, 'rendah' => 2.0, 'sedikit_rendah' => 1.0, 'normal' => 0.0];
+        $mfParams    = [
+            'sangat_rendah'  => ['type' => 'triangle', 'a' => 3.0, 'b' => 4.5, 'c' => 5.2],
+            'rendah'         => ['type' => 'triangle', 'a' => 4.8, 'b' => 5.5, 'c' => 6.1],
+            'sedikit_rendah' => ['type' => 'triangle', 'a' => 5.8, 'b' => 6.2, 'c' => 6.5],
+            'normal'         => ['type' => 'triangle', 'a' => 6.5, 'b' => 7.0, 'c' => 7.8],
+        ];
+
+        if ($calc['is_standby']) {
             return [
                 'status'         => 'Pompa Standby',
-                'recommendation' => 0,
+                'recommendation' => $calc['recommendation'],
                 'message'        => "pH normal <strong>({$p})</strong>, Pompa Soda Ash Bisa Standby",
                 'color'          => 'secondary',
                 'input_value'    => $p,
                 'input_label'    => 'pH Reservoir',
                 'unit'           => '',
                 'mu'             => $mu,
-                'delta'          => $delta,
+                'delta'          => $calc['delta'],
                 'previous_dosis' => $previousDosis,
                 'clamp_min'      => 0.0,
                 'clamp_max'      => 10.0,
-                'categories'     => ['sangat_rendah' => 'Sangat Rendah', 'rendah' => 'Rendah', 'sedikit_rendah' => 'Sedikit Rendah', 'normal' => 'Normal'],
-                'rule_centers'   => ['sangat_rendah' => 3.0, 'rendah' => 2.0, 'sedikit_rendah' => 1.0, 'normal' => 0.0],
-                'mf_params'      => [
-                    'sangat_rendah'  => ['type' => 'triangle', 'a' => 3.0, 'b' => 4.5, 'c' => 5.2],
-                    'rendah'         => ['type' => 'triangle', 'a' => 4.8, 'b' => 5.5, 'c' => 6.1],
-                    'sedikit_rendah' => ['type' => 'triangle', 'a' => 5.8, 'b' => 6.2, 'c' => 6.5],
-                    'normal'         => ['type' => 'triangle', 'a' => 6.5, 'b' => 7.0, 'c' => 7.8],
-                ],
+                'categories'     => $categories,
+                'rule_centers'   => $ruleCenters,
+                'mf_params'      => $mfParams,
             ];
         }
-
-        $recommendation = round(max(0.0, min(10.0, $previousDosis + $delta)), 2);
-        // Rekomendasi = dosis sebelumnya + delta, dibatasi 0–10 ppm
-        // contoh pH=6.0, prev=2.0: clamp(2.0 + 1.25, 0, 10) = 3.25 ppm
 
         $dominant  = array_search(max($mu), $mu);
         // Cari himpunan dengan μ terbesar → menentukan status teks
@@ -383,19 +412,19 @@ class MonitoringDetail extends Component
 
         return [
             'status'         => $status,
-            'recommendation' => $recommendation,
-            'message'        => "pH Reservoir <strong style='font-size:13px;color:#{$hexColor};'>{$p}</strong>, Delta dosis: <strong>{$delta} ppm</strong> → Rekomendasi: <strong style='font-size:13px;'>{$recommendation} ppm</strong>",
+            'recommendation' => $calc['recommendation'],
+            'message'        => "pH Reservoir <strong style='font-size:13px;color:#{$hexColor};'>{$p}</strong>, Delta dosis: <strong>{$calc['delta']} ppm</strong> → Rekomendasi: <strong style='font-size:13px;'>{$calc['recommendation']} ppm</strong>",
             'color'          => $color,
             'input_value'    => $p,
             'input_label'    => 'pH Reservoir',
             'unit'           => '',
             'mu'             => $mu,
-            'delta'          => $delta,
+            'delta'          => $calc['delta'],
             'previous_dosis' => $previousDosis,
             'clamp_min'      => 0.0,
             'clamp_max'      => 10.0,
-            'categories'     => ['sangat_rendah' => 'Sangat Rendah', 'rendah' => 'Rendah', 'sedikit_rendah' => 'Sedikit Rendah', 'normal' => 'Normal'],
-            'rule_centers'   => ['sangat_rendah' => 3.0, 'rendah' => 2.0, 'sedikit_rendah' => 1.0, 'normal' => 0.0],
+            'categories'     => $categories,
+            'rule_centers'   => $ruleCenters,
             'mf_params'      => [
                 'sangat_rendah'  => ['type' => 'triangle', 'a' => 3.0, 'b' => 4.5, 'c' => 5.2],
                 'rendah'         => ['type' => 'triangle', 'a' => 4.8, 'b' => 5.5, 'c' => 6.1],
@@ -625,10 +654,6 @@ class MonitoringDetail extends Component
                 'turbidityAB'   => $this->calculateWMA($historicalData['turbidityAB']),
                 'phAB'          => $this->calculateWMA($historicalData['phAB']),
                 'tdsAB'         => $this->calculateWMA($historicalData['tdsAB']),
-                'freeChlorine'  => $this->calculateWMA($historicalData['freeChlorine']),
-                'pacDosis'      => $this->calculateWMA($historicalData['pACDosis']),
-                'chlorineDosis' => $this->calculateWMA($historicalData['chlorineDosis']),
-                'sodaAshDosis'  => $this->calculateWMA($historicalData['sodaAshDosis']),
             ];
 
             $chartData = [
