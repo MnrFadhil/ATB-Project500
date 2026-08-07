@@ -5,6 +5,29 @@ namespace App\Services;
 use App\Models\Shift;
 use Carbon\Carbon;
 
+/**
+ * Service ini menghitung EVALUASI AKURASI untuk rekomendasi dosis Fuzzy Mamdani
+ * (PAC, Klorin, Soda Ash), dengan cara menghitung ulang rekomendasi fuzzy untuk
+ * SEMUA shift dalam rentang tanggal, lalu bandingkan ke dosis yang beneran
+ * dipakai operator di shift berikutnya.
+ *
+ * Bedanya dengan app/Livewire/MonitoringDetail.php:
+ *   - MonitoringDetail.php → hitung rekomendasi utk 1 shift yang lagi dibuka user,
+ *                            real-time, dipakai operator sebagai acuan.
+ *   - Service ini           → hitung ulang rumus fuzzy yang SAMA PERSIS (membership
+ *                            function, rules, defuzzifikasi, clamp) tapi untuk
+ *                            ribuan shift sekaligus (data lampau), demi menghasilkan
+ *                            metrik MAPE (seberapa dekat rekomendasi sistem ke
+ *                            keputusan operator yang sebenarnya).
+ *
+ * Sumber data yang dipakai (lihat detail di buildEvaluationData() di bawah):
+ *   - Tabel `shifts`          → daftar shift (kolom `date`, `end_time`, `shift`)
+ *   - Tabel `water_qualities` → input fuzzy: turbidity (type='sedimentation'),
+ *                               free_chlor & ph (type='reservoir')
+ *   - Tabel `pump_chemicals`  → dosis AKTUAL yang dipakai operator, difilter
+ *                               `type` (pac/chlorine-kaporit/soda ash) dan
+ *                               `status`='running'
+ */
 class FuzzyEvaluationService
 {
     // =========================================================================
@@ -198,6 +221,16 @@ class FuzzyEvaluationService
 
     // -------------------------------------------------------------------------
     // Cari "next shift" berikutnya — O(1) lookup via index
+    //
+    // Kenapa perlu fungsi ini: skema evaluasinya adalah "rekomendasi dihitung
+    // dari data shift T, dibandingkan ke dosis aktual shift T+1" (2 jam
+    // setelahnya). Fungsi ini nyari shift T+1 itu tanpa harus query database
+    // lagi — cukup lookup di array $index (dibangun sebelumnya di
+    // buildEvaluationData, key-nya "tanggal|jam").
+    //
+    // Kasus khusus shift yang berakhir jam 23:00: shift berikutnya BUKAN di
+    // hari yang sama (karena sudah lewat tengah malam), jadi tanggalnya harus
+    // ditambah 1 hari dan jamnya balik ke 01:00.
     // -------------------------------------------------------------------------
 
     private function findNextShiftByIndex(array $index, array $current): ?array
@@ -206,9 +239,11 @@ class FuzzyEvaluationService
         $date    = $current['date'];
 
         if ($endTime === '23:00') {
+            // Shift 23:00 → shift berikutnya adalah 01:00 di HARI BERIKUTNYA
             $nextDate    = date('Y-m-d', strtotime('+1 day', strtotime($date)));
             $nextEndTime = '01:00';
         } else {
+            // Shift lainnya → shift berikutnya 2 jam kemudian, HARI SAMA
             $nextDate    = $date;
             $nextEndTime = date('H:i', strtotime('+2 hours', strtotime($endTime)));
         }
@@ -218,6 +253,9 @@ class FuzzyEvaluationService
 
     // -------------------------------------------------------------------------
     // Build evaluation data
+    //
+    // Tabel hasil fungsi ini yang jadi dasar halaman "Evaluasi Fuzzy Mamdani"
+    // (tabel per baris + hitung MAPE) dan file export PDF/Excel-nya.
     // -------------------------------------------------------------------------
 
     public function buildEvaluationData(string $startDate, string $endDate): array
@@ -226,8 +264,15 @@ class FuzzyEvaluationService
         ini_set('memory_limit', '512M');
 
         // Extend end by 1 day untuk mengambil "next shift" dari shift terakhir
+        // (shift terakhir dalam rentang filter tetap butuh tahu shift SESUDAHNYA,
+        // walau shift sesudahnya itu sendiri di luar rentang filter yang dipilih user)
         $extendedEnd = date('Y-m-d', strtotime('+1 day', strtotime($endDate)));
 
+        // Ambil semua shift dari tabel `shifts`, plus 2 relasi:
+        //   - waterQualities → nilai turbidity (type sedimentation), free_chlor
+        //     & ph (type reservoir) — ini yang jadi INPUT rumus fuzzy
+        //   - pumpChemicals   → dosis PAC/Klorin/Soda Ash yang beneran dipakai
+        //     operator — ini yang jadi pembanding "aktual" dalam MAPE
         // Hanya select kolom yang dibutuhkan — hemat memory
         $shifts = Shift::select(['id', 'date', 'shift', 'end_time'])
             ->with([
@@ -244,9 +289,18 @@ class FuzzyEvaluationService
         $seriesIndex = []; // key: "date|HH:MM"
 
         foreach ($shifts as $shift) {
+            // Dari semua baris water_qualities milik shift ini, ambil yang
+            // type='sedimentation' (dipakai fuzzy PAC) dan type='reservoir'
+            // (dipakai fuzzy Klorin & Soda Ash sekaligus, karena keduanya
+            // sama-sama diukur di titik reservoir)
             $sed = $shift->waterQualities->firstWhere('type', 'sedimentation');
             $res = $shift->waterQualities->firstWhere('type', 'reservoir');
 
+            // Cari baris pump_chemicals shift ini yang statusnya 'running'
+            // (pompa lagi aktif jalan). Kalau tidak ada yang running, fallback
+            // ambil baris pertama apa adanya (dipakai buat nilai 'prev_*' saja,
+            // sedangkan 'aktual_*' tetap 0 kalau memang tidak ada yang running —
+            // lihat pengecekan status di bawah).
             $pacRunning      = $shift->pumpChemicals->where('type', 'pac')->where('status', 'running')->first()
                             ?? $shift->pumpChemicals->firstWhere('type', 'pac');
             $klorinRunning   = $shift->pumpChemicals->where('type', 'chlorine/kaporit')->where('status', 'running')->first()
@@ -254,6 +308,14 @@ class FuzzyEvaluationService
             $sodaashRunning  = $shift->pumpChemicals->where('type', 'soda ash')->where('status', 'running')->first()
                             ?? $shift->pumpChemicals->firstWhere('type', 'soda ash');
 
+            // 'prev_*'   = dosis SEBELUM shift ini, dipakai sebagai basis
+            //              clamp(dosis_sebelumnya + delta, ...) waktu ngitung
+            //              rekomendasi fuzzy. Kalau pompa tidak running, pakai
+            //              nilai default (10.0/1.5/2.0 — sama dengan default
+            //              parameter di calculatePAC/Klorin/SodaAsh).
+            // 'aktual_*' = dosis AKTUAL shift ini, dipakai sebagai pembanding
+            //              "kebenaran lapangan" waktu hitung MAPE. Kalau pompa
+            //              tidak running, dianggap 0 (pompa memang mati).
             $entry = [
                 'shift_id'          => $shift->id,
                 'date'              => $shift->date,
@@ -277,24 +339,34 @@ class FuzzyEvaluationService
         // Bebaskan Eloquent collection — data sudah di $series
         unset($shifts);
 
+        // Loop utama: untuk TIAP shift ($current), hitung rekomendasi fuzzy-nya
+        // pakai data shift itu sendiri, lalu bandingkan ke dosis aktual yang
+        // dipakai operator di shift SESUDAHNYA ($next). 1 shift = 1 baris tabel.
         $rows = [];
         foreach ($series as $current) {
-            // Hanya tampilkan shift dalam range filter
+            // Hanya tampilkan shift dalam range filter yang dipilih user
             if ($current['date'] < $startDate || $current['date'] > $endDate) continue;
 
-            // Skip jika data kualitas air tidak lengkap
+            // Skip jika data kualitas air belum lengkap diisi operator
+            // (turbidity sedimentasi / free chlorine / pH reservoir kosong)
             if ($current['turb_sed'] === null || $current['free_chlor'] === null || $current['ph_res'] === null) continue;
 
-            // Cari next shift via O(1) index lookup
+            // Cari shift 2 jam sesudahnya via O(1) index lookup (lihat findNextShiftByIndex())
             $next = $this->findNextShiftByIndex($seriesIndex, $current);
-            if ($next === null) continue;
+            if ($next === null) continue; // shift terakhir dalam data, tidak ada shift sesudahnya
 
-            // Hitung rekomendasi fuzzy
+            // Hitung rekomendasi fuzzy PAKAI DATA SHIFT SEKARANG ($current) —
+            // rumusnya persis calculatePAC/Klorin/SodaAsh di MonitoringDetail.php,
+            // cuma versi private di file ini (fuzzyPAC/fuzzyKlorin/fuzzySodaAsh
+            // di atas), supaya hasilnya konsisten dengan yang tampil real-time
+            // di halaman Monitoring Detail.
             $rekomPac     = $this->fuzzyPAC($current['turb_sed'], (float) $current['prev_pac']);
             $rekomKlorin  = $this->fuzzyKlorin($current['free_chlor'], (float) $current['prev_klorin']);
             $rekomSodaAsh = $this->fuzzySodaAsh($current['ph_res'], (float) $current['prev_sodaash']);
 
-            // Ambil dosis aktual next shift (0 jika pompa standby)
+            // Ambil dosis AKTUAL dari shift BERIKUTNYA ($next, bukan $current) —
+            // inilah "kebenaran lapangan" yang jadi pembanding rekomendasi di atas.
+            // 0 kalau pompa standby/mati di shift itu.
             $aktualPac     = (float) $next['aktual_pac'];
             $aktualKlorin  = (float) $next['aktual_klorin'];
             $aktualSodaAsh = (float) $next['aktual_sodaash'];
@@ -334,11 +406,17 @@ class FuzzyEvaluationService
 
     // -------------------------------------------------------------------------
     // Hitung metrik: MAPE
+    //
+    // Bukan query baru ke database — murni olah array $rows yang sudah
+    // dibentuk oleh buildEvaluationData(). Dipanggil 1x per bahan kimia
+    // ($param = 'pac' / 'klorin' / 'sodaash').
     // -------------------------------------------------------------------------
 
     public function calculateMetrics(array $rows, string $param): array
     {
-        // PAC: gunakan mode yang dikonfigurasi via PAC_EVAL_MODE
+        // PAC punya 2 mode perbandingan (lihat konstanta PAC_EVAL_MODE di atas
+        // file ini): default-nya 'rekomen' → bandingkan ke rekomendasi fuzzy.
+        // Klorin & Soda Ash selalu pakai "rekomen_$param" (tidak ada mode 'prev').
         $rekomKey  = ($param === 'pac' && static::PAC_EVAL_MODE === 'prev')
             ? 'baseline_pac'       // Aktual (T+1) vs Dosis 2 jam sebelumnya (shift T)
             : "rekomen_$param";    // Aktual (T+1) vs Rekomendasi Fuzzy
@@ -347,12 +425,16 @@ class FuzzyEvaluationService
         $n = count($rows);
         if ($n === 0) return ['mape' => 0, 'n' => 0];
 
-        $sumPct    = 0;
-        $countPct  = 0;
+        $sumPct    = 0; // akumulasi persentase error dari baris yang valid
+        $countPct  = 0; // jumlah baris valid (aktual != 0)
 
         foreach ($rows as $r) {
             $err = $r[$rekomKey] - $r[$aktualKey];
 
+            // Baris dengan aktual = 0 (pompa standby di shift T+1) DILEWATI dari
+            // rata-rata — sama seperti di WmaEvaluationService/WmaDosisService,
+            // supaya tidak ada pembagian dengan nol. 'n' yang di-return tetap
+            // jumlah baris ASLI (count($rows)), bukan $countPct.
             if ($r[$aktualKey] != 0) {
                 $sumPct += abs($err / $r[$aktualKey]);
                 $countPct++;

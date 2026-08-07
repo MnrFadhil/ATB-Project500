@@ -7,6 +7,32 @@ use App\Models\WmaSetting;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
+/**
+ * Halaman "Monitoring Detail" — komponen INTI dari sistem ini. Di sinilah
+ * rekomendasi dosis Fuzzy Mamdani dan prediksi WMA air baku ditampilkan
+ * REAL-TIME untuk 1 shift yang lagi dibuka user.
+ *
+ * DARI MANA SEMUA DATANYA (garis besar, detail per bagian ada di komentar
+ * masing-masing method di bawah):
+ *   - Tabel `shifts`          → 1 baris = 1 shift (kolom `date`, `end_time`, `shift`)
+ *   - Tabel `water_qualities` → hasil ukur kualitas air, DIBEDAKAN oleh kolom
+ *                               `type`: 'air baku' (sebelum diolah, input WMA),
+ *                               'sedimentation' (setelah sedimentasi, input Fuzzy PAC),
+ *                               'reservoir' (siap distribusi, input Fuzzy Klorin & Soda Ash)
+ *   - Tabel `pump_chemicals`  → dosis pompa kimia (PAC/Klorin/Soda Ash) yang lagi
+ *                               berjalan (`status`='running'), dipakai sebagai
+ *                               "dosis sebelumnya" basis rekomendasi fuzzy berikutnya
+ *   - Tabel `wma_settings`    → bobot WMA (lihat WmaSetting.php)
+ *
+ * ALUR SINGKAT tiap kali halaman ini dibuka (lihat method render() paling bawah):
+ *   1. Ambil 1 shift + semua relasinya berdasarkan $id
+ *   2. getHistoricalWaterQualities() cari 2 shift SEBELUMNYA → gabung dengan
+ *      data shift sekarang jadi 3 titik [d1=lama, d2=tengah, d3=baru]
+ *   3. calculateWMA() dipakai untuk prediksi turbidity/pH/TDS air baku
+ *   4. calculatePAC()/calculateKlorin()/calculateSodaAsh() dipakai untuk
+ *      rekomendasi dosis fuzzy — jalan independen, tidak butuh data historis
+ *   5. Semua hasil dikirim ke Blade view untuk ditampilkan + dipakai chart
+ */
 class MonitoringDetail extends Component
 {
     public $id;
