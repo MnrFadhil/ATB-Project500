@@ -518,10 +518,19 @@ class HideFormMonitoring extends Component
         }
     }
 
+    public function setDefaults(string $date, string $shift, string $startTime, string $endTime): void
+    {
+        if ($this->id) return;
+        $this->form->shift['date']       = $date;
+        $this->form->shift['shift']      = $shift;
+        $this->form->shift['start_time'] = $startTime;
+        $this->form->shift['end_time']   = $endTime;
+    }
+
     public function render()
     {
         return view('livewire.hide-form-monitoring', [
-            'users' => User::all()->where('role', 'user')
+            'users' => User::whereIn('name', ['Putra', 'Chairul', 'Fadhil', 'Anggi', 'Rozy', 'Raihan', 'Hari', 'Hamdani'])->orderByRaw("FIELD(name, 'Putra','Chairul','Fadhil','Anggi','Rozy','Raihan','Hari','Hamdani')")->get()
         ])->layout('layouts.app');
     }
 }

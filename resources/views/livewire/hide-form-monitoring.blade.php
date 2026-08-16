@@ -199,7 +199,7 @@
                             <div class="form-row">
                                 <div class="col-md-3 mb-3">
                                     <label>pH</label>
-                                    <input wire:model="form.airBaku.ph" type="number" step="any" class="form-control" required>
+                                    <input wire:model.blur="form.airBaku.ph" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control" required>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label>Turbidity (NTU)</label>
@@ -222,7 +222,7 @@
                             <div class="form-row">
                                 <div class="col-md-3 mb-3">
                                     <label>pH</label>
-                                    <input wire:model="form.sedimentation.ph" type="number" step="any" class="form-control" required>
+                                    <input wire:model.blur="form.sedimentation.ph" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control" required>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label>Turbidity (NTU)</label>
@@ -245,7 +245,7 @@
                             <div class="form-row">
                                 <div class="col-md-3 mb-3">
                                     <label>pH</label>
-                                    <input wire:model="form.reservoir.ph" type="number" step="any" class="form-control" required>
+                                    <input wire:model.blur="form.reservoir.ph" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control" required>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label>Turbidity (NTU)</label>
@@ -261,7 +261,7 @@
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label>Free Chlor (mg/L)</label>
-                                    <input wire:model="form.reservoir.free_chlor" type="number" step="any" class="form-control" required>
+                                    <input wire:model.blur="form.reservoir.free_chlor" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control" required>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label>ORP (mV)</label>
@@ -339,11 +339,11 @@
                             <div class="form-row">
                                 <div class="col-md-6 mb-3">
                                     <label>Level A (m)</label>
-                                    <input wire:model="form.reservoirLevel.level_a" type="number" step="any" class="form-control" required>
+                                    <input wire:model.blur="form.reservoirLevel.level_a" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label>Level B (m)</label>
-                                    <input wire:model="form.reservoirLevel.level_b" type="number" step="any" class="form-control" required>
+                                    <input wire:model.blur="form.reservoirLevel.level_b" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control" required>
                                 </div>
                             </div>
 
@@ -388,11 +388,11 @@
                             <div class="form-row">
                                 <div class="col-md-6 mb-3">
                                     <label>Inlet (Bar)</label>
-                                    <input wire:model="form.pressStatic.inlet" type="number" step="any" class="form-control" required>
+                                    <input wire:model.blur="form.pressStatic.inlet" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label>Outlet (Bar)</label>
-                                    <input wire:model="form.pressStatic.outlet" type="number" step="any" class="form-control" required>
+                                    <input wire:model.blur="form.pressStatic.outlet" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control" required>
                                 </div>
                             </div>
 
@@ -419,11 +419,11 @@
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Frekuensi (Hz)</label>
-                                                <input wire:model="form.pumpIntakeA.frequency" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpIntakeA.frequency" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=3?d.slice(0,-1)+'.'+d.slice(-1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Pressure (Bar)</label>
-                                                <input wire:model="form.pumpIntakeA.pressure" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpIntakeA.pressure" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                         @endif
                                     </div>
@@ -446,11 +446,11 @@
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Frekuensi (Hz)</label>
-                                                <input wire:model="form.pumpIntakeB.frequency" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpIntakeB.frequency" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=3?d.slice(0,-1)+'.'+d.slice(-1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Pressure (Bar)</label>
-                                                <input wire:model="form.pumpIntakeB.pressure" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpIntakeB.pressure" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                         @endif
                                     </div>
@@ -473,11 +473,11 @@
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Frekuensi (Hz)</label>
-                                                <input wire:model="form.pumpIntakeC.frequency" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpIntakeC.frequency" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=3?d.slice(0,-1)+'.'+d.slice(-1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Pressure (Bar)</label>
-                                                <input wire:model="form.pumpIntakeC.pressure" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpIntakeC.pressure" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                         @endif
                                     </div>
@@ -507,11 +507,11 @@
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Frekuensi (Hz)</label>
-                                                <input wire:model="form.pumpDistriA.frequency" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpDistriA.frequency" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=3?d.slice(0,-1)+'.'+d.slice(-1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Pressure (Bar)</label>
-                                                <input wire:model="form.pumpDistriA.pressure" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpDistriA.pressure" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                         @endif
                                     </div>
@@ -534,11 +534,11 @@
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Frekuensi (Hz)</label>
-                                                <input wire:model="form.pumpDistriB.frequency" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpDistriB.frequency" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=3?d.slice(0,-1)+'.'+d.slice(-1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Pressure (Bar)</label>
-                                                <input wire:model="form.pumpDistriB.pressure" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpDistriB.pressure" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                         @endif
                                     </div>
@@ -561,11 +561,11 @@
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Frekuensi (Hz)</label>
-                                                <input wire:model="form.pumpDistriC.frequency" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpDistriC.frequency" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=3?d.slice(0,-1)+'.'+d.slice(-1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Pressure (Bar)</label>
-                                                <input wire:model="form.pumpDistriC.pressure" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpDistriC.pressure" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                         @endif
                                     </div>
@@ -588,11 +588,11 @@
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Frekuensi (Hz)</label>
-                                                <input wire:model="form.pumpDistriD.frequency" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpDistriD.frequency" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=3?d.slice(0,-1)+'.'+d.slice(-1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                             <div class="col-12 mb-3">
                                                 <label>Pressure (Bar)</label>
-                                                <input wire:model="form.pumpDistriD.pressure" type="number" step="any" class="form-control">
+                                                <input wire:model.blur="form.pumpDistriD.pressure" x-data x-on:input="let d=$el.value.replace(/[^0-9]/g,'');$el.value=d.length>=2?d.slice(0,1)+'.'+d.slice(1):d" type="text" inputmode="decimal" class="form-control">
                                             </div>
                                         @endif
                                     </div>
@@ -913,3 +913,68 @@
         </div>
     </div>
 </div>
+
+@script
+<script>
+    function applyFreqAutoDecimal(input) {
+        if (input._freqBound) return;
+        input._freqBound = true;
+        input.addEventListener('input', function () {
+            let digits = this.value.replace(/[^0-9]/g, '');
+            if (digits.length >= 3) {
+                let formatted = digits.slice(0, -1) + '.' + digits.slice(-1);
+                let cursor = this.selectionStart;
+                this.value = formatted;
+                this.setSelectionRange(cursor, cursor);
+            } else {
+                this.value = digits;
+            }
+        });
+    }
+
+    // Set default date & shift dari jam server (Asia/Jakarta)
+    if (!{{ $id ? 'true' : 'false' }}) {
+        @php
+            $serverNow = \Carbon\Carbon::now('Asia/Jakarta');
+            $serverDate = $serverNow->format('Y-m-d');
+            $realHour  = (int) $serverNow->format('H');
+            $adjHour   = (int) $serverNow->copy()->subMinutes(30)->format('H');
+            // Shift pakai jam asli (midnight tetap shift iii)
+            if ($realHour >= 8 && $realHour < 16) {
+                $serverShift = 'shift i';
+            } elseif ($realHour >= 16) {
+                $serverShift = 'shift ii';
+            } else {
+                $serverShift = 'shift iii';
+            }
+            $startHour = $adjHour === 0 ? 23 : ($adjHour % 2 === 0 ? $adjHour - 1 : $adjHour);
+            $endHour   = ($startHour + 2) % 24;
+            // Validasi slot sesuai shift, fallback ke slot terakhir shift
+            $validEnds = ['shift i' => [7,9,11,13,15], 'shift ii' => [15,17,19,21,23], 'shift iii' => [23,1,3,5,7]];
+            if (!in_array($endHour, $validEnds[$serverShift])) {
+                $ends      = $validEnds[$serverShift];
+                $endHour   = $ends[count($ends) - 1];
+                $startHour = ($endHour - 2 + 24) % 24;
+            }
+            $serverEnd   = str_pad($endHour,   2, '0', STR_PAD_LEFT) . ':00';
+            $serverStart = str_pad($startHour, 2, '0', STR_PAD_LEFT) . ':00';
+        @endphp
+        $wire.call('setDefaults',
+            '{{ $serverDate }}',
+            '{{ $serverShift }}',
+            '{{ $serverStart }}',
+            '{{ $serverEnd }}'
+        );
+    }
+
+    function initFreqInputs() {
+        document.querySelectorAll('.freq-auto-decimal').forEach(applyFreqAutoDecimal);
+    }
+
+    initFreqInputs();
+
+    Livewire.hook('morph.updated', () => {
+        initFreqInputs();
+    });
+</script>
+@endscript
