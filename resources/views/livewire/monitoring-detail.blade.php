@@ -34,12 +34,9 @@
                     <div class="row">
                         <div class="col-5 col-md-4">Operator</div>
                         <div class="col-7 col-md-8">:
-                            @foreach ($shifts->shiftOperators as $operator => $index)
-                                @if ($operator == 1)
-                                    &
-                                @endif
-                                {{ $shifts->shiftOperators[$operator]->name }}
-                            @endforeach
+                            @php $operatorNames = $shifts->shiftOperators->pluck('name')->join(' & '); @endphp
+                            {{ $operatorNames }}
+                            <button onclick="copyTotalizer(this, '{{ $operatorNames }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
                         </div>
                     </div>
 
@@ -55,8 +52,10 @@
                             @if($shifts->notes)
                                 @php
                                     $lines = array_filter(array_map('trim', explode("\n", $shifts->notes)));
+                                    $firstLine = array_shift($lines);
                                 @endphp
-                                : - {{ array_shift($lines) }}
+                                : - {{ $firstLine }}
+                                <button onclick="copyTotalizer(this, this.dataset.val)" data-val="{{ $shifts->notes }}" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
                                 @foreach($lines as $line)
                                     <div style="padding-left: 8px;">- {{ $line }}</div>
                                 @endforeach
@@ -76,20 +75,29 @@
                         <div class="font-weight-bold mb-2 text-capitalize" style="color: #000000;">{{ $waterQuality->type }}</div>
                         <div class="mb-3">
                             <div class="row">
-                                <div class="col-5 col-md-4">Ph</div>
-                                <div class="col-7 col-md-8">: {{ $waterQuality->ph }}</div>
+                                <div class="col-5 col-md-4">Turbidity</div>
+                                @php $turbVal = $waterQuality->type == 'air baku' && $waterQuality->turbidity >= 100 ? number_format($waterQuality->turbidity, 0) : number_format($waterQuality->turbidity, 2); @endphp
+                                <div class="col-7 col-md-8">: {{ $turbVal }} NTU
+                                    <button onclick="copyTotalizer(this, '{{ $turbVal }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
-                                <div class="col-5 col-md-4">Turbidity</div>
-                                <div class="col-7 col-md-8">: {{ $waterQuality->type == 'air baku' && $waterQuality->turbidity >= 100 ? number_format($waterQuality->turbidity, 0) : number_format($waterQuality->turbidity, 2) }} NTU</div>
+                                <div class="col-5 col-md-4">Ph</div>
+                                <div class="col-7 col-md-8">: {{ $waterQuality->ph }}
+                                    <button onclick="copyTotalizer(this, '{{ $waterQuality->ph }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Warna</div>
-                                <div class="col-7 col-md-8">: {{ $waterQuality->color }} PCU</div>
+                                <div class="col-7 col-md-8">: {{ $waterQuality->color }} PCU
+                                    <button onclick="copyTotalizer(this, '{{ $waterQuality->color }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">TDS</div>
-                                <div class="col-7 col-md-8">: {{ $waterQuality->tds }}</div>
+                                <div class="col-7 col-md-8">: {{ $waterQuality->tds }}
+                                    <button onclick="copyTotalizer(this, '{{ $waterQuality->tds }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
 
                             @if ($waterQuality->type == 'reservoir')
@@ -653,15 +661,21 @@
                     <div>
                         <div class="row">
                             <div class="col-5 col-md-4">Total Kwh</div>
-                            <div class="col-7 col-md-8">: {{ number_format($shifts->mdpPanels->kwh_total, 2, '.', '') }} kwh</div>
+                            <div class="col-7 col-md-8">: {{ number_format($shifts->mdpPanels->kwh_total, 2, '.', '') }} kwh
+                                <button onclick="copyTotalizer(this, '{{ number_format($shifts->mdpPanels->kwh_total, 2, '.', '') }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Wbp</div>
-                            <div class="col-7 col-md-8">: {{ number_format($shifts->mdpPanels->wdp, 2, '.', '') }}</div>
+                            <div class="col-7 col-md-8">: {{ number_format($shifts->mdpPanels->wdp, 2, '.', '') }}
+                                <button onclick="copyTotalizer(this, '{{ number_format($shifts->mdpPanels->wdp, 2, '.', '') }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Lwbp</div>
-                            <div class="col-7 col-md-8">: {{ number_format($shifts->mdpPanels->lwbp, 2, '.', '') }}</div>
+                            <div class="col-7 col-md-8">: {{ number_format($shifts->mdpPanels->lwbp, 2, '.', '') }}
+                                <button onclick="copyTotalizer(this, '{{ number_format($shifts->mdpPanels->lwbp, 2, '.', '') }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-5 col-md-4">Kvar</div>
@@ -733,15 +747,21 @@
                         @if ($pumpIntakeA->status == 'running')
                             <div class="row">
                                 <div class="col-5 col-md-4">Ampere</div>
-                                <div class="col-7 col-md-8">: {{ $pumpIntakeA->ampere }} A</div>
+                                <div class="col-7 col-md-8">: {{ $pumpIntakeA->ampere }} A
+                                    <button onclick="copyTotalizer(this, '{{ $pumpIntakeA->ampere }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Frekuensi</div>
-                                <div class="col-7 col-md-8">: {{ $pumpIntakeA->frequency }} Hz</div>
+                                <div class="col-7 col-md-8">: {{ $pumpIntakeA->frequency }} Hz
+                                    <button onclick="copyTotalizer(this, '{{ $pumpIntakeA->frequency }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Pressure</div>
-                                <div class="col-7 col-md-8">: {{ $pumpIntakeA->pressure }} Bar</div>
+                                <div class="col-7 col-md-8">: {{ $pumpIntakeA->pressure }} Bar
+                                    <button onclick="copyTotalizer(this, '{{ $pumpIntakeA->pressure }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -771,15 +791,21 @@
                         @if ($pumpIntakeB->status == 'running')
                             <div class="row">
                                 <div class="col-5 col-md-4">Ampere</div>
-                                <div class="col-7 col-md-8">: {{ $pumpIntakeB->ampere }} A</div>
+                                <div class="col-7 col-md-8">: {{ $pumpIntakeB->ampere }} A
+                                    <button onclick="copyTotalizer(this, '{{ $pumpIntakeB->ampere }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Frekuensi</div>
-                                <div class="col-7 col-md-8">: {{ $pumpIntakeB->frequency }} Hz</div>
+                                <div class="col-7 col-md-8">: {{ $pumpIntakeB->frequency }} Hz
+                                    <button onclick="copyTotalizer(this, '{{ $pumpIntakeB->frequency }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Pressure</div>
-                                <div class="col-7 col-md-8">: {{ $pumpIntakeB->pressure }} Bar</div>
+                                <div class="col-7 col-md-8">: {{ $pumpIntakeB->pressure }} Bar
+                                    <button onclick="copyTotalizer(this, '{{ $pumpIntakeB->pressure }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -809,15 +835,21 @@
                         @if ($pumpIntakeC->status == 'running')
                             <div class="row">
                                 <div class="col-5 col-md-4">Ampere</div>
-                                <div class="col-7 col-md-8">: {{ $pumpIntakeC->ampere }} A</div>
+                                <div class="col-7 col-md-8">: {{ $pumpIntakeC->ampere }} A
+                                    <button onclick="copyTotalizer(this, '{{ $pumpIntakeC->ampere }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Frekuensi</div>
-                                <div class="col-7 col-md-8">: {{ $pumpIntakeC->frequency }} Hz</div>
+                                <div class="col-7 col-md-8">: {{ $pumpIntakeC->frequency }} Hz
+                                    <button onclick="copyTotalizer(this, '{{ $pumpIntakeC->frequency }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Pressure</div>
-                                <div class="col-7 col-md-8">: {{ $pumpIntakeC->pressure }} Bar</div>
+                                <div class="col-7 col-md-8">: {{ $pumpIntakeC->pressure }} Bar
+                                    <button onclick="copyTotalizer(this, '{{ $pumpIntakeC->pressure }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -853,15 +885,21 @@
                         @if ($pumpDistriA->status == 'running')
                             <div class="row">
                                 <div class="col-5 col-md-4">Ampere</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriA->ampere }} A</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriA->ampere }} A
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriA->ampere }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Frekuensi</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriA->frequency }} Hz</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriA->frequency }} Hz
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriA->frequency }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Pressure</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriA->pressure }} Bar</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriA->pressure }} Bar
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriA->pressure }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -891,15 +929,21 @@
                         @if ($pumpDistriB->status == 'running')
                             <div class="row">
                                 <div class="col-5 col-md-4">Ampere</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriB->ampere }} A</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriB->ampere }} A
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriB->ampere }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Frekuensi</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriB->frequency }} Hz</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriB->frequency }} Hz
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriB->frequency }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Pressure</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriB->pressure }} Bar</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriB->pressure }} Bar
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriB->pressure }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -929,15 +973,21 @@
                         @if ($pumpDistriC->status == 'running')
                             <div class="row">
                                 <div class="col-5 col-md-4">Ampere</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriC->ampere }} A</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriC->ampere }} A
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriC->ampere }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Frekuensi</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriC->frequency }} Hz</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriC->frequency }} Hz
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriC->frequency }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Pressure</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriC->pressure }} Bar</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriC->pressure }} Bar
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriC->pressure }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -967,15 +1017,21 @@
                         @if ($pumpDistriD->status == 'running')
                             <div class="row">
                                 <div class="col-5 col-md-4">Ampere</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriD->ampere }} A</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriD->ampere }} A
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriD->ampere }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Frekuensi</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriD->frequency }} Hz</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriD->frequency }} Hz
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriD->frequency }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-5 col-md-4">Pressure</div>
-                                <div class="col-7 col-md-8">: {{ $pumpDistriD->pressure }} Bar</div>
+                                <div class="col-7 col-md-8">: {{ $pumpDistriD->pressure }} Bar
+                                    <button onclick="copyTotalizer(this, '{{ $pumpDistriD->pressure }}')" class="btn btn-sm btn-link py-0 px-1 ml-1" title="Copy"><i class="fa fa-copy"></i></button>
+                                </div>
                             </div>
                         @endif
                     </div>
