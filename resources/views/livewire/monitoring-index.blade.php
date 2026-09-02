@@ -44,54 +44,62 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered record-table">
-                    <thead>
-                        <tr>
-                            <th>Jam</th>
-                            <th>Shift</th>
-                            <th>Note</th>
-                            <th class="text-center" style="width: 1%">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($shifts as $shift)
-                            <tr data-shift="{{ strtolower($shift->shift) }}">
-                                <td class="cell-jam">
-                                    {{ substr($shift->start_time, 0, 5) }} - {{ substr($shift->end_time, 0, 5) }}
-                                </td>
-                                <td class="cell-shift">{{ strtoupper($shift->shift) }}</td>
-                                <td class="cell-note">
-                                    <div class="note-text">{{ $shift->notes ?: '-' }}</div>
-                                    <button type="button" class="note-toggle">Selengkapnya</button>
-                                </td>
-                                <td class="cell-action text-center">
-                                    <div class="action-btns">
-                                        <a href="/monitoring/{{ $shift->id }}" wire:navigate
-                                            class="btn btn-info btn-sm" title="Detail">
-                                            <i class="fas fa-info-circle text-white"></i>
-                                        </a>
-                                        @if (!$isAdmin)
-                                            <a href="/monitoring/{{ $shift->id }}/edit"
-                                                class="btn btn-warning btn-sm" title="Edit">
-                                                <i class="fas fa-pencil text-white"></i>
-                                            </a>
-                                            <button wire:click="showConfirmDelete({{ $shift }})" type="button"
-                                                class="btn btn-danger btn-sm" title="Hapus">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center">No Data Available</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                @php
+                    $lastShift = null;
+                    $groupedShifts = $shifts->groupBy('shift');
+                @endphp
+                @forelse ($groupedShifts as $shiftName => $shiftRows)
+                    <div style="font-weight: 800; font-size: 1.1rem; color: #00664A; padding: 14px 0 6px 4px; border-bottom: 1px solid #dee2e6; margin-bottom: 0;">
+                        {{ strtoupper($shiftName) }}
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered record-table mb-0">
+                            <tbody>
+                                @foreach ($shiftRows as $shift)
+                                    <tr data-shift="{{ strtolower($shift->shift) }}">
+                                        <td class="cell-jam">
+                                            {{ substr($shift->start_time, 0, 5) }} - {{ substr($shift->end_time, 0, 5) }}
+                                        </td>
+                                        <td class="cell-shift">{{ strtoupper($shift->shift) }}</td>
+                                        <td class="cell-note">
+                                            <div class="note-text">{{ $shift->notes ?: '-' }}</div>
+                                            <button type="button" class="note-toggle">Selengkapnya</button>
+                                        </td>
+                                        <td class="cell-action text-center">
+                                            <div class="action-btns">
+                                                <a href="/monitoring/{{ $shift->id }}" wire:navigate
+                                                    class="btn btn-info btn-sm" title="Detail">
+                                                    <i class="fas fa-info-circle text-white"></i>
+                                                </a>
+                                                @if (!$isAdmin)
+                                                    <a href="/monitoring/{{ $shift->id }}/edit"
+                                                        class="btn btn-warning btn-sm" title="Edit">
+                                                        <i class="fas fa-pencil text-white"></i>
+                                                    </a>
+                                                    <button wire:click="showConfirmDelete({{ $shift }})" type="button"
+                                                        class="btn btn-danger btn-sm" title="Hapus">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="height: 12px;"></div>
+                @empty
+                    <div class="table-responsive">
+                        <table class="table table-bordered record-table">
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" class="text-center">No Data Available</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                @endforelse
         </div>
     </div>
 
